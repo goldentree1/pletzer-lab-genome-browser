@@ -12,11 +12,11 @@ self.window = {
   requestAnimationFrame: cb => cb(),
   cancelAnimationFrame: () => {},
   navigator: {},
-}
+};
 self.document = {
   createTextNode() {},
   querySelector() {
-    return { appendChild() {} }
+    return { appendChild() {} };
   },
   documentElement: {},
   head: { appendChild: () => {} },
@@ -27,6 +27,6 @@ self.document = {
       setAttribute() {},
       removeAttribute() {},
       appendChild() {},
-    }
+    };
   },
-}
+};
