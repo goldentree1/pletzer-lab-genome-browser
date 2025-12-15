@@ -6,7 +6,7 @@ import {
   JBrowseLinearGenomeView,
 } from '@jbrowse/react-linear-genome-view2';
 
-import { config } from './config';
+import { config } from './config_NC011770';
 
 type ViewModel = ReturnType<typeof createViewState>;
 
@@ -14,21 +14,7 @@ function View() {
   const [viewState, setViewState] = useState<ViewModel>();
 
   useEffect(() => {
-    const state = createViewState({
-      ...config,
-
-      configuration: {
-        rpc: {
-          defaultDriver: 'WebWorkerRpcDriver',
-        },
-      },
-
-      makeWorkerInstance: () => {
-        return new Worker(new URL('./rpcWorker', import.meta.url), {
-          type: 'module',
-        });
-      },
-    });
+    const state = createViewState(config);
 
     setViewState(state);
   }, []);

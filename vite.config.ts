@@ -11,4 +11,18 @@ export default defineConfig({
   worker: {
     format: 'es',
   },
+
+  // Vite serves .gz files with Content-Encoding: gzip
+  // which the browser auto-decompresses, making JBrowse not work.
+  // The only work-around is to serve it separately without vite
+  // in development mode.
+  server: {
+    proxy: {
+      '/data': {
+        target: 'http://localhost:5174',
+        changeOrigin: true,
+        rewrite: p => p.replace(/^\/data/, ''),
+      },
+    },
+  },
 });
