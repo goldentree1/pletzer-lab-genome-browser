@@ -4,18 +4,24 @@ import react from '@vitejs/plugin-react';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './',
-  build: {
-    sourcemap: true,
-  },
+  base: './', // ./ means assets/data are relative to index.html
   worker: {
     format: 'es',
   },
 
-  // Vite serves .gz files with Content-Encoding: gzip
-  // which the browser auto-decompresses, making JBrowse not work.
+  // keep index.html in ./src/ (Vite sucks)
+  root: 'src',
+  publicDir: '../public',
+  build: {
+    outDir: '../dist',
+    emptyOutDir: true,
+    sourcemap: true,
+  },
+
+  // Vite serves .gz files with "Content-Encoding: gzip" which
+  // the browser auto-decompresses, making JBrowse not work!!!
   // The only work-around is to serve it separately without vite
-  // in development mode.
+  // in dev mode (static-build is unaffected)
   server: {
     proxy: {
       '/data': {

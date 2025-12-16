@@ -7,10 +7,7 @@
   "scripts": {
     "dev": "concurrently -k -n site,data \"vite --port 5173\" \"npx serve -S ./public/data -p 5174\"",
     "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "aws s3 sync --delete dist s3://jbrowse.org/demos/lgv-vite/",
-    "postdeploy": "AWS_PAGER=\"\" aws cloudfront  create-invalidation --distribution-id E13LGELJOT4GQO --paths \"/demos/lgv-vite/*\"",
+    "start": "npx serve -S ./dist/",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -35,6 +32,7 @@
     "express": "^5.2.1",
     "globals": "^16.0.0",
     "prettier": "^3.3.3",
+    "serve": "^14.2.5",
     "tsx": "^4.21.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.11.0",
