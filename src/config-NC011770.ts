@@ -1,7 +1,7 @@
 import type { createViewState } from '@jbrowse/react-linear-genome-view2';
 type JBrowseConfig = Parameters<typeof createViewState>[0];
 
-export const config: JBrowseConfig = {
+const config: JBrowseConfig = {
   assembly: {
     name: 'LESB58',
     sequence: {
@@ -98,3 +98,5 @@ export const config: JBrowseConfig = {
     });
   },
 };
+
+export default config;
