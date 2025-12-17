@@ -1,5 +1,4 @@
-import type { createViewState } from '@jbrowse/react-linear-genome-view2';
-type JBrowseConfig = Parameters<typeof createViewState>[0];
+import type { JBrowseConfig } from './types';
 
 const config: JBrowseConfig = {
   assembly: {
@@ -9,7 +8,7 @@ const config: JBrowseConfig = {
       trackId: 'RefSeqTrack',
       adapter: {
         type: 'BgzipFastaAdapter',
-        uri: '/data/NC011770/LESB58_ASM2664v1.fasta.gz',
+        uri: '/data/LESB58/LESB58_ASM2664v1.fasta.gz',
       },
     },
   },
@@ -17,31 +16,53 @@ const config: JBrowseConfig = {
     {
       type: 'FeatureTrack',
       trackId: 'GFF3GeneTrack',
-      name: 'GFF3 Track',
+      name: 'Genes',
       assemblyNames: ['LESB58'],
       adapter: {
         type: 'Gff3TabixAdapter',
         gffGzLocation: {
-          uri: '/data/NC011770/LESB58_ASM2664v1.gff.sorted.gff.noregion.gz',
+          uri: '/data/LESB58/LESB58_ASM2664v1.gff.sorted.gff.noregion.gz',
           locationType: 'UriLocation',
         },
         index: {
           location: {
-            uri: '/data/NC011770/LESB58_ASM2664v1.gff.sorted.gff.noregion.gz.tbi',
+            uri: '/data/LESB58/LESB58_ASM2664v1.gff.sorted.gff.noregion.gz.tbi',
             locationType: 'UriLocation',
           },
         },
       },
-      displays: [
-        {
-          type: 'LinearBasicDisplay',
-          displayId: 'GFF3GeneTrack-LinearBasicDisplay',
-          renderer: {
-            type: 'SvgFeatureRenderer',
-            color1: "jexl:get(feature,'strand')>0?'#00FF00':'red'",
+    },
+    {
+      type: 'VariantTrack',
+      trackId: 'VcfVariantTrack1',
+      name: 'Variants',
+      assemblyNames: ['LESB58'],
+      adapter: {
+        type: 'VcfTabixAdapter',
+        vcfGzLocation: {
+          uri: '/data/LESB58/outputCorrected.vcf.gz',
+          locationType: 'UriLocation',
+        },
+        index: {
+          location: {
+            uri: '/data/LESB58/outputCorrected.vcf.gz.tbi',
+            locationType: 'UriLocation',
           },
         },
-      ],
+      },
+    },
+    {
+      type: 'QuantitativeTrack',
+      trackId: 'BigWigFromBAMTrack1',
+      name: 'Coverage (BigWig)',
+      assemblyNames: ['LESB58'],
+      adapter: {
+        type: 'BigWigAdapter',
+        bigWigLocation: {
+          uri: '/data/LESB58/BigWig_From_BAM-binsize2.bw',
+          locationType: 'UriLocation',
+        },
+      },
     },
   ],
   defaultSession: {
@@ -61,7 +82,12 @@ const config: JBrowseConfig = {
       init: {
         assembly: 'LESB58',
         loc: 'NC_011770.1:1..5,000',
-        tracks: ['RefSeqTrack', 'GFF3GeneTrack'],
+        tracks: [
+          'RefSeqTrack',
+          'BigWigFromBAMTrack1',
+          'GFF3GeneTrack',
+          'VcfVariantTrack1',
+        ],
       },
     },
   },
@@ -71,32 +97,20 @@ const config: JBrowseConfig = {
       type: 'TrixTextSearchAdapter',
       textSearchAdapterId: 'lesb58-index',
       ixFilePath: {
-        uri: '/data/NC011770/trix/assembly1.ix',
+        uri: '/data/LESB58/trix/assembly1.ix',
         locationType: 'UriLocation',
       },
       ixxFilePath: {
-        uri: '/data/NC011770/trix/assembly1.ixx',
+        uri: '/data/LESB58/trix/assembly1.ixx',
         locationType: 'UriLocation',
       },
       metaFilePath: {
-        uri: '/data/NC011770/trix/assembly1_meta.json',
+        uri: '/data/LESB58/trix/assembly1_meta.json',
         locationType: 'UriLocation',
       },
       assemblyNames: ['LESB58'],
     },
   ],
-
-  configuration: {
-    rpc: {
-      defaultDriver: 'WebWorkerRpcDriver',
-    },
-  },
-
-  makeWorkerInstance: () => {
-    return new Worker(new URL('./rpcWorker', import.meta.url), {
-      type: 'module',
-    });
-  },
 };
 
 export default config;

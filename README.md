@@ -20,7 +20,7 @@ yarn dev
 
 ### Build for production:
 ```bash
-yarn build # prod-ready static website output to ./dist/
+yarn build # prod-ready static website, output to ./dist/
 ```
 
 ### Run production build:
