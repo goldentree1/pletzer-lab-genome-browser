@@ -1,4 +1,4 @@
-import type { JBrowseConfig, JBrowseConfigBuilderOpts } from './types';
+import type { JBrowseConfig } from './types';
 
 const defaultConf: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
   configuration: {
@@ -49,7 +49,7 @@ export function makeConfig(config: JBrowseConfig): JBrowseConfig {
     ...defaultConf,
   };
 
-  // dynamic track patches
+  // track patches
   for (const track of newConf.tracks || []) {
     // add reverse/forward strand colouring to genes (GFF3 track)
     if (
@@ -62,13 +62,14 @@ export function makeConfig(config: JBrowseConfig): JBrowseConfig {
           displayId: 'GFF3GeneTrack-LinearBasicDisplay',
           renderer: {
             type: 'SvgFeatureRenderer',
-            color1: "jexl:get(feature,'strand')>0?'#00FF00':'red'",
-            color2: "jexl:get(feature,'strand')>0?'#00FF00':'red'",
+            color1: "jexl:get(feature,'strand')>0?'#00FF00':'#ff0000'",
+            color2: "jexl:get(feature,'strand')>0?'#029f02':'#af0101'",
           },
         },
       ];
     }
   }
+
   // edit default session settings
   if (newConf.defaultSession?.view) {
     newConf.defaultSession.view.trackLabels = 'overlapping';
@@ -76,26 +77,4 @@ export function makeConfig(config: JBrowseConfig): JBrowseConfig {
   }
 
   return newConf;
-}
-
-export function makeConfigFromOpts(
-  opts: JBrowseConfigBuilderOpts,
-): JBrowseConfig {
-  console.log(opts);
-
-  return {
-    assembly: {
-      name: opts.assemblyName,
-      sequence: {
-        type: 'ReferenceSequenceTrack',
-        trackId: 'RefSeqTrack',
-        adapter: {
-          type: 'BgzipFastaAdapter',
-          uri: `/data/${opts.dataDirName}/LESB58_ASM2664v1.fasta.gz`,
-        },
-      },
-    },
-    tracks: [],
-    ...defaultConf,
-  };
 }

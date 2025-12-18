@@ -18,13 +18,13 @@ import { makeConfig } from './makeConfig';
 
 function App() {
   const datasetNames = [
-    'LESB58',
-    'GCF_000014625',
-    'GCF_000006765.1',
-    'GCF_000013425.1',
-    'GCF_000013465.1',
-    'GCF_000281535.2',
-    'GCF_031932345.1',
+    'P.aeruginosa LESB58',
+    'P.aeruginosa PA14',
+    'P.aeruginosa PAO1',
+    'S.aureus HG001 (NCTC 8325)',
+    'S.aureus USA300LAC',
+    'K.pneumoniae KPNIH1',
+    'A.baumannii AB5075-UW',
   ];
   const [configName, setConfigName] = useState(datasetNames[0]);
   const [viewState, setViewState] = useState<ViewModel>();
@@ -51,7 +51,7 @@ function App() {
           <img src="./pletzerlab-icon.webp" alt="Pletzer Lab Icon" />
           <h1>Pletzer Lab Genome Browser</h1>
         </div>
-        <div className="header-genome-chooser">
+        <nav className="header-genome-chooser">
           <select onChange={event => setConfigName(event.target.value)}>
             {datasetNames.map(datasetName => (
               <option value={datasetName} key={`dataset-${datasetName}`}>
@@ -59,19 +59,50 @@ function App() {
               </option>
             ))}
           </select>
-        </div>
+        </nav>
         <div className="header-buttons-container">
           <div className="header-buttons">
-            <div>
+            <div className="checkbox">
               <label htmlFor="logScaleCheckbox">Log Scale</label>
-              <input type="checkbox" id="logScaleCheckbox" />
+              <input
+                type="checkbox"
+                id="logScaleCheckbox"
+                onChange={evt => {
+                  const checked = evt.target.checked;
+                  if (!viewState) return;
+
+                  const linearView = viewState.session.views.find(
+                    v => v.type === 'LinearGenomeView',
+                  );
+                  if (!linearView) return;
+
+                  linearView.tracks.forEach(track => {
+                    /** @ts-expect-error display is 'any' -_- */
+                    track.displays.forEach(display => {
+                      if (isWiggleDisplay(display)) {
+                        display.setScaleType(checked ? 'log' : 'linear');
+                      }
+                    });
+                  });
+                }}
+              />
             </div>
-            <div>
-              <label htmlFor="legendCheckbox">Legend</label>
-              <input type="checkbox" id="legendCheckbox" />
-            </div>
-            <div>
-              <button>Fullscreen</button>
+            <div className="checkbox">
+              <label htmlFor="aminoAcidsCheckbox">CDS+Amino</label>
+              <input
+                type="checkbox"
+                id="aminoAcidsCheckbox"
+                onChange={evt => {
+                  const checked = evt.target.checked;
+                  if (!viewState) return;
+
+                  const linearView = viewState.session.views.find(
+                    v => v.type === 'LinearGenomeView',
+                  );
+                  if (!linearView) return;
+                  linearView.setColorByCDS(checked);
+                }}
+              />
             </div>
           </div>
         </div>
@@ -86,21 +117,25 @@ function App() {
 export default App;
 
 function getConf(datasetName: string): JBrowseConfig | null {
-  if (datasetName === 'LESB58') {
+  if (datasetName === 'P.aeruginosa LESB58') {
     return config_LESB58;
-  } else if (datasetName === 'GCF_000014625') {
+  } else if (datasetName === 'P.aeruginosa PA14') {
     return config_GCF_000014625;
-  } else if (datasetName === 'GCF_000006765.1') {
+  } else if (datasetName === 'P.aeruginosa PAO1') {
     return config_GCF_000006765_1;
-  } else if (datasetName === 'GCF_000013425.1') {
+  } else if (datasetName === 'S.aureus HG001 (NCTC 8325)') {
     return config_GCF_000013425_1;
-  } else if (datasetName === 'GCF_000013465.1') {
+  } else if (datasetName === 'S.aureus USA300LAC') {
     return config_GCF_000013465_1;
-  } else if (datasetName === 'GCF_000281535.2') {
+  } else if (datasetName === 'K.pneumoniae KPNIH1') {
     return config_GCF_000281535_2;
-  } else if (datasetName === 'GCF_031932345.1') {
+  } else if (datasetName === 'A.baumannii AB5075-UW') {
     return config_GCF_031932345_1;
   } else {
     return null;
   }
+}
+
+function isWiggleDisplay(d: { type: string }) {
+  return d.type === 'LinearWiggleDisplay' || d.type === 'SharedWiggleDisplay';
 }

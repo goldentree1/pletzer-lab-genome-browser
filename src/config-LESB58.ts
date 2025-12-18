@@ -54,15 +54,26 @@ const config: JBrowseConfig = {
     {
       type: 'QuantitativeTrack',
       trackId: 'BigWigFromBAMTrack1',
-      name: 'Coverage (BigWig)',
+      name: 'Coverage',
       assemblyNames: ['LESB58'],
       adapter: {
         type: 'BigWigAdapter',
         bigWigLocation: {
-          uri: '/data/LESB58/BigWig_From_BAM-binsize2.bw',
+          uri: '/data/LESB58/BigWig_From_BAM-binsize5.bw',
           locationType: 'UriLocation',
         },
       },
+      displays: [
+        {
+          type: 'LinearWiggleDisplay',
+          displayId: 'BigWigFromBAMTrack1-LinearWiggleDisplay',
+          height: 225,
+          // scaleType: 'log', // 'linear' | 'log'
+          // autoscale: 'local', // 'local' | 'global'
+          // summaryScoreMode: 'mean', // mean | max | min | total
+          // logScaleBase: 10, // IS THIS legit!?
+        },
+      ],
     },
   ],
   defaultSession: {

@@ -4,6 +4,7 @@ export type JBrowseConfig = Parameters<typeof createViewState>[0];
 
 export type ViewModel = ReturnType<typeof createViewState>;
 
+// This is for if I make my own Jbrowse conf auto-creator thingy.
 export interface JBrowseConfigBuilderOpts {
   assemblyName: string;
   dataDirName: string;

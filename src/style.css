@@ -19,7 +19,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #1e1e25;
-  background-color: #f5f5f5;
+  background-color: #f2f2f2;
 }
 
 code {
@@ -30,12 +30,6 @@ code {
 select {
   min-width: 100px;
 }
-/*
-#root {
-  height: 100vh;
-  min-height: 100vh;
-  max-height: 100vh;
-}*/
 
 /** ===== Header / navigation ===== */
 
@@ -78,17 +72,11 @@ select {
   align-items: center;
   gap: 0.37rem;
 }
-/*
-.header-buttons-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}*/
 
 .header-buttons {
   display: flex;
   flex-direction: row;
-  gap: 0.75rem;
+  gap: 1rem;
   align-items: center;
   background-color: #f5f5f5;
   border-radius: 2rem;
@@ -96,6 +84,13 @@ select {
   margin: 0.37rem 0rem;
   padding: 0.37rem;
   padding-inline: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.header-buttons .checkbox {
+  display: flex;
+  gap: 0.2rem;
+  justify-content: center;
 }
 
 /** ===== JBrowse customisations ===== */
@@ -108,28 +103,7 @@ select {
   background-color: #e1e1e1 !important;
 }
 
-/** ===== DARK THEME =====*/
-@media (prefers-color-scheme: dark) {
-  html,
-  body {
-    color: white;
-    background-color: #2a2a31;
-  }
-
-  /** ===== Header / navigation ===== */
-
-  .header {
-    color: white;
-    background-color: #1e1e25;
-  }
-
-  /** ===== JBrowse customisations ===== */
-
-  .jbrowse-container > div > div,
-  .jbrowse-container > div {
-    background-color: #2a2a31 !important;
-  }
-}
+/** half-stolen selector code below - shouold probably clean this up a bit.. */
 
 select {
   appearance: none;
@@ -235,4 +209,27 @@ select {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+/** ===== DARK THEME =====*/
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    color: white;
+    background-color: #2a2a31;
+  }
+
+  /** ===== Header / navigation ===== */
+
+  .header {
+    color: white;
+    background-color: #1e1e25;
+  }
+
+  /** ===== JBrowse customisations ===== */
+
+  .jbrowse-container > div > div,
+  .jbrowse-container > div {
+    background-color: #2a2a31 !important;
+  }
 }
