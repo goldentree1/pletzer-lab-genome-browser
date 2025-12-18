@@ -35,9 +35,22 @@ function App() {
     if (!config) {
       return;
     }
-
     const state = createViewState(makeConfig(config));
     setViewState(state);
+
+    /** TEMPORARY DISGUSTING
+     * PIECE OF CRAP CODE - just undoes all checkboxes
+     * on conf change (we should instead be APPLYING checkbox to the conf somehow)
+     */
+    const checboxesTEMPORARY = document.querySelectorAll(
+      '.header-buttons input[type="checkbox"]',
+    );
+    checboxesTEMPORARY.forEach((el: Element) => {
+      const el2 = el as HTMLInputElement;
+      if (el2.checked) {
+        el2.checked = false;
+      }
+    });
   }, [configName]);
 
   if (!viewState) {
