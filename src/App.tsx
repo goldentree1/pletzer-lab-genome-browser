@@ -5,7 +5,8 @@ import {
   createViewState,
   JBrowseLinearGenomeView,
 } from '@jbrowse/react-linear-genome-view2';
-import PluginTest from './pluginTest';
+
+// import PluginTest from './pluginTest';
 import type { JBrowseConfig, ViewModel } from './types';
 
 // const p = new PluginTest();
@@ -41,7 +42,7 @@ function App() {
     }
     const state = createViewState({
       ...makeConfig(config),
-      plugins: [PluginTest],
+      // plugins: [PluginTest],
     });
     setViewState(state);
 

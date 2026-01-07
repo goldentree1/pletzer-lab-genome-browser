@@ -53,8 +53,35 @@ const config: JBrowseConfig = {
     },
     {
       type: 'QuantitativeTrack',
-      trackId: 'BigWigFromBAMTrack1',
-      name: 'Coverage',
+      trackId: 'BigWig-bin5',
+      name: 'Coverage bin5',
+      assemblyNames: ['LESB58'],
+      adapter: {
+        type: 'BigWigAdapter',
+        bigWigLocation: {
+          uri: '/data/LESB58/bigwig-bin5.bw',
+          locationType: 'UriLocation',
+        },
+      },
+      displays: [
+        {
+          type: 'LinearWiggleDisplay',
+          displayId: 'BigWig-bin5-LinearWiggleDisplay',
+          height: 150,
+          renderer: {
+            type: 'XYPlotRenderer',
+            color: '#1f77b4',
+            lineWidth: 1.5,
+          },
+          scaleType: 'linear',
+          autoscale: 'local',
+        },
+      ],
+    },
+    {
+      type: 'QuantitativeTrack',
+      trackId: 'BigWig-bin100',
+      name: 'Coverage bin100',
       assemblyNames: ['LESB58'],
       adapter: {
         type: 'BigWigAdapter',
@@ -66,12 +93,35 @@ const config: JBrowseConfig = {
       displays: [
         {
           type: 'LinearWiggleDisplay',
-          displayId: 'BigWigFromBAMTrack1-LinearWiggleDisplay',
-          height: 225,
-          // scaleType: 'log', // 'linear' | 'log'
-          // autoscale: 'local', // 'local' | 'global'
-          // summaryScoreMode: 'mean', // mean | max | min | total
-          // logScaleBase: 10, // IS THIS legit!?
+          displayId: 'BigWig-bin100-LinearWiggleDisplay',
+          height: 150,
+          renderer: {
+            type: 'XYPlotRenderer',
+            color: '#d62728',
+            lineWidth: 2,
+          },
+          scaleType: 'linear',
+          autoscale: 'local',
+        },
+      ],
+    },
+    {
+      type: 'MultiQuantitativeTrack',
+      trackId: 'Coverage_multiwiggle',
+      name: 'Coverage binsize5 vs binsize100',
+      assemblyNames: ['LESB58'],
+      category: ['Coverage'],
+      adapter: {
+        type: 'MultiWiggleAdapter',
+        bigWigs: [
+          '/data/LESB58/bigwig-bin100.bw',
+          '/data/LESB58/bigwig-bin5.bw',
+        ],
+      },
+      displays: [
+        {
+          type: 'MultiLinearWiggleDisplay',
+          displayId: 'Coverage_multiwiggle-MultiLinearWiggleDisplay',
         },
       ],
     },
@@ -95,7 +145,11 @@ const config: JBrowseConfig = {
         loc: 'NC_011770.1:1..5,000',
         tracks: [
           'RefSeqTrack',
-          'BigWigFromBAMTrack1',
+          'BigWig-bin5',
+          'BigWig-bin100',
+          'Coverage_multiwiggle',
+          // 'BigWig-overlay',
+          // 'BigWigFromBAMTrack1',
           'GFF3GeneTrack',
           'VcfVariantTrack1',
         ],
