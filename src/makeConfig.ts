@@ -92,18 +92,6 @@ export function myCreateViewState(config: JBrowseConfig): ViewModel {
           { op: 'replace', path: '/rendererTypeNameState', value: 'multiline' },
         ]);
       }
-
-      if (
-        display.type === 'LinearWiggleDisplay' ||
-        display.type === 'MultiLinearWiggleDisplay'
-      ) {
-        if (display.renderer?.type === 'XYPlotRenderer') {
-          // MST patch
-          applyPatch(display.renderer, [
-            { op: 'replace', path: '/logBase', value: 10 },
-          ]);
-        }
-      }
     }
   }
 
