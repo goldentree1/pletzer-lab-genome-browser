@@ -122,6 +122,11 @@ const config: JBrowseConfig = {
         {
           type: 'MultiLinearWiggleDisplay',
           displayId: 'Coverage_multiwiggle-MultiLinearWiggleDisplay',
+          renderer: {
+            type: 'XYPlotRenderer',
+          },
+          scaleType: 'log',
+          autoscale: 'global',
         },
       ],
     },
@@ -145,8 +150,8 @@ const config: JBrowseConfig = {
         loc: 'NC_011770.1:1..5,000',
         tracks: [
           'RefSeqTrack',
-          'BigWig-bin5',
-          'BigWig-bin100',
+          // 'BigWig-bin5',
+          // 'BigWig-bin100',
           'Coverage_multiwiggle',
           // 'BigWig-overlay',
           // 'BigWigFromBAMTrack1',

@@ -1,6 +1,8 @@
-import type { JBrowseConfig } from './types';
+import type { JBrowseConfig, ViewModel } from './types';
+import { applyPatch } from 'mobx-state-tree';
+import { createViewState } from '@jbrowse/react-linear-genome-view2';
 
-const defaultConf: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
+const myConf: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
   configuration: {
     // custom styling
     theme: {
@@ -42,11 +44,11 @@ const defaultConf: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
 /**
  * Transform the given configuration into my nicely customised and styled configuration
  */
-export function makeConfig(config: JBrowseConfig): JBrowseConfig {
-  // do as much as we can by overwriting with defaults
+export function myCreateViewState(config: JBrowseConfig): ViewModel {
+  // overwrite conf with customisations
   const newConf = {
     ...config,
-    ...defaultConf,
+    ...myConf,
   };
 
   // track patches
@@ -76,5 +78,34 @@ export function makeConfig(config: JBrowseConfig): JBrowseConfig {
     newConf.defaultSession.view.colorByCDS = false;
   }
 
-  return newConf;
+  // CREATE VIEW STATE
+  const state = createViewState(newConf);
+
+  // customise views
+  const view = state.session.views[0];
+  if (!view || !view.tracks) return state;
+  for (const viewTrack of view.tracks) {
+    for (const display of viewTrack.displays || []) {
+      // update multiwiggle to xyplot for overlap
+      if (display.type === 'MultiLinearWiggleDisplay') {
+        applyPatch(display, [
+          { op: 'replace', path: '/rendererTypeNameState', value: 'multiline' },
+        ]);
+      }
+
+      if (
+        display.type === 'LinearWiggleDisplay' ||
+        display.type === 'MultiLinearWiggleDisplay'
+      ) {
+        if (display.renderer?.type === 'XYPlotRenderer') {
+          // MST patch
+          applyPatch(display.renderer, [
+            { op: 'replace', path: '/logBase', value: 10 },
+          ]);
+        }
+      }
+    }
+  }
+
+  return state;
 }

@@ -1,16 +1,8 @@
 import { useState, useEffect } from 'react';
 // @ts-expect-error no types for font
 import '@fontsource/roboto';
-import {
-  createViewState,
-  JBrowseLinearGenomeView,
-} from '@jbrowse/react-linear-genome-view2';
-
-// import PluginTest from './pluginTest';
+import { JBrowseLinearGenomeView } from '@jbrowse/react-linear-genome-view2';
 import type { JBrowseConfig, ViewModel } from './types';
-
-// const p = new PluginTest();
-// console.log(p);
 
 import config_LESB58 from './config-LESB58';
 import config_GCF_000014625 from './config-GCF_000014625';
@@ -19,7 +11,7 @@ import config_GCF_000013425_1 from './config-GCF_000013425.1';
 import config_GCF_000013465_1 from './config-GCF_000013465.1';
 import config_GCF_000281535_2 from './config-GCF_000281535.2';
 import config_GCF_031932345_1 from './config-GCF_031932345.1';
-import { makeConfig } from './makeConfig';
+import { myCreateViewState } from './makeConfig';
 
 function App() {
   const datasetNames = [
@@ -40,10 +32,7 @@ function App() {
     if (!config) {
       return;
     }
-    const state = createViewState({
-      ...makeConfig(config),
-      // plugins: [PluginTest],
-    });
+    const state = myCreateViewState(config);
     setViewState(state);
 
     /** TEMPORARY DISGUSTING
@@ -158,5 +147,5 @@ function getConf(datasetName: string): JBrowseConfig | null {
 }
 
 function isWiggleDisplay(d: { type: string }) {
-  return d.type === 'LinearWiggleDisplay' || d.type === 'SharedWiggleDisplay';
+  return d.type.includes('Wiggle');
 }
