@@ -59,7 +59,7 @@ const config: JBrowseConfig = {
       adapter: {
         type: 'BigWigAdapter',
         bigWigLocation: {
-          uri: '/data/LESB58/BigWig_From_BAM-binsize5.bw',
+          uri: '/data/LESB58/bigwig-bin100.bw',
           locationType: 'UriLocation',
         },
       },

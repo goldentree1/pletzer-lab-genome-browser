@@ -5,7 +5,11 @@ import {
   createViewState,
   JBrowseLinearGenomeView,
 } from '@jbrowse/react-linear-genome-view2';
+import PluginTest from './pluginTest';
 import type { JBrowseConfig, ViewModel } from './types';
+
+// const p = new PluginTest();
+// console.log(p);
 
 import config_LESB58 from './config-LESB58';
 import config_GCF_000014625 from './config-GCF_000014625';
@@ -35,7 +39,10 @@ function App() {
     if (!config) {
       return;
     }
-    const state = createViewState(makeConfig(config));
+    const state = createViewState({
+      ...makeConfig(config),
+      plugins: [PluginTest],
+    });
     setViewState(state);
 
     /** TEMPORARY DISGUSTING
