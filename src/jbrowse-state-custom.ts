@@ -1,6 +1,7 @@
 import type { JBrowseConfig, ViewModel } from './types';
 import { applyPatch } from 'mobx-state-tree';
 import { createViewState } from '@jbrowse/react-linear-genome-view2';
+import PluginTest from './pluginTest';
 
 export class GenomeBrowserState {
   private static jbrowseCustomisations: Omit<
@@ -45,7 +46,7 @@ export class GenomeBrowserState {
     },
 
     // add plugins
-    plugins: [],
+    plugins: [PluginTest],
   };
 
   private viewState: ViewModel;
@@ -84,7 +85,7 @@ export class GenomeBrowserState {
     }
 
     // build the views
-    this.viewState = createViewState({ ...newConf, plugins: [] });
+    this.viewState = createViewState({ ...newConf });
 
     const view = this.viewState.session.views[0];
     if (!view || !view.tracks) return;
