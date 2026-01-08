@@ -13,7 +13,24 @@ import config_GCF_000281535_2 from './config-GCF_000281535.2';
 import config_GCF_031932345_1 from './config-GCF_031932345.1';
 import { myCreateViewState } from './jbrowse-custom';
 
+type Strain = {
+  name: string;
+  config: JBrowseConfig;
+};
+
+type Species = {
+  name: string;
+  strains: Strain[];
+};
+
 function App() {
+  /** Get query params */
+  const queryParams = new URLSearchParams(window.location.search);
+  // if (queryParams.get('genome')) {
+  //   const datasetName = queryParams.get('genome') || 'P.aeruginosa LESB58';
+  //   const datasetConfig = queryParams.get('config') || 'config_LESB58';
+  // }
+
   const datasetNames = [
     'P.aeruginosa LESB58',
     'P.aeruginosa PA14',
@@ -23,19 +40,83 @@ function App() {
     'K.pneumoniae KPNIH1',
     'A.baumannii AB5075-UW',
   ];
-  const [configName, setConfigName] = useState(datasetNames[0]);
+  const species: Species[] = [
+    {
+      name: 'P. Aeruginosa',
+      strains: [
+        {
+          name: 'LESB58',
+          config: config_LESB58,
+        },
+        {
+          name: 'PA14',
+          config: config_GCF_000014625,
+        },
+        {
+          name: 'PAO1',
+          config: config_GCF_000006765_1,
+        },
+      ],
+    },
+    {
+      name: 'S. Aureus',
+      strains: [
+        {
+          name: 'HG001',
+          config: config_GCF_000013425_1,
+        },
+        {
+          name: 'USA300LAC',
+          config: config_GCF_000013465_1,
+        },
+      ],
+    },
+    {
+      name: 'K. Pneumoniae',
+      strains: [
+        {
+          name: 'KPNIH1',
+          config: config_GCF_000281535_2,
+        },
+      ],
+    },
+    {
+      name: 'A. Baumannii',
+      strains: [
+        {
+          name: 'AB5075-UW',
+          config: config_GCF_031932345_1,
+        },
+      ],
+    },
+  ];
+
+  let currSpecimen = species[0];
+  let currStrain = species[0].strains[0];
+  if (queryParams.get('species')) {
+    const sp = species.find(s => s.name === queryParams.get('species'));
+    if (sp) {
+      currSpecimen = sp;
+      currStrain = sp.strains[0];
+      if (queryParams.get('strain')) {
+        const str = sp.strains.find(s => s.name === queryParams.get('strain'));
+        if (str) {
+          currStrain = str;
+        }
+      }
+    }
+  }
+
+  const [specimen, setSpecimen] = useState(currSpecimen);
+  const [strain, setStrain] = useState(currStrain || species[0].strains[0]);
   const [viewState, setViewState] = useState<ViewModel>();
 
   // update view with selected dataset
   useEffect(() => {
-    const config = getConf(configName);
-    if (!config) {
-      return;
-    }
-    const state = myCreateViewState(config);
+    const state = myCreateViewState(strain.config);
     setViewState(state);
     resetCheckboxes();
-  }, [configName]);
+  }, [strain]);
 
   if (!viewState) {
     return null;
@@ -49,10 +130,34 @@ function App() {
           <h1>Pletzer Lab Genome Browser</h1>
         </div>
         <nav className="header-genome-chooser">
-          <select onChange={event => setConfigName(event.target.value)}>
-            {datasetNames.map(datasetName => (
-              <option value={datasetName} key={`dataset-${datasetName}`}>
-                {datasetName}
+          <select
+            onChange={event => {
+              const specimenName = event.target.value;
+              setSpecimen(
+                species.find(s => s.name === specimenName) || species[0],
+              );
+              setStrain(findStrain(specimenName) || species[0].strains[0]);
+            }}
+          >
+            {species.map(s => (
+              <option value={s.name} key={`specimen-${s.name}`}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <select
+            onChange={event => {
+              const selectedSpecimen = specimen.name;
+              const selectedStrain = event.target.value;
+              setStrain(
+                findStrain(selectedSpecimen, selectedStrain) ||
+                  specimen.strains[0],
+              );
+            }}
+          >
+            {specimen.strains.map(s => (
+              <option value={s.name} key={`strain-${s.name}`}>
+                {s.name}
               </option>
             ))}
           </select>
@@ -83,6 +188,16 @@ function App() {
       </div>
     </>
   );
+
+  function findStrain(speciesName: string, strain?: string): Strain | null {
+    if (!strain)
+      return species.find(c => c.name === speciesName)?.strains[0] || null;
+    return (
+      species
+        .find(c => c.name === speciesName)
+        ?.strains.find(s => s.name === strain) || null
+    );
+  }
 
   function resetCheckboxes() {
     const checkboxes = document.querySelectorAll(
