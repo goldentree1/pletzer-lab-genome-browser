@@ -11,7 +11,7 @@ import config_GCF_000013425_1 from './config-GCF_000013425.1';
 import config_GCF_000013465_1 from './config-GCF_000013465.1';
 import config_GCF_000281535_2 from './config-GCF_000281535.2';
 import config_GCF_031932345_1 from './config-GCF_031932345.1';
-import { myCreateViewState } from './makeConfig';
+import { myCreateViewState } from './jbrowse-custom';
 
 function App() {
   const datasetNames = [
@@ -34,20 +34,7 @@ function App() {
     }
     const state = myCreateViewState(config);
     setViewState(state);
-
-    /** TEMPORARY DISGUSTING
-     * PIECE OF CRAP CODE - just undoes all checkboxes
-     * on conf change (we should instead be APPLYING checkbox to the conf somehow)
-     */
-    const checboxesTEMPORARY = document.querySelectorAll(
-      '.header-buttons input[type="checkbox"]',
-    );
-    checboxesTEMPORARY.forEach((el: Element) => {
-      const el2 = el as HTMLInputElement;
-      if (el2.checked) {
-        el2.checked = false;
-      }
-    });
+    resetCheckboxes();
   }, [configName]);
 
   if (!viewState) {
@@ -77,24 +64,7 @@ function App() {
               <input
                 type="checkbox"
                 id="logScaleCheckbox"
-                onChange={evt => {
-                  const checked = evt.target.checked;
-                  if (!viewState) return;
-
-                  const linearView = viewState.session.views.find(
-                    v => v.type === 'LinearGenomeView',
-                  );
-                  if (!linearView) return;
-
-                  linearView.tracks.forEach(track => {
-                    /** @ts-expect-error display is 'any' -_- */
-                    track.displays.forEach(display => {
-                      if (isWiggleDisplay(display)) {
-                        display.setScaleType(checked ? 'log' : 'linear');
-                      }
-                    });
-                  });
-                }}
+                onChange={event => logScaleCheckboxHandler(event)}
               />
             </div>
             <div className="checkbox">
@@ -102,50 +72,83 @@ function App() {
               <input
                 type="checkbox"
                 id="aminoAcidsCheckbox"
-                onChange={evt => {
-                  const checked = evt.target.checked;
-                  if (!viewState) return;
-
-                  const linearView = viewState.session.views.find(
-                    v => v.type === 'LinearGenomeView',
-                  );
-                  if (!linearView) return;
-                  linearView.setColorByCDS(checked);
-                }}
+                onChange={event => aminoAcidCheckboxHandler(event)}
               />
             </div>
           </div>
         </div>
       </header>
       <div className="jbrowse-container">
-        <JBrowseLinearGenomeView viewState={viewState} />
+        {viewState && <JBrowseLinearGenomeView viewState={viewState} />}
       </div>
     </>
   );
-}
 
-export default App;
+  function resetCheckboxes() {
+    const checkboxes = document.querySelectorAll(
+      '.header-buttons input[type="checkbox"]',
+    ) as NodeListOf<HTMLInputElement>;
 
-function getConf(datasetName: string): JBrowseConfig | null {
-  if (datasetName === 'P.aeruginosa LESB58') {
-    return config_LESB58;
-  } else if (datasetName === 'P.aeruginosa PA14') {
-    return config_GCF_000014625;
-  } else if (datasetName === 'P.aeruginosa PAO1') {
-    return config_GCF_000006765_1;
-  } else if (datasetName === 'S.aureus HG001 (NCTC 8325)') {
-    return config_GCF_000013425_1;
-  } else if (datasetName === 'S.aureus USA300LAC') {
-    return config_GCF_000013465_1;
-  } else if (datasetName === 'K.pneumoniae KPNIH1') {
-    return config_GCF_000281535_2;
-  } else if (datasetName === 'A.baumannii AB5075-UW') {
-    return config_GCF_031932345_1;
-  } else {
-    return null;
+    checkboxes.forEach(box => {
+      if (box.checked) {
+        box.checked = false;
+      }
+    });
+  }
+
+  function aminoAcidCheckboxHandler(evt: React.ChangeEvent<HTMLInputElement>) {
+    const checked = evt.target.checked;
+    if (!viewState) return;
+
+    const linearView = viewState.session.views.find(
+      v => v.type === 'LinearGenomeView',
+    );
+    if (!linearView) return;
+    linearView.setColorByCDS(checked);
+  }
+
+  function logScaleCheckboxHandler(evt: React.ChangeEvent<HTMLInputElement>) {
+    const checked = evt.target.checked;
+    if (!viewState) return;
+
+    const linearView = viewState.session.views.find(
+      v => v.type === 'LinearGenomeView',
+    );
+    if (!linearView) return;
+
+    linearView.tracks.forEach(track => {
+      /** @ts-expect-error display is 'any' -_- */
+      track.displays.forEach(display => {
+        if (isWiggleDisplay(display)) {
+          display.setScaleType(checked ? 'log' : 'linear');
+        }
+      });
+    });
+  }
+
+  function getConf(datasetName: string): JBrowseConfig | null {
+    if (datasetName === 'P.aeruginosa LESB58') {
+      return config_LESB58;
+    } else if (datasetName === 'P.aeruginosa PA14') {
+      return config_GCF_000014625;
+    } else if (datasetName === 'P.aeruginosa PAO1') {
+      return config_GCF_000006765_1;
+    } else if (datasetName === 'S.aureus HG001 (NCTC 8325)') {
+      return config_GCF_000013425_1;
+    } else if (datasetName === 'S.aureus USA300LAC') {
+      return config_GCF_000013465_1;
+    } else if (datasetName === 'K.pneumoniae KPNIH1') {
+      return config_GCF_000281535_2;
+    } else if (datasetName === 'A.baumannii AB5075-UW') {
+      return config_GCF_031932345_1;
+    } else {
+      return null;
+    }
+  }
+
+  function isWiggleDisplay(d: { type: string }) {
+    return d.type.includes('Wiggle');
   }
 }
 
-function isWiggleDisplay(d: { type: string }) {
-  return d.type.includes('Wiggle');
-}
+export default App;

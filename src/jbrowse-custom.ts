@@ -2,7 +2,7 @@ import type { JBrowseConfig, ViewModel } from './types';
 import { applyPatch } from 'mobx-state-tree';
 import { createViewState } from '@jbrowse/react-linear-genome-view2';
 
-const myConf: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
+const jbrowseCustomisations: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
   configuration: {
     // custom styling
     theme: {
@@ -39,16 +39,19 @@ const myConf: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
       type: 'module',
     });
   },
+
+  // add plugins
+  plugins: [],
 };
 
 /**
- * Transform the given configuration into my nicely customised and styled configuration
+ * JBrowse's createViewState() ... but with my customisations.
  */
 export function myCreateViewState(config: JBrowseConfig): ViewModel {
   // overwrite conf with customisations
   const newConf = {
     ...config,
-    ...myConf,
+    ...jbrowseCustomisations,
   };
 
   // track patches
@@ -78,15 +81,14 @@ export function myCreateViewState(config: JBrowseConfig): ViewModel {
     newConf.defaultSession.view.colorByCDS = false;
   }
 
-  // CREATE VIEW STATE
-  const state = createViewState(newConf);
+  // build the views
+  const state = createViewState({ ...newConf, plugins: [] });
 
-  // customise views
   const view = state.session.views[0];
   if (!view || !view.tracks) return state;
   for (const viewTrack of view.tracks) {
+    // multiwiggle tracks should have overlapping lines
     for (const display of viewTrack.displays || []) {
-      // update multiwiggle to xyplot for overlap
       if (display.type === 'MultiLinearWiggleDisplay') {
         applyPatch(display, [
           { op: 'replace', path: '/rendererTypeNameState', value: 'multiline' },
@@ -95,5 +97,5 @@ export function myCreateViewState(config: JBrowseConfig): ViewModel {
     }
   }
 
-  return state;
+  return state satisfies ViewModel;
 }
