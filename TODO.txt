@@ -5,16 +5,17 @@ TODO:
 			- public/data/GCF_000281535.2
 			- public/data/GCF_031932345.1
 
-=== do comparison with multiwig:
-			- conditions <select/> menu (pick replicates individually, or average)
-			-
 
 === check all searches work
-            - aliases too - like old_locus_tag
+            - aliases too - like old_locus_tag (minor)
 
 === log scale - make base-10 log manually (looks like its base-2 in jbrowse w/ no way to change)?
 
 === deploy... on fucking WORDPRESS :O
+
+=== do comparison with multiwig:
+			- conditions <select/> menu (pick replicates individually, or average)
+			-
 
 === PLES name change (minor)
 
