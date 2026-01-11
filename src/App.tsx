@@ -7,21 +7,20 @@ import myConf from './config';
 import { buildConfig, myCreateViewState } from './jbrowse-custom';
 
 function App() {
-  const strainNames = Object.keys(myConf);
-
-  const [configName, setConfigName] = useState(strainNames[0]);
+  const bacteria = Object.keys(myConf).sort();
+  const [bacterium, setBacterium] = useState<string>(bacteria[0]);
   const [viewState, setViewState] = useState<ViewModel>();
 
   // update view with selected dataset
   useEffect(() => {
-    const config = myConf[configName];
+    const config = myConf[bacterium];
     if (!config) {
       return;
     }
     const state = myCreateViewState(buildConfig(config));
     setViewState(state);
     resetCheckboxes();
-  }, [configName]);
+  }, [bacterium]);
 
   if (!viewState) {
     return null;
@@ -35,10 +34,10 @@ function App() {
           <h1>Pletzer Lab Genome Browser</h1>
         </div>
         <nav className="header-genome-chooser">
-          <select onChange={event => setConfigName(event.target.value)}>
-            {strainNames.map(datasetName => (
-              <option value={datasetName} key={`dataset-${datasetName}`}>
-                {datasetName}
+          <select onChange={event => setBacterium(event.target.value)}>
+            {bacteria.map(b => (
+              <option value={b} key={`dataset-${b}`}>
+                {b}
               </option>
             ))}
           </select>
@@ -65,7 +64,7 @@ function App() {
         </div>
       </header>
       <div className="jbrowse-container">
-        {viewState && <JBrowseLinearGenomeView viewState={viewState} />}
+        <JBrowseLinearGenomeView viewState={viewState} />
       </div>
     </>
   );
@@ -105,15 +104,11 @@ function App() {
     linearView.tracks.forEach(track => {
       /** @ts-expect-error display is 'any' -_- */
       track.displays.forEach(display => {
-        if (isWiggleDisplay(display)) {
+        if (display.type.includes('Wiggle')) {
           display.setScaleType(checked ? 'log' : 'linear');
         }
       });
     });
-  }
-
-  function isWiggleDisplay(d: { type: string }) {
-    return d.type.includes('Wiggle');
   }
 }
 

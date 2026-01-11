@@ -62,7 +62,7 @@ select {
 }
 
 .header-title h1 {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   display: inline-block;
   color: #155b8e;
 }
@@ -70,6 +70,7 @@ select {
 .header-genome-chooser {
   display: flex;
   align-items: center;
+  justify-self: center;
   gap: 0.37rem;
 }
 
@@ -79,11 +80,12 @@ select {
   gap: 1rem;
   align-items: center;
   background-color: #f5f5f5;
-  border-radius: 2rem;
-  border: 1px solid #155b8e;
+  border-radius: 0.37rem;
+  /*border: 1px solid #155b8e44;*/
+  border: 1px solid #cccccc;
   margin: 0.37rem 0rem;
   padding: 0.37rem;
-  padding-inline: 1.5rem;
+  padding-inline: 0.5rem;
   font-size: 0.85rem;
 }
 
@@ -118,7 +120,7 @@ select {
 }
 
 select {
-  font-size: 0.9rem;
+  font-size: 0.89rem;
   display: flex;
   justify-content: space-between;
   min-width: 300px;
