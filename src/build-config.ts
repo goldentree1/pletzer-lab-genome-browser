@@ -1,24 +1,15 @@
-import type { JBrowseConfig } from './types';
+import type { JBrowseConfig, ConfigBuilderOpts } from './types';
 
-interface Gen {
-  ncbiName: string; // e.g., 'GCF_000014625'
-  dataDir?: string; // default '/data/$ncbiName/'
-  firstRegion: string; // e.g., 'NC_008463.1'
-  data: {
-    refSeq: string; // default 'REFSEQ.faa.gz'
-    genomic: string; // default 'GENOME.gff'
-    coverage: string[];
-  };
-}
-
-export function gen({
+export function buildConfig({
   firstRegion,
   ncbiName,
   dataDir,
   data: { refSeq, genomic, coverage },
-}: Gen): JBrowseConfig {
+  extras,
+}: ConfigBuilderOpts): JBrowseConfig {
   if (!dataDir) dataDir = `/data/${ncbiName}`;
 
+  // config to be returned
   const conf = {
     assembly: {
       name: 'asm',
@@ -88,6 +79,8 @@ export function gen({
     ],
   };
 
+  // monkey patches
+
   if (coverage.length >= 2) {
     // add multiwig coverage if exists
     conf.tracks.push({
@@ -116,6 +109,13 @@ export function gen({
 
     // add coverage track to default session
     conf.defaultSession.view.init.tracks.push('multiwig-coverage');
+  }
+
+  if (extras) {
+    for (const track of extras) {
+      conf.tracks.push(track);
+      conf.defaultSession.view.init.tracks.push(track.trackId);
+    }
   }
 
   return conf;

@@ -1,6 +1,6 @@
-import { gen } from './config-gen';
+import { buildConfig } from './build-config';
 
-const g = gen({
+const conf = buildConfig({
   ncbiName: 'GCF_000013425.1',
   firstRegion: 'NC_007795.1',
   data: {
@@ -10,4 +10,4 @@ const g = gen({
   },
 });
 
-export default g;
+export default conf;
