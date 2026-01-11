@@ -8,6 +8,30 @@ This project uses [JBrowse2 Linear Genome View](https://github.com/GMOD/jbrowse-
 
 ## Usage
 
+### To prepare a genome counts comparison
+```bash
+
+# === Make dir and get reference genome data from NCBI ===
+
+mkdir -p public/data/GCF_000006765.1
+
+# Download the reference genome from ncbi
+scripts/download_and_prepare_from_ncbi.sh GCF_000006765.1
+
+# === Prepare the BAM files (coverage) ===
+cp /path/to/bamfile.bam public/data/GCF_000006765.1/ # copy BAM to directory
+
+# 1. Check that the header names match the .fai file
+scripts/extract_bam_names.sh < public/data/GCF_000006765.1/bamfile.bam
+# 2. Reheader if needed
+scripts/reheader-bam.sh public/data/GCF_000006765.1/bamfile.bam "BAD_HEADER" "NEW_HEADER"
+# 3. Prepare BigWig from BAM (for compatibility w/ website)
+scripts/bam-to-bw.sh public/data/GCF_000006765.1/bamfile.bam bwfile.bw
+
+# === Build the config ===
+# Edit src/config.
+```
+
 ### Install npm dependencies:
 ```bash
 yarn
