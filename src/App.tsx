@@ -1,38 +1,25 @@
+import type { ViewModel } from './types';
 import { useState, useEffect } from 'react';
+import { JBrowseLinearGenomeView } from '@jbrowse/react-linear-genome-view2';
 // @ts-expect-error no types for font
 import '@fontsource/roboto';
-import { JBrowseLinearGenomeView } from '@jbrowse/react-linear-genome-view2';
-import type { JBrowseConfig, ViewModel } from './types';
-
-import config_LESB58 from './config-LESB58';
-import config_GCF_000014625 from './config-GCF_000014625';
-import config_GCF_000006765_1 from './config-GCF_000006765.1';
-import config_GCF_000013425_1 from './config-GCF_000013425.1';
-import config_GCF_000013465_1 from './config-GCF_000013465.1';
-import config_GCF_000281535_2 from './config-GCF_000281535.2';
-import config_GCF_031932345_1 from './config-GCF_031932345.1';
+import myConf from './config';
+import { buildConfig } from './build-config';
 import { myCreateViewState } from './jbrowse-custom';
 
 function App() {
-  const datasetNames = [
-    'P.aeruginosa LESB58',
-    'P.aeruginosa PA14',
-    'P.aeruginosa PAO1',
-    'S.aureus HG001 (NCTC 8325)',
-    'S.aureus USA300LAC',
-    'K.pneumoniae KPNIH1',
-    'A.baumannii AB5075-UW',
-  ];
-  const [configName, setConfigName] = useState(datasetNames[0]);
+  const strainNames = Object.keys(myConf);
+
+  const [configName, setConfigName] = useState(strainNames[0]);
   const [viewState, setViewState] = useState<ViewModel>();
 
   // update view with selected dataset
   useEffect(() => {
-    const config = getConf(configName);
+    const config = myConf[configName];
     if (!config) {
       return;
     }
-    const state = myCreateViewState(config);
+    const state = myCreateViewState(buildConfig(config));
     setViewState(state);
     resetCheckboxes();
   }, [configName]);
@@ -50,7 +37,7 @@ function App() {
         </div>
         <nav className="header-genome-chooser">
           <select onChange={event => setConfigName(event.target.value)}>
-            {datasetNames.map(datasetName => (
+            {strainNames.map(datasetName => (
               <option value={datasetName} key={`dataset-${datasetName}`}>
                 {datasetName}
               </option>
@@ -124,26 +111,6 @@ function App() {
         }
       });
     });
-  }
-
-  function getConf(datasetName: string): JBrowseConfig | null {
-    if (datasetName === 'P.aeruginosa LESB58') {
-      return config_LESB58;
-    } else if (datasetName === 'P.aeruginosa PA14') {
-      return config_GCF_000014625;
-    } else if (datasetName === 'P.aeruginosa PAO1') {
-      return config_GCF_000006765_1;
-    } else if (datasetName === 'S.aureus HG001 (NCTC 8325)') {
-      return config_GCF_000013425_1;
-    } else if (datasetName === 'S.aureus USA300LAC') {
-      return config_GCF_000013465_1;
-    } else if (datasetName === 'K.pneumoniae KPNIH1') {
-      return config_GCF_000281535_2;
-    } else if (datasetName === 'A.baumannii AB5075-UW') {
-      return config_GCF_031932345_1;
-    } else {
-      return null;
-    }
   }
 
   function isWiggleDisplay(d: { type: string }) {
