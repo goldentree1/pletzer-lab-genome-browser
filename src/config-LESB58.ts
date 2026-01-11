@@ -138,12 +138,12 @@ const config: JBrowseConfig = {
       id: 'linearGenomeView',
       type: 'LinearGenomeView',
       displayedRegions: [
-        {
-          refName: 'NC_011770.1',
-          start: 0,
-          end: 6601757,
-          assemblyName: 'LESB58',
-        },
+        // {
+        //   refName: 'NC_011770.1',
+        //   start: 0,
+        //   end: 6601757,
+        //   assemblyName: 'LESB58',
+        // },
       ],
       init: {
         assembly: 'LESB58',
