@@ -10,9 +10,14 @@ TODO:
 			-
 
 === check all searches work
+            - aliases too - like old_locus_tag
 
 === log scale - make base-10 log manually (looks like its base-2 in jbrowse w/ no way to change)?
+
+=== deploy... on fucking WORDPRESS :O
 
 === PLES name change (minor)
 
 === FAA gene counts (minor)
+
+=== file upload?? (minor)
