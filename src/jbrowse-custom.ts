@@ -1,7 +1,162 @@
-import type { JBrowseConfig, ViewModel } from './types';
+import type { ConfigBuilderOpts, JBrowseConfig, ViewModel } from './types';
+import type PluginManager from '@jbrowse/core/PluginManager';
 import { applyPatch } from 'mobx-state-tree';
 import { createViewState } from '@jbrowse/react-linear-genome-view2';
-import PluginTest from './pluginTest';
+import Plugin from '@jbrowse/core/Plugin';
+
+export function buildConfig({
+  firstRegion,
+  ncbiName,
+  dataDir,
+  data: { refSeq, genomic, coverage },
+  extras,
+}: ConfigBuilderOpts): JBrowseConfig {
+  if (!dataDir) dataDir = `/data/${ncbiName}`;
+
+  // main config to be returned
+  const conf = {
+    assembly: {
+      name: 'asm',
+      sequence: {
+        type: 'ReferenceSequenceTrack',
+        trackId: 'refseq',
+        adapter: {
+          type: 'BgzipFastaAdapter',
+          uri: `${dataDir}/${refSeq}`,
+        },
+      },
+    },
+    tracks: [
+      {
+        type: 'FeatureTrack',
+        trackId: 'genomic',
+        name: 'GFF3 Track',
+        assemblyNames: ['asm'],
+        adapter: {
+          type: 'Gff3TabixAdapter',
+          gffGzLocation: {
+            uri: `${dataDir}/${genomic}`,
+            locationType: 'UriLocation',
+          },
+          index: {
+            location: {
+              uri: `${dataDir}/${genomic}.tbi`,
+              locationType: 'UriLocation',
+            },
+          },
+        },
+      },
+    ],
+    defaultSession: {
+      name: 'default-session',
+      margin: 0,
+      view: {
+        id: 'lgv',
+        type: 'LinearGenomeView',
+        displayedRegions: [],
+        init: {
+          assembly: 'asm',
+          loc: `${firstRegion}:1..5,000`,
+          tracks: ['refseq', 'genomic'],
+        },
+      },
+    },
+
+    aggregateTextSearchAdapters: [
+      {
+        type: 'TrixTextSearchAdapter',
+        textSearchAdapterId: 'text-search',
+        ixFilePath: {
+          uri: `${dataDir}/trix/${refSeq}.ix`,
+          locationType: 'UriLocation',
+        },
+        ixxFilePath: {
+          uri: `${dataDir}/trix/${refSeq}.ixx`,
+          locationType: 'UriLocation',
+        },
+        metaFilePath: {
+          uri: `${dataDir}/trix/${refSeq}_meta.json`,
+          locationType: 'UriLocation',
+        },
+        assemblyNames: ['asm'],
+      },
+    ],
+  };
+
+  // monkey patches
+
+  if (coverage.length >= 2) {
+    // add multiwig coverage if exists
+    conf.tracks.push({
+      type: 'MultiQuantitativeTrack',
+      trackId: 'multiwig-coverage',
+      name: 'Coverage',
+      assemblyNames: ['asm'],
+      category: ['Coverage'],
+      adapter: {
+        type: 'MultiWiggleAdapter',
+        /** @ts-expect-error idk why type issue, works fine */
+        bigWigs: coverage.map(c => `${dataDir}/${c}`),
+      },
+      displays: [
+        {
+          type: 'MultiLinearWiggleDisplay',
+          displayId: 'Coverage_multiwiggle-MultiLinearWiggleDisplay',
+          renderer: {
+            type: 'XYPlotRenderer',
+          },
+          scaleType: 'log',
+          autoscale: 'global',
+        },
+      ],
+    });
+
+    // add coverage track to default session
+    conf.defaultSession.view.init.tracks.push('multiwig-coverage');
+  }
+
+  if (extras) {
+    for (const track of extras) {
+      conf.tracks.push(track);
+      conf.defaultSession.view.init.tracks.push(track.trackId);
+    }
+  }
+
+  return conf;
+}
+
+export default class MyJbrowsePlugin extends Plugin {
+  name = 'MyJbrowsePlugin';
+
+  install(pluginManager: PluginManager) {
+    // // sanity check: proves plugin is loaded
+    console.log('[MyJbrowsePlugin] installed');
+
+    // example: remove track menu for GFF3 FeatureTracks
+    pluginManager.addToExtensionPoint('TrackMenuItems', (items, ctx) => {
+      const model = ctx?.model;
+
+      if (
+        /** @ts-expect-error fuck typescript */
+        model?.configuration?.trackType === 'FeatureTrack' &&
+        /** @ts-expect-error fuck typescript #2 */
+        model?.adapterConfig?.type === 'Gff3TabixAdapter'
+      ) {
+        return []; // meant to remove ... menu but doesnt work
+      }
+
+      pluginManager.addToExtensionPoint('FeatureMenuItems', (items, ctx) => {
+        /** @ts-expect-error fuck typescript */
+        if (ctx?.track?.adapterConfig?.type === 'Gff3TabixAdapter') {
+          return [];
+        }
+        return items;
+      });
+
+      return items;
+    });
+  }
+}
 
 const jbrowseCustomisations: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
   configuration: {
@@ -42,7 +197,7 @@ const jbrowseCustomisations: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
   },
 
   // add plugins
-  plugins: [PluginTest],
+  plugins: [MyJbrowsePlugin],
 };
 
 /**

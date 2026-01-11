@@ -4,8 +4,7 @@ import { JBrowseLinearGenomeView } from '@jbrowse/react-linear-genome-view2';
 // @ts-expect-error no types for font
 import '@fontsource/roboto';
 import myConf from './config';
-import { buildConfig } from './build-config';
-import { myCreateViewState } from './jbrowse-custom';
+import { buildConfig, myCreateViewState } from './jbrowse-custom';
 
 function App() {
   const strainNames = Object.keys(myConf);
