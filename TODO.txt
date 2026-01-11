@@ -1,1 +1,12 @@
-TODO: get all regions to displaygit checkout config-generator git checkout config-generator 
+TODO: 
+
+=== get all regions to display for (currently only first one does grr):
+			- public/data/GCF_000013465.1
+			- public/data/GCF_000281535.2
+			- public/data/GCF_031932345.1
+			
+=== do comparison with multiwig:
+			- conditions <select/> menu (pick replicates individually, or average)
+			- 
+			
+=== check all searches work

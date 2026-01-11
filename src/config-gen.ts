@@ -62,7 +62,7 @@ export function gen({
         init: {
           assembly: 'asm',
           loc: `${firstRegion}:1..5,000`,
-          tracks: ['refseq', 'genomic', 'coverage'],
+          tracks: ['refseq', 'genomic'],
         },
       },
     },
@@ -88,16 +88,17 @@ export function gen({
     ],
   };
 
-  if (coverage.length > 0) {
+  if (coverage.length >= 2) {
+    // add multiwig coverage if exists
     conf.tracks.push({
       type: 'MultiQuantitativeTrack',
-      trackId: 'coverage',
+      trackId: 'multiwig-coverage',
       name: 'Coverage',
       assemblyNames: ['asm'],
       category: ['Coverage'],
       adapter: {
         type: 'MultiWiggleAdapter',
-        /** @ts-expect-error idk why but moving it out gives bad type */
+        /** @ts-expect-error idk why type issue, works fine */
         bigWigs: coverage.map(c => `${dataDir}/${c}`),
       },
       displays: [
@@ -112,6 +113,9 @@ export function gen({
         },
       ],
     });
+
+    // add coverage track to default session
+    conf.defaultSession.view.init.tracks.push('multiwig-coverage');
   }
 
   return conf;

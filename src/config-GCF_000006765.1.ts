@@ -5,7 +5,7 @@ const g = gen({
   firstRegion: 'NC_002516.2',
   data: {
     refSeq: 'refseq.fna.gz',
-    genomic: 'genomic.gff.sorted.noregion.gz',
+    genomic: 'genomic.gff.sorted.noregion.gff.gz',
     coverage: [],
   },
 });
