@@ -135,16 +135,19 @@ export function myCreateViewState(config: JBrowseConfig): ViewModel {
 }
 
 /** Build a JBrowse-compatible config from my simple config builder */
-export function buildConfig({
-  firstRegion,
-  ncbiName,
-  dataDir,
-  data: { refSeq, genomic, coverage },
-  extras,
-}: ConfigBuilderOpts): JBrowseConfig {
+export function buildConfig(
+  {
+    firstRegion,
+    ncbiName,
+    dataDir,
+    data: { refSeq, genomic, coverage },
+    extras,
+  }: ConfigBuilderOpts,
+  { loc = [0, 5000], conditionA = [0, 0], conditionB = [1, 0] } = {},
+): JBrowseConfig {
   if (!dataDir) dataDir = `/data/${ncbiName}`;
-
-  // main config to be returned
+  // console.log('loc', loc);
+  // console.log(firstRegion);
   const conf = {
     assembly: {
       name: 'asm',
@@ -187,12 +190,11 @@ export function buildConfig({
         displayedRegions: [],
         init: {
           assembly: 'asm',
-          loc: `${firstRegion}:1..5,000`,
+          loc: `${firstRegion}:${loc[0] + 1}..${loc[1]}`,
           tracks: ['refseq', 'genomic'],
         },
       },
     },
-
     aggregateTextSearchAdapters: [
       {
         type: 'TrixTextSearchAdapter',
@@ -212,12 +214,10 @@ export function buildConfig({
         assemblyNames: ['asm'],
       },
     ],
-  };
+  } satisfies JBrowseConfig;
 
-  // monkey patches
-
+  // add multiwig coverage if at least 2 conditions exist
   if (coverage.length >= 2) {
-    // add multiwig coverage if exists
     conf.tracks.push({
       type: 'MultiQuantitativeTrack',
       trackId: 'multiwig-coverage',
@@ -226,23 +226,23 @@ export function buildConfig({
       category: ['Coverage'],
       adapter: {
         type: 'MultiWiggleAdapter',
-        /** @ts-expect-error idk why type issue, works fine */
-        bigWigs: coverage.map(c => `${dataDir}/${c}`),
+        /** @ts-expect-error works at runtime */
+        bigWigs: [
+          coverage[conditionA[0]][conditionA[1]],
+          coverage[conditionB[0]][conditionB[1]],
+        ].map(fname => `${dataDir}/${fname}`),
       },
       displays: [
         {
           type: 'MultiLinearWiggleDisplay',
           displayId: 'Coverage_multiwiggle-MultiLinearWiggleDisplay',
-          renderer: {
-            type: 'XYPlotRenderer',
-          },
+          renderer: { type: 'XYPlotRenderer' },
           scaleType: 'log',
           autoscale: 'global',
         },
       ],
     });
 
-    // add coverage track to default session
     conf.defaultSession.view.init.tracks.push('multiwig-coverage');
   }
 

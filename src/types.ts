@@ -13,7 +13,7 @@ export interface ConfigBuilderOpts {
   data: {
     refSeq: string; // default 'REFSEQ.faa.gz'
     genomic: string; // default 'GENOME.gff'
-    coverage: string[];
+    coverage: string[][];
   };
   extras?: JBrowseConfig['tracks'];
 }

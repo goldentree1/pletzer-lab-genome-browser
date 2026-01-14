@@ -10,21 +10,22 @@ function App() {
   const bacteria = Object.keys(myConf).sort();
   const [bacterium, setBacterium] = useState<string>(bacteria[0]);
   const [viewState, setViewState] = useState<ViewModel>();
+  const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
+  const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
 
-  // update view with selected dataset
   useEffect(() => {
     const config = myConf[bacterium];
-    if (!config) {
-      return;
-    }
-    const state = myCreateViewState(buildConfig(config));
+    if (!config) return;
+
+    const state = myCreateViewState(
+      buildConfig(config, { conditionA, conditionB, loc: [0, 5000] }),
+    );
+
     setViewState(state);
     resetCheckboxes();
-  }, [bacterium]);
+  }, [bacterium, conditionA, conditionB]);
 
-  if (!viewState) {
-    return null;
-  }
+  if (!viewState) return null;
 
   return (
     <>
@@ -34,14 +35,63 @@ function App() {
           <h1>Pletzer Lab Genome Browser</h1>
         </div>
         <nav className="header-genome-chooser">
-          <select onChange={event => setBacterium(event.target.value)}>
+          <select onChange={e => setBacterium(e.target.value)}>
             {bacteria.map(b => (
-              <option value={b} key={`dataset-${b}`}>
+              <option key={b} value={b}>
                 {b}
               </option>
             ))}
           </select>
+
+          {myConf[bacterium].data.coverage.length >= 2 && (
+            <div className="header-condition-chooser">
+              <select
+                id="select-condition-a"
+                onChange={e => {
+                  const [c, r] = e.target.value.split(',').map(Number);
+                  setConditionA([c, r]);
+                }}
+                value={conditionA.join(',')}
+              >
+                {myConf[bacterium].data.coverage.map((arr, i) => (
+                  <optgroup
+                    key={`condA-group-${i}`}
+                    label={`Condition ${i + 1}`}
+                  >
+                    {arr.map((fname, j) => (
+                      <option key={`condA-${i}-${j}`} value={`${i},${j}`}>
+                        {fname}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+
+              <select
+                id="select-condition-b"
+                onChange={e => {
+                  const [c, r] = e.target.value.split(',').map(Number);
+                  setConditionB([c, r]);
+                }}
+                value={conditionB.join(',')}
+              >
+                {myConf[bacterium].data.coverage.map((arr, i) => (
+                  <optgroup
+                    key={`condB-group-${i}`}
+                    label={`Condition ${i + 1}`}
+                  >
+                    {arr.map((fname, j) => (
+                      <option key={`condB-${i}-${j}`} value={`${i},${j}`}>
+                        {fname}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+          )}
         </nav>
+
         <div className="header-buttons-container">
           <div className="header-buttons">
             <div className="checkbox">
@@ -49,7 +99,7 @@ function App() {
               <input
                 type="checkbox"
                 id="logScaleCheckbox"
-                onChange={event => logScaleCheckboxHandler(event)}
+                onChange={logScaleCheckboxHandler}
               />
             </div>
             <div className="checkbox">
@@ -57,12 +107,13 @@ function App() {
               <input
                 type="checkbox"
                 id="aminoAcidsCheckbox"
-                onChange={event => aminoAcidCheckboxHandler(event)}
+                onChange={aminoAcidCheckboxHandler}
               />
             </div>
           </div>
         </div>
       </header>
+
       <div className="jbrowse-container">
         <JBrowseLinearGenomeView viewState={viewState} />
       </div>
@@ -70,42 +121,32 @@ function App() {
   );
 
   function resetCheckboxes() {
-    const checkboxes = document.querySelectorAll(
-      '.header-buttons input[type="checkbox"]',
-    ) as NodeListOf<HTMLInputElement>;
-
-    checkboxes.forEach(box => {
-      if (box.checked) {
-        box.checked = false;
-      }
-    });
+    document
+      .querySelectorAll<HTMLInputElement>(
+        '.header-buttons input[type="checkbox"]',
+      )
+      .forEach(box => (box.checked = false));
   }
 
   function aminoAcidCheckboxHandler(evt: React.ChangeEvent<HTMLInputElement>) {
-    const checked = evt.target.checked;
-    if (!viewState) return;
-
-    const linearView = viewState.session.views.find(
+    const linearView = viewState?.session.views.find(
       v => v.type === 'LinearGenomeView',
     );
     if (!linearView) return;
-    linearView.setColorByCDS(checked);
+    linearView.setColorByCDS(evt.target.checked);
   }
 
   function logScaleCheckboxHandler(evt: React.ChangeEvent<HTMLInputElement>) {
-    const checked = evt.target.checked;
-    if (!viewState) return;
-
-    const linearView = viewState.session.views.find(
+    const linearView = viewState?.session.views.find(
       v => v.type === 'LinearGenomeView',
     );
     if (!linearView) return;
 
     linearView.tracks.forEach(track => {
-      /** @ts-expect-error display is 'any' -_- */
+      /** @ts-expect-error display is 'any' */
       track.displays.forEach(display => {
         if (display.type.includes('Wiggle')) {
-          display.setScaleType(checked ? 'log' : 'linear');
+          display.setScaleType(evt.target.checked ? 'log' : 'linear');
         }
       });
     });

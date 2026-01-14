@@ -34,8 +34,53 @@ const myConfig: { [key: string]: ConfigBuilderOpts } = {
     data: {
       refSeq: 'GCF_000014625.1_ASM1462v1_genomic.fna.gz',
       genomic: 'genomic.gff.sorted.noregion.gff.gz',
-      coverage: ['PA14_I_1.bw', 'PA14_Un_1.bw'],
+      // coverage: ['PA14_I_1.bw', 'PA14_Un_1.bw'],
+      coverage: [
+        [
+          'PA14_I_1-to-3-average__binsize1.reheadered.bw',
+          'PA14_I_1.reheadered.bw',
+          'PA14_I_2.reheadered.bw',
+          'PA14_I_3.reheadered.bw',
+        ],
+        [
+          'PA14_Un_1-to-3-average__binsize1.reheadered.bw',
+          'PA14_Un_1.reheadered.bw',
+          'PA14_Un_2.reheadered.bw',
+          'PA14_Un_3.reheadered.bw',
+        ],
+      ],
     },
+    extras: [
+      // {
+      //   type: 'MultiQuantitativeTrack',
+      //   trackId: 'TESTmultiwig-coverage',
+      //   name: 'TESTCoverage',
+      //   assemblyNames: ['asm'],
+      //   category: ['Coverage'],
+      //   adapter: {
+      //     type: 'MultiWiggleAdapter',
+      //     bigWigs: [
+      //       '/data/GCF_000014625/PA14_I_1.reheadered.bw',
+      //       '/data/GCF_000014625/PA14_I_2.reheadered.bw',
+      //       '/data/GCF_000014625/PA14_I_3.reheadered.bw',
+      //       '/data/GCF_000014625/PA14_Un_1.reheadered.bw',
+      //       '/data/GCF_000014625/PA14_Un_2.reheadered.bw',
+      //       '/data/GCF_000014625/PA14_Un_3.reheadered.bw',
+      //     ],
+      //   },
+      //   displays: [
+      //     {
+      //       type: 'MultiLinearWiggleDisplay',
+      //       displayId: 'TESTCoverage_multiwiggle-MultiLinearWiggleDisplay',
+      //       renderer: {
+      //         type: 'XYPlotRenderer',
+      //       },
+      //       scaleType: 'log',
+      //       autoscale: 'global',
+      //     },
+      //   ],
+      // },
+    ],
   },
   'K.pneumoniae KPNIH1': {
     ncbiName: 'GCF_000281535.2',
@@ -56,12 +101,12 @@ const myConfig: { [key: string]: ConfigBuilderOpts } = {
     },
   },
   'P.aeruginosa LESB58': {
-    ncbiName: 'LESB58',
+    ncbiName: 'GCF_000026645.1',
     firstRegion: 'NC_011770.1',
     data: {
       refSeq: 'LESB58_ASM2664v1.fasta.gz',
       genomic: 'LESB58_ASM2664v1.gff.sorted.gff.noregion.gz',
-      coverage: ['bigwig-bin5.bw', 'bigwig-bin100.bw'],
+      coverage: [['bigwig-bin5.bw'], ['bigwig-bin100.bw']],
     },
     extras: [
       // temporary - extras may be useful
@@ -73,12 +118,12 @@ const myConfig: { [key: string]: ConfigBuilderOpts } = {
         adapter: {
           type: 'VcfTabixAdapter',
           vcfGzLocation: {
-            uri: '/data/LESB58/outputCorrected.vcf.gz',
+            uri: '/data/GCF_000026645.1/outputCorrected.vcf.gz',
             locationType: 'UriLocation',
           },
           index: {
             location: {
-              uri: '/data/LESB58/outputCorrected.vcf.gz.tbi',
+              uri: '/data/GCF_000026645.1/outputCorrected.vcf.gz.tbi',
               locationType: 'UriLocation',
             },
           },
@@ -92,7 +137,7 @@ const myConfig: { [key: string]: ConfigBuilderOpts } = {
         adapter: {
           type: 'BigWigAdapter',
           bigWigLocation: {
-            uri: '/data/LESB58/bigwig-bin5.bw',
+            uri: '/data/GCF_000026645.1/bigwig-bin5.bw',
             locationType: 'UriLocation',
           },
         },
@@ -119,7 +164,7 @@ const myConfig: { [key: string]: ConfigBuilderOpts } = {
         adapter: {
           type: 'BigWigAdapter',
           bigWigLocation: {
-            uri: '/data/LESB58/bigwig-bin100.bw',
+            uri: '/data/GCF_000026645.1/bigwig-bin100.bw',
             locationType: 'UriLocation',
           },
         },
