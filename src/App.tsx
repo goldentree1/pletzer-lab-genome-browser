@@ -77,7 +77,6 @@ function App() {
         if (display.type.includes('Wiggle')) {
           display.setScaleType(logScaling ? 'log' : 'linear');
           display.setAutoscale(globalScaling ? 'global' : 'local');
-          // display.autoscale = globalScaling ? 'global' : 'local'; // <- new
         }
       });
     });
@@ -103,6 +102,8 @@ function App() {
               </option>
             ))}
           </select>
+
+          {/*<span>:</span>*/}
 
           {myConf[bacterium].data.coverage.length >= 2 && (
             <div className="header-condition-chooser">

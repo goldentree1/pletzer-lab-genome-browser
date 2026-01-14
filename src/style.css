@@ -37,13 +37,15 @@ select {
   display: flex;
   flex-direction: row;
   padding-inline: 0.37rem;
-  padding-block: 0.05rem;
-  gap: 0.5rem;
+  padding-block: 0.15rem;
+  gap: 2.1rem;
   background-color: white;
   justify-content: space-between;
   box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.125),
-    0 2px 4px -2px rgb(0 0 0 / 0.125);
+    0 6px 8px -1px rgb(0 0 0 / 0.125),
+    0 4px 6px -2px rgb(0 0 0 / 0.125);
+  color: #155b8e;
+  overflow-x: auto;
 }
 
 .header-title {
@@ -51,6 +53,7 @@ select {
   justify-content: center;
   align-items: center;
   gap: 0.37rem;
+  flex-shrink: 0;
 }
 
 .header-title img {
@@ -62,23 +65,23 @@ select {
 }
 
 .header-title h1 {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  font-weight: 900;
   display: inline-block;
-  color: #155b8e;
 }
 
 .header-genome-chooser {
   display: flex;
   align-items: center;
   justify-self: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
 
   /** For dynamic vertical - but need to change gap property if used*/
-  /*flex-wrap: wrap;*/
+  flex-wrap: wrap;
+}
 
-  /** For vertical*/
-  /*gap: 0.2rem;
-  flex-direction: column;*/
+.header-genome-chooser > select {
+  margin: 0 auto;
 }
 
 .header-condition-chooser {
@@ -87,12 +90,23 @@ select {
   gap: 0.15rem;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
+  padding-inline: 0.25rem;
 }
 
 .header-condition-chooser > span {
   font-size: 0.75rem;
   font-weight: 800;
   margin-inline: 0.15rem;
+  display: inline;
+}
+
+.header-buttons-container {
+  display: flex;
+  flex-direction: column;
+  /*flex-shrink: 0;*/
+  justify-content: center;
+  overflow-x: auto;
 }
 
 .header-buttons {
@@ -125,6 +139,12 @@ select {
 .jbrowse-container > div > div,
 .jbrowse-container > div {
   background-color: #e1e1e1 !important;
+}
+.jbrowse-container > div > div > div > div:first-child {
+  min-height: 0.4rem;
+}
+.jbrowse-container > div > div > div > div:first-child > * {
+  display: none; /* hides the first direct div */
 }
 
 /** half-stolen selector code below - shouold probably clean this up a bit.. */
@@ -244,7 +264,7 @@ select {
   background: white
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
     right 10px center / 18px no-repeat;
-  border: 2px solid #155b8e;
+  border: 1px solid #155b8e;
   border-radius: 1.5rem;
   padding-block: 2px;
   padding-inline: 1rem 1.5rem;
@@ -256,20 +276,32 @@ select {
   html,
   body {
     color: white;
-    background-color: #2a2a31;
+    background-color: #3a3a41;
+  }
+
+  input {
+    color: black;
   }
 
   /** ===== Header / navigation ===== */
 
   .header {
     color: white;
-    background-color: #1e1e25;
+    background-color: #111111;
+  }
+
+  .header-title h1 {
+    color: dodgerblue;
+  }
+
+  .checkbox {
+    color: black;
   }
 
   /** ===== JBrowse customisations ===== */
 
   .jbrowse-container > div > div,
   .jbrowse-container > div {
-    background-color: #2a2a31 !important;
+    background-color: #3a3a41 !important;
   }
 }
