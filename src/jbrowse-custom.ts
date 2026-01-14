@@ -1,4 +1,4 @@
-import type { ConfigBuilderOpts, JBrowseConfig, ViewModel } from './types';
+import type { JBrowseCustomConfig, JBrowseConfig, ViewModel } from './types';
 import type PluginManager from '@jbrowse/core/PluginManager';
 import { applyPatch } from 'mobx-state-tree';
 import { createViewState } from '@jbrowse/react-linear-genome-view2';
@@ -144,7 +144,7 @@ export function buildConfig(
     dataDir,
     data: { refSeq, genomic, coverage },
     extras,
-  }: ConfigBuilderOpts,
+  }: JBrowseCustomConfig,
   {
     loc = [0, 5000],
     logScale = true,

@@ -7,13 +7,18 @@ import myConf from './config';
 import { buildConfig, myCreateViewState } from './jbrowse-custom';
 
 function App() {
-  const bacteria = Object.keys(myConf).sort();
-  const [bacterium, setBacterium] = useState(bacteria[0]);
+  const bacteria: string[] = Object.keys(myConf).sort();
+  // const [bacterium, setBacterium] = useState(bacteria[0]);
+  const [bacterium, setBacterium] = useState<string>(() => {
+    const v = localStorage.getItem('pletzer-genome-browser:bacterium');
+    return v && bacteria.includes(v) ? v : bacteria[0];
+  });
   const [viewState, setViewState] = useState<ViewModel>();
   const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
   const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
 
   // retrieve settings from localStorage API if exists
+
   const [logScaling, setLogScaling] = useState<boolean>(() => {
     const v = localStorage.getItem('pletzer-genome-browser:logScaling');
     return v === null ? true : v === 'true';
@@ -29,17 +34,23 @@ function App() {
 
   // localStorage API update on setting change
   useEffect(() => {
+    localStorage.setItem('pletzer-genome-browser:bacterium', bacterium);
+  }, [bacterium]);
+
+  useEffect(() => {
     localStorage.setItem(
       'pletzer-genome-browser:logScaling',
       String(logScaling),
     );
   }, [logScaling]);
+
   useEffect(() => {
     localStorage.setItem(
       'pletzer-genome-browser:colorByCDS',
       String(colorByCds),
     );
   }, [colorByCds]);
+
   useEffect(() => {
     localStorage.setItem(
       'pletzer-genome-browser:globalScaling',
@@ -75,15 +86,20 @@ function App() {
       /** @ts-expect-error display is 'any' */
       track.displays.forEach(display => {
         if (display.type.includes('Wiggle')) {
-          display.setScaleType(logScaling ? 'log' : 'linear');
-          display.setAutoscale(globalScaling ? 'global' : 'local');
+          const wantedScale = logScaling ? 'log' : 'linear';
+          if (display.scaleType !== wantedScale) {
+            display.setScaleType(wantedScale);
+          }
+          if (display.autoscale !== (globalScaling ? 'global' : 'local')) {
+            display.setAutoscale(globalScaling ? 'global' : 'local');
+          }
         }
       });
     });
 
     // colour by CDS
     linearView.setColorByCDS(colorByCds);
-  }, [viewState, logScaling, colorByCds, globalScaling]);
+  }, [logScaling, colorByCds, globalScaling, viewState]);
 
   if (!viewState) return null;
 
@@ -95,15 +111,16 @@ function App() {
           <h1>Pletzer Lab Genome Browser</h1>
         </div>
         <nav className="header-genome-chooser">
-          <select onChange={e => setBacterium(e.target.value)}>
+          <select
+            defaultValue={bacteria.find(b => b === bacterium) || bacteria[0]}
+            onChange={e => setBacterium(e.target.value)}
+          >
             {bacteria.map(b => (
               <option key={b} value={b}>
                 {b}
               </option>
             ))}
           </select>
-
-          {/*<span>:</span>*/}
 
           {myConf[bacterium].data.coverage.length >= 2 && (
             <div className="header-condition-chooser">

@@ -1,6 +1,6 @@
-import type { ConfigBuilderOpts } from './types';
+import type { JBrowseCustomConfig } from './types';
 
-const myConfig: { [key: string]: ConfigBuilderOpts } = {
+const myConfig: { [key: string]: JBrowseCustomConfig } = {
   'P.aeruginosa PAO1': {
     ncbiName: 'GCF_000006765.1',
     firstRegion: 'NC_002516.2',
@@ -50,37 +50,7 @@ const myConfig: { [key: string]: ConfigBuilderOpts } = {
         ],
       ],
     },
-    extras: [
-      // {
-      //   type: 'MultiQuantitativeTrack',
-      //   trackId: 'TESTmultiwig-coverage',
-      //   name: 'TESTCoverage',
-      //   assemblyNames: ['asm'],
-      //   category: ['Coverage'],
-      //   adapter: {
-      //     type: 'MultiWiggleAdapter',
-      //     bigWigs: [
-      //       '/data/GCF_000014625/PA14_I_1.reheadered.bw',
-      //       '/data/GCF_000014625/PA14_I_2.reheadered.bw',
-      //       '/data/GCF_000014625/PA14_I_3.reheadered.bw',
-      //       '/data/GCF_000014625/PA14_Un_1.reheadered.bw',
-      //       '/data/GCF_000014625/PA14_Un_2.reheadered.bw',
-      //       '/data/GCF_000014625/PA14_Un_3.reheadered.bw',
-      //     ],
-      //   },
-      //   displays: [
-      //     {
-      //       type: 'MultiLinearWiggleDisplay',
-      //       displayId: 'TESTCoverage_multiwiggle-MultiLinearWiggleDisplay',
-      //       renderer: {
-      //         type: 'XYPlotRenderer',
-      //       },
-      //       scaleType: 'log',
-      //       autoscale: 'global',
-      //     },
-      //   ],
-      // },
-    ],
+    extras: [],
   },
   'K.pneumoniae KPNIH1': {
     ncbiName: 'GCF_000281535.2',

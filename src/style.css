@@ -104,7 +104,7 @@ select {
 .header-buttons-container {
   display: flex;
   flex-direction: column;
-  /*flex-shrink: 0;*/
+  flex-shrink: 0;
   justify-content: center;
   overflow-x: auto;
 }
@@ -134,17 +134,20 @@ select {
 /** ===== JBrowse customisations ===== */
 
 .jbrowse-container {
-  padding: 0.2rem 0rem;
+  padding: 0rem 0rem;
 }
 .jbrowse-container > div > div,
 .jbrowse-container > div {
   background-color: #e1e1e1 !important;
 }
+/**ridiculous hacks so jbrowse doesnt show it's logo and menu.
+we 'can' remove logo, but menu would be confusing and unnecessary.
+other option is to fork project, and i'm not quite that desperate yet. */
 .jbrowse-container > div > div > div > div:first-child {
-  min-height: 0.4rem;
+  min-height: 0.5rem;
 }
 .jbrowse-container > div > div > div > div:first-child > * {
-  display: none; /* hides the first direct div */
+  display: none;
 }
 
 /** half-stolen selector code below - shouold probably clean this up a bit.. */
@@ -213,7 +216,7 @@ select {
       &:open::picker(select) {
         opacity: 1;
         height: calc-size(auto, size);
-        overflow: auto;
+        overflow: hidden;
         @starting-style {
           opacity: 0;
           height: 0;
@@ -245,7 +248,7 @@ select {
   }
 }
 
-.sr-only {
+/*.sr-only {
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
   height: 1px;
@@ -253,14 +256,12 @@ select {
   position: absolute;
   white-space: nowrap;
   width: 1px;
-}
+}*/
 
 /* condition selects only */
 .condition-select {
-  font-size: 0.78rem; /* smaller font */
-  min-width: 200px; /* smaller width */
-  max-width: 250px;
-  color: #155b8e; /* text color blue */
+  font-size: 0.78rem;
+  color: #155b8e;
   background: white
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
     right 10px center / 18px no-repeat;
@@ -269,7 +270,28 @@ select {
   padding-block: 2px;
   padding-inline: 1rem 1.5rem;
   font-weight: 500;
+  max-width: 200px;
+  min-width: 200px;
 }
+
+.condition-select {
+  overflow: hidden;
+}
+
+/*.condition-select:nth-of-type(2) {
+  border: 1px solid #377eb8;
+}
+
+.condition-select:nth-of-type(2) {
+  border: 1px solid #e41a1c;
+}
+
+.condition-select:nth-of-type(2) option {
+  &:checked {
+    background: #e41a1c;
+    color: white;
+  }
+}*/
 
 /** ===== DARK THEME =====*/
 @media (prefers-color-scheme: dark) {

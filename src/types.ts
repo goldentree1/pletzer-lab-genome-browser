@@ -6,7 +6,7 @@ export type ViewModel = ReturnType<typeof createViewState>;
 
 /** My personal config - much, much smaller.
  * Used for building full config for JBrowse */
-export interface ConfigBuilderOpts {
+export interface JBrowseCustomConfig {
   ncbiName: string; // e.g., 'GCF_000014625'
   dataDir?: string; // default '/data/$ncbiName/'
   firstRegion: string; // e.g., 'NC_008463.1'

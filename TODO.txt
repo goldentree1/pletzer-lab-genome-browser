@@ -1,22 +1,18 @@
 TODO:
 
-=== do comparison with multiwig:
-			- conditions <select/> menu (pick replicates individually, or average)
-			-
-
 === get all regions to display for (currently only first one does grr):
 			- public/data/GCF_000013465.1
 			- public/data/GCF_000281535.2
 			- public/data/GCF_031932345.1
 
-=== deploy... on fucking WORDPRESS :O
+=== deploy... on fucking WORDPRESS :O (either WP redirect, or maybe static plugin)
 
 === check all searches work
             - aliases too - like old_locus_tag (minor)
 
-=== log scale - make base-10 log manually (looks like its base-2 in jbrowse w/ no way to change)?
+=== PLES name change / old_locus_tag=
 
-=== PLES name change (minor)
+=== log scale - make base-10 log manually (looks like its base-2 in jbrowse w/ no way to change)?
 
 === FAA gene counts (minor)
 

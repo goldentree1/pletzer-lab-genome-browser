@@ -1,6 +1,10 @@
 #!/bin/bash
 
 NCBI_ACCESSION_ID="$1"
+DATA_DIR="public/data/$NCBI_ACCESSION_ID"
+NCBI_DATA_DIR="tmp/$NCBI_ACCESSION_ID/ncbi_dataset/data/$NCBI_ACCESSION_ID"
+REFSEQ_FILE=$(ls "$NCBI_DATA_DIR" | grep "$NCBI_ACCESSION_ID" | grep ".fna")
+GENES_FILE=$(ls "$NCBI_DATA_DIR" | grep "genomic.gff")
 
 jbrowse_prepare_fasta(){
     echo "Preparing FASTA genome reference sequence..."
@@ -19,8 +23,6 @@ jbrowse_prepare_fasta(){
 }
 
 jbrowse_prepare_gff(){
-    #!/bin/bash
-
     # Converts/fixes GFF format and creates indexes.
     # This allows it to be visualised in JBrowse
 
@@ -70,28 +72,24 @@ jbrowse_prepare_gff(){
 # === MAIN ===
 
 # Download + extract dataset into 'tmp'
-mkdir -p tmp
+mkdir -p "$DATA_DIR"
 curl -L \
  -H "Accept: application/zip" \
- -o "tmp/$NCBI_ACCESSION_ID.zip" \
+ -o "$DATA_DIR/$NCBI_ACCESSION_ID.zip" \
  "https://api.ncbi.nlm.nih.gov/datasets/v2/genome/accession/$NCBI_ACCESSION_ID/download?include_annotation_type=GENOME_FASTA&include_annotation_type=GENOME_GFF&include_annotation_type=RNA_FASTA&include_annotation_type=CDS_FASTA&include_annotation_type=PROT_FASTA&include_annotation_type=SEQUENCE_REPORT&hydrated=FULLY_HYDRATED" \
  > /dev/null
-unzip "tmp/$NCBI_ACCESSION_ID.zip" -d "tmp/$NCBI_ACCESSION_ID"
+unzip "$DATA_DIR/$NCBI_ACCESSION_ID.zip" -d "$DATA_DIR/$NCBI_ACCESSION_ID"
 
 # We should really do md5sum checking here too... comes with each NCBI download.
 
-DATA_FILES_DIR="tmp/$NCBI_ACCESSION_ID/ncbi_dataset/data/$NCBI_ACCESSION_ID"
-REFSEQ_FILE=$(ls "$DATA_FILES_DIR" | grep "$NCBI_ACCESSION_ID" | grep ".fna")
-GENES_FILE=$(ls "$DATA_FILES_DIR" | grep "genomic.gff")
+mkdir -p "$DATA_DIR"
+cp "$NCBI_DATA_DIR/$REFSEQ_FILE" "$DATA_DIR/refseq.fna"
+cp "$NCBI_DATA_DIR/$GENES_FILE" "$DATA_DIR/genomic.gff"
 
-mkdir -p "public/data/$NCBI_ACCESSION_ID"
-cp "$DATA_FILES_DIR/$REFSEQ_FILE" "public/data/$NCBI_ACCESSION_ID/refseq.fna"
-cp "$DATA_FILES_DIR/$GENES_FILE" "public/data/$NCBI_ACCESSION_ID/genomic.gff"
+jbrowse_prepare_fasta "$DATA_DIR/refseq.fna"
+jbrowse_prepare_gff "$DATA_DIR/genomic.gff"
 
-jbrowse_prepare_fasta "public/data/$NCBI_ACCESSION_ID/refseq.fna"
-jbrowse_prepare_gff "public/data/$NCBI_ACCESSION_ID/genomic.gff"
-
-cd "public/data/$NCBI_ACCESSION_ID"
+cd "$DATA_DIR"
 
 # create config for JBrowse
 jbrowse add-assembly refseq.fna.gz --name "$NCBI_ACCESSION_ID" --load inPlace --type bgzipFasta

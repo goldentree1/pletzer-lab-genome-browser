@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import subprocess
 
 """
 Checks that files match the reference genome (ie chromosome names are not mismatched).
@@ -28,23 +29,33 @@ def main():
 
     # Read reference file chromsomes
     ref_chroms = fai_extract_chromosomes(args.ref)
+    print(f"\nReference chromosomes from FASTA index:\n{', '.join(ref_chroms)}\n")
 
     # Read all other files, checking for mismatches against the reference
+    n_issues = 0
     for file in args.files:
         chroms = None
-
         if file.endswith(".gff"):
             chroms = gff_extract_chromosomes(file)
         elif file.endswith(".vcf"):
             chroms = vcf_extract_chromosomes(file)
         elif file.endswith(".bed"):
             chroms = bed_extract_chromosomes(file)
+        elif file.endswith(".bam"):
+            chroms = bam_extract_chromosomes(file)
         else:
             print(f"Unable to parse '{file}': unrecognised format")
             exit(1)
 
-        print(f"Checking '{file}':")
-        print_check_mismatch(ref_chroms, list(chroms))
+        chrom_issues = check_mismatches(ref_chroms, list(chroms))
+        print(f"[{'OK' if len(chrom_issues) == 0 else 'FAIL'}]: '{basename(file)}'")
+        if len(chrom_issues) > 0:
+            print(
+                f"\t mismatch{'es' if len(chrom_issues) > 1 else ''} on: {'", "'.join(chrom_issues)}"
+            )
+            n_issues += 1
+
+    print("\nALL OK! NAMES MATCH." if n_issues == 0 else "\nFAIL")
 
 
 # Works for fasta.fai or fastq.fai files.
@@ -159,18 +170,40 @@ def vcf_extract_chromosomes(file: str) -> dict[str, list[int]]:
     return chroms
 
 
-def print_check_mismatch(refs: dict[str, tuple[int, int]], chroms: list[str]):
+def bam_extract_chromosomes(file: str) -> dict[str, list[int]]:
+    chroms = {}
+
+    cmd = [
+        "samtools",
+        "view",
+        "-H",
+        file,
+    ]
+
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    for line in result.stdout.splitlines():
+        if line.startswith("@SQ"):
+            fields = line.split("\t")
+            chrom_name = fields[1].split(":")[1]
+            chrom_len = int(fields[2].split(":")[1])
+            chroms[chrom_name] = (0, chrom_len)
+    return chroms
+
+
+def check_mismatches(refs: dict[str, tuple[int, int]], chroms: list[str]):
     chrom_issues: list[str] = []
     for c in chroms:
         if c not in refs:
             chrom_issues.append(c)
-    if len(chrom_issues) > 0:
-        print(
-            f"\tFound mismatch{'es' if len(chrom_issues) > 1 else ''}: {', '.join(chrom_issues)}"
-        )
-    else:
-        print("\tOK!")
     return chrom_issues
+
+
+# Helpers
+def basename(filename: str) -> str:
+    f = filename
+    while f.find("/") != -1:
+        f = f[f.find("/") + 1 :]
+    return f
 
 
 if __name__ == "__main__":
