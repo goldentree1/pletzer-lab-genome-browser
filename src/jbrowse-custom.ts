@@ -99,10 +99,12 @@ export function myCreateViewState(config: JBrowseConfig): ViewModel {
         {
           type: 'LinearBasicDisplay',
           displayId: 'GFF3GeneTrack-LinearBasicDisplay',
+          height: 130,
           renderer: {
             type: 'SvgFeatureRenderer',
             color1: "jexl:get(feature,'strand')>0?'#00FF00':'#ff0000'",
             color2: "jexl:get(feature,'strand')>0?'#029f02':'#af0101'",
+            height: 15,
           },
         },
       ];
@@ -143,11 +145,15 @@ export function buildConfig(
     data: { refSeq, genomic, coverage },
     extras,
   }: ConfigBuilderOpts,
-  { loc = [0, 5000], conditionA = [0, 0], conditionB = [1, 0] } = {},
+  {
+    loc = [0, 5000],
+    logScale = true,
+    conditionA = [0, 0],
+    conditionB = [1, 0],
+  } = {},
 ): JBrowseConfig {
   if (!dataDir) dataDir = `/data/${ncbiName}`;
-  // console.log('loc', loc);
-  // console.log(firstRegion);
+
   const conf = {
     assembly: {
       name: 'asm',
@@ -237,7 +243,8 @@ export function buildConfig(
           type: 'MultiLinearWiggleDisplay',
           displayId: 'Coverage_multiwiggle-MultiLinearWiggleDisplay',
           renderer: { type: 'XYPlotRenderer' },
-          scaleType: 'log',
+          height: 300,
+          scaleType: logScale ? 'log' : 'linear',
           autoscale: 'global',
         },
       ],

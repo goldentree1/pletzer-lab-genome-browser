@@ -37,13 +37,13 @@ const myConfig: { [key: string]: ConfigBuilderOpts } = {
       // coverage: ['PA14_I_1.bw', 'PA14_Un_1.bw'],
       coverage: [
         [
-          'PA14_I_1-to-3-average__binsize1.reheadered.bw',
+          'PA14_I_Average.bw',
           'PA14_I_1.reheadered.bw',
           'PA14_I_2.reheadered.bw',
           'PA14_I_3.reheadered.bw',
         ],
         [
-          'PA14_Un_1-to-3-average__binsize1.reheadered.bw',
+          'PA14_Un_Average.bw',
           'PA14_Un_1.reheadered.bw',
           'PA14_Un_2.reheadered.bw',
           'PA14_Un_3.reheadered.bw',
@@ -108,82 +108,82 @@ const myConfig: { [key: string]: ConfigBuilderOpts } = {
       genomic: 'LESB58_ASM2664v1.gff.sorted.gff.noregion.gz',
       coverage: [['bigwig-bin5.bw'], ['bigwig-bin100.bw']],
     },
-    extras: [
-      // temporary - extras may be useful
-      {
-        type: 'VariantTrack',
-        trackId: 'VcfVariantTrack1',
-        name: 'Variants',
-        assemblyNames: ['asm'],
-        adapter: {
-          type: 'VcfTabixAdapter',
-          vcfGzLocation: {
-            uri: '/data/GCF_000026645.1/outputCorrected.vcf.gz',
-            locationType: 'UriLocation',
-          },
-          index: {
-            location: {
-              uri: '/data/GCF_000026645.1/outputCorrected.vcf.gz.tbi',
-              locationType: 'UriLocation',
-            },
-          },
-        },
-      },
-      {
-        type: 'QuantitativeTrack',
-        trackId: 'BigWig-bin5',
-        name: 'Coverage bin5',
-        assemblyNames: ['asm'],
-        adapter: {
-          type: 'BigWigAdapter',
-          bigWigLocation: {
-            uri: '/data/GCF_000026645.1/bigwig-bin5.bw',
-            locationType: 'UriLocation',
-          },
-        },
-        displays: [
-          {
-            type: 'LinearWiggleDisplay',
-            displayId: 'BigWig-bin5-LinearWiggleDisplay',
-            height: 150,
-            renderer: {
-              type: 'XYPlotRenderer',
-              color: '#1f77b4',
-              lineWidth: 1.5,
-            },
-            scaleType: 'linear',
-            autoscale: 'local',
-          },
-        ],
-      },
-      {
-        type: 'QuantitativeTrack',
-        trackId: 'BigWig-bin100',
-        name: 'Coverage bin100',
-        assemblyNames: ['asm'],
-        adapter: {
-          type: 'BigWigAdapter',
-          bigWigLocation: {
-            uri: '/data/GCF_000026645.1/bigwig-bin100.bw',
-            locationType: 'UriLocation',
-          },
-        },
-        displays: [
-          {
-            type: 'LinearWiggleDisplay',
-            displayId: 'BigWig-bin100-LinearWiggleDisplay',
-            height: 150,
-            renderer: {
-              type: 'XYPlotRenderer',
-              color: '#d62728',
-              lineWidth: 2,
-            },
-            scaleType: 'linear',
-            autoscale: 'local',
-          },
-        ],
-      },
-    ],
+    // extras: [
+    //   // temporary - extras may be useful
+    //   {
+    //     type: 'VariantTrack',
+    //     trackId: 'VcfVariantTrack1',
+    //     name: 'Variants',
+    //     assemblyNames: ['asm'],
+    //     adapter: {
+    //       type: 'VcfTabixAdapter',
+    //       vcfGzLocation: {
+    //         uri: '/data/GCF_000026645.1/outputCorrected.vcf.gz',
+    //         locationType: 'UriLocation',
+    //       },
+    //       index: {
+    //         location: {
+    //           uri: '/data/GCF_000026645.1/outputCorrected.vcf.gz.tbi',
+    //           locationType: 'UriLocation',
+    //         },
+    //       },
+    //     },
+    //   },
+    //   {
+    //     type: 'QuantitativeTrack',
+    //     trackId: 'BigWig-bin5',
+    //     name: 'Coverage bin5',
+    //     assemblyNames: ['asm'],
+    //     adapter: {
+    //       type: 'BigWigAdapter',
+    //       bigWigLocation: {
+    //         uri: '/data/GCF_000026645.1/bigwig-bin5.bw',
+    //         locationType: 'UriLocation',
+    //       },
+    //     },
+    //     displays: [
+    //       {
+    //         type: 'LinearWiggleDisplay',
+    //         displayId: 'BigWig-bin5-LinearWiggleDisplay',
+    //         height: 150,
+    //         renderer: {
+    //           type: 'XYPlotRenderer',
+    //           color: '#1f77b4',
+    //           lineWidth: 1.5,
+    //         },
+    //         scaleType: 'linear',
+    //         autoscale: 'local',
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     type: 'QuantitativeTrack',
+    //     trackId: 'BigWig-bin100',
+    //     name: 'Coverage bin100',
+    //     assemblyNames: ['asm'],
+    //     adapter: {
+    //       type: 'BigWigAdapter',
+    //       bigWigLocation: {
+    //         uri: '/data/GCF_000026645.1/bigwig-bin100.bw',
+    //         locationType: 'UriLocation',
+    //       },
+    //     },
+    //     displays: [
+    //       {
+    //         type: 'LinearWiggleDisplay',
+    //         displayId: 'BigWig-bin100-LinearWiggleDisplay',
+    //         height: 150,
+    //         renderer: {
+    //           type: 'XYPlotRenderer',
+    //           color: '#d62728',
+    //           lineWidth: 2,
+    //         },
+    //         scaleType: 'linear',
+    //         autoscale: 'local',
+    //       },
+    //     ],
+    //   },
+    // ],
   },
 };
 
