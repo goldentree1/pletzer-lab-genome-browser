@@ -1,9 +1,38 @@
 TODO:
 
+-- Multi-conditions display
+X Make individual replicates able to be shown
+X Compute averages script (per-base, so no binning to start with)
+X Compare
+X statefulness (remembers checkbox settings between loads, uses React to keep log-scaling between genome switches, etc.)
+X STATEFULNESS: make same genome/comparison come up
+X responsivity
+
+IMPORTANT (what Sam wants):
+- GET SEARCH WORKING AGAIN! (aliases too for old_locus_tag= names??)
+- Do BAM -> BW for S.Aureus (sam gave me more BAM files)
+- Use Binsizes of 10. CPM Normalization is good, it should be the default.
+- Script to rebuild based on file layout ()
+- Make multi-chromosome stuff display ALL chroms!!!! (bugfix)
+- WordPress deployment (either static plugin or redirect to Vercel or something)
+-
+
+- Make JBrowse custom better by making it a class?
+- Make JBrowse custom better by removing need for 'rnaseq' or whatever?
+- Switch between side-by-side / overlay
+- Sam counts from FAA file displayed.
+- Change name to old_locus_tag (AND/OR use aliases for search)
+- Testing:  we can test the scripts work by using VERY simple BAM files with a few coords only (learn how that works),
+and very simple bigwig files to test averages, etc!
+X Testing: compare to Weizmann data. Then once visually ok looking, we can use that dataset seeing how to test. DW! Weizmann is different conditions to our PA14. SAM had a look at what I've done - and thinks its displaying well etc.
+
 === get all regions to display for (currently only first one does grr):
 			- public/data/GCF_000013465.1
 			- public/data/GCF_000281535.2
 			- public/data/GCF_031932345.1
+
+	^^NO - THIS IS FINE. MAYBE  SOME UI THING TO SWITCH CHROMOSOMES OR AT LEAST
+	JUST SHOW THAT THEY EXIST. OR MAYBE INCL. ALL IF THEY DONT TAKE UP FULL SPACE
 
 === deploy... on fucking WORDPRESS :O (either WP redirect, or maybe static plugin)
 
@@ -12,8 +41,11 @@ TODO:
 
 === PLES name change / old_locus_tag=
 
-=== log scale - make base-10 log manually (looks like its base-2 in jbrowse w/ no way to change)?
-
-=== FAA gene counts (minor)
+X log scale - make base-10 log manually (looks like its base-2 in jbrowse w/ no way to change)?
+WE DONT NEED BASE-10, BASE-2 is FINE.
 
 === file upload?? (minor)
+Dont think so - we are just going to make it REBUILD-ABLE!!
+That way, postdocs / professor can simply re-deploy it.
+
+=== FAA gene counts (minor)

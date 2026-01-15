@@ -8,3 +8,9 @@
 
 samtools index "$1"
 bamCoverage --binSize 1 -b "$1" -o "$2"
+bamCoverage \
+  -b "$1" \
+  -o "$2.cpm.bw" \
+  --normalizeUsing CPM \
+  --binSize 10
+# ^ sam liked these sizes.

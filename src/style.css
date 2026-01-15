@@ -216,11 +216,14 @@ select {
       &:open::picker(select) {
         opacity: 1;
         height: calc-size(auto, size);
-        overflow: hidden;
+        overflow: auto;
         @starting-style {
           opacity: 0;
           height: 0;
         }
+      }
+      optgroup {
+        color: #155b8e;
       }
       option {
         padding: 15px 20px;
@@ -248,16 +251,6 @@ select {
   }
 }
 
-/*.sr-only {
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}*/
-
 /* condition selects only */
 .condition-select {
   font-size: 0.78rem;
@@ -274,24 +267,9 @@ select {
   min-width: 200px;
 }
 
-.condition-select {
-  overflow: hidden;
+.condition-select > optgroup:first-child {
+  padding-top: 0.37rem;
 }
-
-/*.condition-select:nth-of-type(2) {
-  border: 1px solid #377eb8;
-}
-
-.condition-select:nth-of-type(2) {
-  border: 1px solid #e41a1c;
-}
-
-.condition-select:nth-of-type(2) option {
-  &:checked {
-    background: #e41a1c;
-    color: white;
-  }
-}*/
 
 /** ===== DARK THEME =====*/
 @media (prefers-color-scheme: dark) {

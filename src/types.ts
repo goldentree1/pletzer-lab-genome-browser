@@ -11,7 +11,7 @@ export interface JBrowseCustomConfig {
   dataDir?: string; // default '/data/$ncbiName/'
   firstRegion: string; // e.g., 'NC_008463.1'
   data: {
-    refSeq: string; // default 'REFSEQ.faa.gz'
+    refSeq?: string; // default 'REFSEQ.faa.gz'
     genomic: string; // default 'GENOME.gff'
     coverage: string[][];
   };

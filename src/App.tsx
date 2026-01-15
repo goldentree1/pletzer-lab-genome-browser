@@ -101,6 +101,12 @@ function App() {
     linearView.setColorByCDS(colorByCds);
   }, [logScaling, colorByCds, globalScaling, viewState]);
 
+  useEffect(() => {
+    // revert conditions to defaults
+    setConditionA([0, 0]);
+    setConditionB([1, 0]);
+  }, [bacterium]);
+
   if (!viewState) return null;
 
   return (

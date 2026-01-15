@@ -153,6 +153,7 @@ export function buildConfig(
   } = {},
 ): JBrowseConfig {
   if (!dataDir) dataDir = `/data/${ncbiName}`;
+  if (!refSeq) refSeq = 'refseq.fna.gz';
 
   const conf = {
     assembly: {
