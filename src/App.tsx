@@ -5,60 +5,31 @@ import { JBrowseLinearGenomeView } from '@jbrowse/react-linear-genome-view2';
 import '@fontsource/roboto';
 import myConf from './config';
 import { buildConfig, myCreateViewState } from './jbrowse-custom';
+import { useStoredStateBoolean, useStoredStateString } from './utils';
 
 function App() {
   const bacteria: string[] = Object.keys(myConf).sort();
-  // const [bacterium, setBacterium] = useState(bacteria[0]);
-  const [bacterium, setBacterium] = useState<string>(() => {
-    const v = localStorage.getItem('pletzer-genome-browser:bacterium');
-    return v && bacteria.includes(v) ? v : bacteria[0];
-  });
+  const [bacterium, setBacterium] = useStoredStateString(
+    'pletzer-genome-browser:bacterium',
+    bacteria[0],
+  );
   const [viewState, setViewState] = useState<ViewModel>();
   const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
   const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
+  const [logScaling, setLogScaling] = useStoredStateBoolean(
+    'pletzer-genome-browser:logScaling',
+    true,
+  );
+  const [globalScaling, setGlobalScaling] = useStoredStateBoolean(
+    'pletzer-genome-browser:globalScaling',
+    true,
+  );
+  const [colorByCds, setColorByCDS] = useStoredStateBoolean(
+    'pletzer-genome-browser:colorByCDS',
+    false,
+  );
 
-  // retrieve settings from localStorage API if exists
-
-  const [logScaling, setLogScaling] = useState<boolean>(() => {
-    const v = localStorage.getItem('pletzer-genome-browser:logScaling');
-    return v === null ? true : v === 'true';
-  });
-  const [globalScaling, setGlobalScaling] = useState<boolean>(() => {
-    const v = localStorage.getItem('pletzer-genome-browser:globalScaling');
-    return v === null ? true : v === 'true';
-  });
-  const [colorByCds, setColorByCDS] = useState<boolean>(() => {
-    const v = localStorage.getItem('pletzer-genome-browser:colorByCDS');
-    return v === null ? false : v === 'true';
-  });
-
-  // localStorage API update on setting change
-  useEffect(() => {
-    localStorage.setItem('pletzer-genome-browser:bacterium', bacterium);
-  }, [bacterium]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      'pletzer-genome-browser:logScaling',
-      String(logScaling),
-    );
-  }, [logScaling]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      'pletzer-genome-browser:colorByCDS',
-      String(colorByCds),
-    );
-  }, [colorByCds]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      'pletzer-genome-browser:globalScaling',
-      String(globalScaling),
-    );
-  }, [globalScaling]);
-
-  // conf full reload (for things jbrowse cant handle via DOM)
+  // config full reload (for things jbrowse cant handle via DOM)
   useEffect(() => {
     const config = myConf[bacterium];
     if (!config) return;
@@ -102,7 +73,7 @@ function App() {
   }, [logScaling, colorByCds, globalScaling, viewState]);
 
   useEffect(() => {
-    // revert conditions to defaults
+    // revert conditions to defaults on bacterium change
     setConditionA([0, 0]);
     setConditionB([1, 0]);
   }, [bacterium]);
@@ -214,7 +185,7 @@ function App() {
       </header>
 
       <div className="jbrowse-container">
-        <JBrowseLinearGenomeView viewState={viewState} />
+        {viewState && <JBrowseLinearGenomeView viewState={viewState} />}
       </div>
     </>
   );

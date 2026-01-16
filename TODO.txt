@@ -9,12 +9,15 @@ X STATEFULNESS: make same genome/comparison come up
 X responsivity
 
 IMPORTANT (what Sam wants):
-- GET SEARCH WORKING AGAIN! (aliases too for old_locus_tag= names??)
+X GET SEARCH WORKING AGAIN! (aliases too for old_locus_tag= names??)
 - Do BAM -> BW for S.Aureus (sam gave me more BAM files)
-- Use Binsizes of 10. CPM Normalization is good, it should be the default.
-- Script to rebuild based on file layout ()
+- "Use Binsizes of 10. CPM Normalization is good, it should be the default" -- Sam.
+- Script to rebuild based on pre-defined dir structure.
 - Make multi-chromosome stuff display ALL chroms!!!! (bugfix)
-- WordPress deployment (either static plugin or redirect to Vercel or something)
+- WordPress deployment (either static plugin or redirect to Vercel or something):
+	Plan:: https://chatgpt.com/c/69698a86-b490-8324-8ec5-9144cc671191
+	We can just upload the ENTIRE directory to the 'Wordpress uploads' dir.
+	After that, we can just make a simple page that points an iframe to the dir, eg /genome-browser -> /wp-content/uploads/pletzerlab-genome-browser/index.html
 -
 
 - Make JBrowse custom better by making it a class?

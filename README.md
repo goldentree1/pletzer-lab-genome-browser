@@ -8,6 +8,25 @@ This project uses [JBrowse2 Linear Genome View](https://github.com/GMOD/jbrowse-
 
 ## Usage
 
+### Prepare your files
+
+With a dir structure like so:
+GCF_000014625/
+├── genes.gff
+├── reads/
+│   ├── PA14_I/
+│   │   ├── PA14_I.1.bam
+│   │   ├── PA14_I.2.bam
+│   │   └── PA14_I.3.bam
+│   └── PA14_Un/
+│       ├── PA14_Un.1.bam
+│       ├── PA14_Un.2.bam
+│       └── PA14_Un.3.bam
+└── refseq.fna
+```bash
+
+```
+
 ### To prepare a genome counts comparison
 ```bash
 
