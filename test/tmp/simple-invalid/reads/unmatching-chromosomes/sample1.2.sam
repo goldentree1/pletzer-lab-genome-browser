@@ -1,0 +1,4 @@
+@HD	VN:1.6	SO:coordinate
+@SQ	SN:badchrom2	LN:100
+r3	16	badchrom2	55	60	10M	*	0	0	AGCTAGCTAG	FFFFFFFFFF
+r4	16	badchrom2	70	60	10M	*	0	0	CTAGCTAGCT	FFFFFFFFFF

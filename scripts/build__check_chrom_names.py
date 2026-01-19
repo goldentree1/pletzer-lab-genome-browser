@@ -14,48 +14,52 @@ Usage: ./gene_mismatch_checker.py <reference FAI file> <...other files (GFF,BED,
 
 # ===== MAIN =====
 def main():
-    # Parse cli args
-    parser = argparse.ArgumentParser(
-        description="Check that all files match the reference (i.e., no chromosome name mismatches)"
-    )
-    parser.add_argument("ref", help="The reference FAI file")
-    parser.add_argument("files", nargs="*", help="Other files (GFF,BED,BAM,VCF)")
+    try:
+        # Parse cli args
+        parser = argparse.ArgumentParser(
+            description="Check that all files match the reference (i.e., no chromosome name mismatches)"
+        )
+        parser.add_argument("ref", help="The reference FAI file")
+        parser.add_argument("files", nargs="*", help="Other files (GFF,BED,BAM,VCF)")
 
-    args = parser.parse_args()
+        args = parser.parse_args()
 
-    if not args.ref or not args.ref.endswith(".fai"):
-        print(f"Invalid reference file '{args.ref}' (must be a .fai file)")
-        exit(1)
-
-    # Read reference file chromsomes
-    ref_chroms = fai_extract_chromosomes(args.ref)
-    # print(f"\nReference chromosomes from FASTA index:\n{', '.join(ref_chroms)}\n")
-
-    # Read all other files, checking for mismatches against the reference
-    n_issues = 0
-    for file in args.files:
-        chroms = None
-        if file.endswith(".gff"):
-            chroms = gff_extract_chromosomes(file)
-        elif file.endswith(".vcf"):
-            chroms = vcf_extract_chromosomes(file)
-        elif file.endswith(".bed"):
-            chroms = bed_extract_chromosomes(file)
-        elif file.endswith(".bam"):
-            chroms = bam_extract_chromosomes(file)
-        else:
-            print(f"Unable to parse '{file}': unrecognised format")
+        if not args.ref or not args.ref.endswith(".fai"):
+            print(f"Invalid reference file '{args.ref}' (must be a .fai file)")
             exit(1)
 
-        chrom_issues = check_mismatches(ref_chroms, list(chroms))
-        if len(chrom_issues) > 0:
-            print(
-                f"Chromosome mismatch{'es' if len(chrom_issues) > 1 else ''} in '{basename(file)}': {', '.join(chrom_issues)}"
-            )
-            n_issues += 1
-    if n_issues == 0:
-        exit(0)
-    else:
+        # Read reference file chromsomes
+        ref_chroms = fai_extract_chromosomes(args.ref)
+
+        # Read all other files, checking for mismatches against the reference
+        n_issues = 0
+        for file in args.files:
+            chroms = None
+            if file.endswith(".gff"):
+                chroms = gff_extract_chromosomes(file)
+            elif file.endswith(".vcf"):
+                chroms = vcf_extract_chromosomes(file)
+            elif file.endswith(".bed"):
+                chroms = bed_extract_chromosomes(file)
+            elif file.endswith(".bam"):
+                chroms = bam_extract_chromosomes(file)
+            else:
+                print(f"Unable to parse '{file}': unrecognised format")
+                exit(1)
+
+            chrom_issues = check_mismatches(ref_chroms, list(chroms))
+            if len(chrom_issues) > 0:
+                print(
+                    f"Chromosome mismatch{'es' if len(chrom_issues) > 1 else ''} in '{basename(file)}': {', '.join(chrom_issues)}"
+                )
+                n_issues += 1
+        if n_issues == 0:
+            exit(0)
+        else:
+            exit(1)
+
+    except Exception as e:
+        print(str(e))
         exit(1)
 
 
@@ -83,7 +87,7 @@ def gff_extract_chromosomes(file: str) -> dict[str, tuple[int, int]]:
     with open(file, "r") as f:
         for line in f:
             sline = line.rstrip()
-            if sline.startswith("#"):
+            if sline.startswith("#") or not sline:
                 pass
             else:
                 fields = sline.split("\t")
