@@ -154,68 +154,78 @@ if $should_exit; then
     exit 1
 fi
 
+echo -e "\033[0;32mAll OK!\033[0m"
+echo
+
 # ================================================
 #     ===   2: Prepare data for JBrowse    ===
 # ================================================
 # If the script gets here, all is well with the data and structure.
 # We can now prepare the data for JBrowse!
-echo -e "\033[0;32mAll OK!\033[0m"
-echo
 echo "Preparing data for Pletzer Lab Genome Browser..."
 for genome_dir in "$DATA_DIR"/*; do
     refseq_file="$genome_dir/refseq.fasta"
     genes_file="$genome_dir/genes.gff"
     reads_dir="$genome_dir/reads"
-
-    echo "Preparing GFF file '$(basename "$genes_file")'..."
+    printf "Preparing \033[0;34m%s\033[0m:\n" "$(basename "$genome_dir")"
+    echo "Preparing genes file '$(basename "$genes_file")'..."
     jbrowse_prepare_gff "$genes_file"
 
     for condition_dir in "$reads_dir"/*; do
         [[ -d "$condition_dir" ]] || continue  # skip non-directories
 
-        bam_files=()
-        bw_files=()  # keep track of BigWigs for this condition
+       # ================================================
+       # Process BAMs and compute BigWigs (individual + merged)
+       # ================================================
+       bam_files=()       # raw BAMs
+       bw_files=()        # individual BigWigs
+       cpm_bw_files=()    # individual CPM BigWigs
 
-        # Process each BAM
-        for bam_file in "$condition_dir"/*.bam; do
-            [[ -f "$bam_file" ]] || continue  # skip if no BAMs match
+       # Collect BAM files
+       for bam_file in "$condition_dir"/*.bam; do
+           [[ -f "$bam_file" ]] || continue
+           bam_files+=("$bam_file")
 
-            bam_name=$(basename "$bam_file")
-            bw_file="$condition_dir/${bam_name%.bam}.bw"
-            cpm_bw_file="$condition_dir/${bam_name%.bam}.cpm.bw"
+           bam_name=$(basename "$bam_file")
+           bw_file="$condition_dir/${bam_name%.bam}.bw"
+           cpm_bw_file="$condition_dir/${bam_name%.bam}.cpm.bw"
 
-            echo "Processing BAM file '$bam_name' (this can take a few minutes)..."
-            samtools index "$bam_file"
-            bamCoverage -b "$bam_file" -o "$bw_file" --binSize "$BIN_SIZE"
-            bamCoverage -b "$bam_file" -o "$cpm_bw_file" --normalizeUsing CPM --binSize "$BIN_SIZE"
+           echo "Processing BAM file '$bam_name'"
+           samtools index "$bam_file"
+           bamCoverage -b "$bam_file" -o "$bw_file" --binSize "$BIN_SIZE"
+           bamCoverage -b "$bam_file" -o "$cpm_bw_file" --normalizeUsing CPM --binSize "$BIN_SIZE"
 
-            bw_files+=("$bw_file")
-            bam_files+=("$bam_file")
-            cpm_bw_files+=("$cpm_bw_file")  # keep track for averaging
-        done
+           bw_files+=("$bw_file")
+           cpm_bw_files+=("$cpm_bw_file")
+       done
 
-        # Compute averages, and do CPM normalization.
-        n_files=${#bw_files[@]}
-        if (( n_files == 0 )); then
-            echo "No BigWigs found in '$condition_dir', skipping."
-            continue
-        elif (( n_files == 1 )); then
-            single_bw="${bw_files[0]}"
-            avg_bw="$condition_dir/$(basename "${single_bw%.bw}").average.bw"
-            cpm_avg_bw="$condition_dir/$(basename "${single_bw%.bw}").average.cpm.bw"
+       n_files=${#bam_files[@]}
+       if (( n_files == 0 )); then
+           echo "No BAM files found in '$condition_dir', skipping."
+           continue
+       elif (( n_files == 1 )); then
+           # Only one BAM: just copy individual BigWigs to “average” names
+           avg_bw="$condition_dir/$(basename "$condition_dir").average.bw"
+           cpm_avg_bw="$condition_dir/$(basename "$condition_dir").average.cpm.bw"
+           echo "Only one BAM file found in '$condition_dir', which will be treated as the average."
+           cp "${bw_files[0]}" "$avg_bw"
+           cp "${cpm_bw_files[0]}" "$cpm_avg_bw"
+       else
+           # Multiple BAMs -> merge BAMs and create merged BigWigs
+           merged_bam="$condition_dir/$(basename "$condition_dir").merged.bam"
+           avg_bw="$condition_dir/$(basename "$condition_dir").average.bw"
+           cpm_avg_bw="$condition_dir/$(basename "$condition_dir").average.cpm.bw"
 
-            echo "Only one BAM -> copying $single_bw to $avg_bw and $cpm_avg_bw"
-            cp "$single_bw" "$avg_bw"
-            cp "${cpm_bw_files[0]}" "$cpm_avg_bw"
-        else
-            # Multiple BigWigs: compute average
-            avg_bw="$condition_dir/$(basename "${condition_dir}").average.bw"
-            cpm_avg_bw="$condition_dir/$(basename "${condition_dir}").average.cpm.bw"
-            echo "Computing average for '$condition_dir'"
-            bigwigAverage --bigwigs "${bw_files[@]}" -o "$avg_bw" --binSize "$BIN_SIZE"
-            echo "Computing CPM-normalized average for '$condition_dir'"
-            bigwigAverage --bigwigs "${cpm_bw_files[@]}" -o "$cpm_avg_bw" --binSize "$BIN_SIZE"
-        fi
+           echo "Merging BAM files into '$merged_bam'"
+           samtools merge -f "$merged_bam" "${bam_files[@]}"
+           samtools index "$merged_bam"
+
+           echo "Generating merged BigWig"
+           bamCoverage -b "$merged_bam" -o "$avg_bw" --binSize "$BIN_SIZE"
+           echo "Generating CPM-normalized merged BigWig"
+           bamCoverage -b "$merged_bam" -o "$cpm_avg_bw" --normalizeUsing CPM --binSize "$BIN_SIZE"
+       fi
+
     done
 
 done

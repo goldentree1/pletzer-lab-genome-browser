@@ -1,0 +1,4 @@
+@HD	VN:1.6	SO:coordinate
+@SQ	SN:notchrom1	LN:100
+r1	0	notchrom1	6	60	10M	*	0	0	ATGCGTACGT	FFFFFFFFFF
+r2	0	notchrom1	15	60	10M	*	0	0	GCTAGCTAGC	FFFFFFFFFF

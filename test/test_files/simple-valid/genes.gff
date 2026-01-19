@@ -1,0 +1,8 @@
+##gff-version 3
+##sequence-region chr1 1 100
+
+chr1	RefSeq	gene	5	30	.	+	.	ID=gene1;Name=geneA
+chr1	RefSeq	CDS	5	30	.	+	0	ID=cds1;Parent=gene1;Name=geneA_cds
+
+chr1	RefSeq	gene	50	80	.	-	.	ID=gene2;Name=geneB
+chr1	RefSeq	CDS	50	80	.	-	0	ID=cds2;Parent=gene2;Name=geneB_cds
