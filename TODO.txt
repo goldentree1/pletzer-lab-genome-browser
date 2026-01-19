@@ -18,7 +18,9 @@ X GET SEARCH WORKING AGAIN! (aliases too for old_locus_tag= names??)
 	Plan:: https://chatgpt.com/c/69698a86-b490-8324-8ec5-9144cc671191
 	We can just upload the ENTIRE directory to the 'Wordpress uploads' dir.
 	After that, we can just make a simple page that points an iframe to the dir, eg /genome-browser -> /wp-content/uploads/pletzerlab-genome-browser/index.html
--
+
+
+- Tests!? Sam seems happy enough that it works after visually inspecting though.
 
 - Make JBrowse custom better by making it a class?
 - Make JBrowse custom better by removing need for 'rnaseq' or whatever?
