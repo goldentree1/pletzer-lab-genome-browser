@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Gzip, index and make chrom.sizes a FASTA reference sequence for JBrowse
 jbrowse_prepare_fasta(){
     FASTA_FILE=$1
     bgzip -fk "$FASTA_FILE"
@@ -9,30 +10,31 @@ jbrowse_prepare_fasta(){
 
 # Converts/fixes GFF format and creates indexes for JBrowse
 jbrowse_prepare_gff(){
-
     GFF_FILE=$1
 
-    # GFF/GTF files can have strange file formats.
-    # AGAT is a tool built to standardise and sort GFF/GTF files into standard GFF3 format.
+    # Use AGAT to sort and standardise the GFF/GTF file into standard GFF3 format
     agat config --expose --tabix > /dev/null # Make sure there's a config
     agat_convert_sp_gxf2gxf.pl \
       --gff "$GFF_FILE" \
-      -o "$GFF_FILE.agat" > /dev/null
+      -o "$GFF_FILE.agat" > /dev/null 2>&1
 
-    # Sort chromosomes for tabix cmd
+    # sort chromosomes for tabix
     {
       grep '^#' "$GFF_FILE.agat"
       LC_ALL=C sort -t $'\t' -k1,1 -k4,4n <(grep -v '^#' "$GFF_FILE.agat")
     } > "$GFF_FILE.sorted"
 
-    # Remove 'region' type genes (these usually just span the entire genome for bacterium - not helpful)
+    # remove 'region' types (these just span the entire genome - not useful)
     awk -F'\t' '$3 != "region"' < "$GFF_FILE.sorted" > "$GFF_FILE.sorted.noregion.gff"
+
+    # gzip it and create tabix index
     bgzip -fk "$GFF_FILE.sorted.noregion.gff" -o "$GFF_FILE.sorted.noregion.gff.gz"
     tabix -p gff "$GFF_FILE.sorted.noregion.gff.gz"
 }
 
 # First arg is DATA_DIR. Otherwise default to ./data
 DATA_DIR="${1:-./data}"
+BIN_SIZE=10
 if [[ ! -d "$DATA_DIR" ]]; then
     echo "Directory '$DATA_DIR' does not exist."
     exit 1
@@ -59,9 +61,9 @@ fi
 # Each directory requires:
 # - a "refseq.fasta" (reference sequence)
 # - a "genes.gff" (gene names)
-# - a "reads" directory (reads)
-# - directories under reads/* must contain at least one .bam file
-# - all chromosome names in .bam and .gff files match reference sequence
+# - a "reads" directory (reads) with subfolders for each condition
+# - reads/<condition>/* must contain at least one .bam file
+# - all chromosome names in .bam and .gff files must match reference sequence
 should_exit=false
 echo
 echo "Checking for errors..."
@@ -152,16 +154,68 @@ if $should_exit; then
     exit 1
 fi
 
-echo "All OK! Preparing data for Pletzer Lab Genome Browser..."
 # ================================================
 #     ===   2: Prepare data for JBrowse    ===
 # ================================================
-# If the script gets here, all is well with the data and structure
+# If the script gets here, all is well with the data and structure.
 # We can now prepare the data for JBrowse!
+echo -e "\033[0;32mAll OK!\033[0m"
+echo
+echo "Preparing data for Pletzer Lab Genome Browser..."
 for genome_dir in "$DATA_DIR"/*; do
     refseq_file="$genome_dir/refseq.fasta"
     genes_file="$genome_dir/genes.gff"
     reads_dir="$genome_dir/reads"
 
+    echo "Preparing GFF file '$(basename "$genes_file")'..."
     jbrowse_prepare_gff "$genes_file"
+
+    for condition_dir in "$reads_dir"/*; do
+        [[ -d "$condition_dir" ]] || continue  # skip non-directories
+
+        bam_files=()
+        bw_files=()  # keep track of BigWigs for this condition
+
+        # Process each BAM
+        for bam_file in "$condition_dir"/*.bam; do
+            [[ -f "$bam_file" ]] || continue  # skip if no BAMs match
+
+            bam_name=$(basename "$bam_file")
+            bw_file="$condition_dir/${bam_name%.bam}.bw"
+            cpm_bw_file="$condition_dir/${bam_name%.bam}.cpm.bw"
+
+            echo "Processing BAM file '$bam_name' (this can take a few minutes)..."
+            samtools index "$bam_file"
+            bamCoverage -b "$bam_file" -o "$bw_file" --binSize "$BIN_SIZE"
+            bamCoverage -b "$bam_file" -o "$cpm_bw_file" --normalizeUsing CPM --binSize "$BIN_SIZE"
+
+            bw_files+=("$bw_file")
+            bam_files+=("$bam_file")
+            cpm_bw_files+=("$cpm_bw_file")  # keep track for averaging
+        done
+
+        # Compute averages, and do CPM normalization.
+        n_files=${#bw_files[@]}
+        if (( n_files == 0 )); then
+            echo "No BigWigs found in '$condition_dir', skipping."
+            continue
+        elif (( n_files == 1 )); then
+            single_bw="${bw_files[0]}"
+            avg_bw="$condition_dir/$(basename "${single_bw%.bw}").average.bw"
+            cpm_avg_bw="$condition_dir/$(basename "${single_bw%.bw}").average.cpm.bw"
+
+            echo "Only one BAM -> copying $single_bw to $avg_bw and $cpm_avg_bw"
+            cp "$single_bw" "$avg_bw"
+            cp "${cpm_bw_files[0]}" "$cpm_avg_bw"
+        else
+            # Multiple BigWigs: compute average
+            avg_bw="$condition_dir/$(basename "${condition_dir}").average.bw"
+            cpm_avg_bw="$condition_dir/$(basename "${condition_dir}").average.cpm.bw"
+            echo "Computing average for '$condition_dir'"
+            bigwigAverage --bigwigs "${bw_files[@]}" -o "$avg_bw" --binSize "$BIN_SIZE"
+            echo "Computing CPM-normalized average for '$condition_dir'"
+            bigwigAverage --bigwigs "${cpm_bw_files[@]}" -o "$cpm_avg_bw" --binSize "$BIN_SIZE"
+        fi
+    done
+
 done
