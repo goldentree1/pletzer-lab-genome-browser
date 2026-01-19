@@ -190,7 +190,7 @@ for genome_dir in "$DATA_DIR"/*; do
            bw_file="$condition_dir/${bam_name%.bam}.bw"
            cpm_bw_file="$condition_dir/${bam_name%.bam}.cpm.bw"
 
-           echo "Processing BAM file '$bam_name'"
+           echo "Processing BAM file '$bam_name' (this will take a few minutes)..."
            samtools index "$bam_file"
            bamCoverage -b "$bam_file" -o "$bw_file" --binSize "$BIN_SIZE"
            bamCoverage -b "$bam_file" -o "$cpm_bw_file" --normalizeUsing CPM --binSize "$BIN_SIZE"
