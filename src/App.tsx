@@ -10,24 +10,33 @@ import { useStoredStateBoolean, useStoredStateString } from './utils';
 function App() {
   const bacteria: string[] = Object.keys(myConf).sort();
   const [bacterium, setBacterium] = useStoredStateString(
-    'pletzer-genome-browser:bacterium',
+    'pletzer-lab-genome-browser:bacterium',
     bacteria[0],
   );
+
   const [viewState, setViewState] = useState<ViewModel>();
   const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
   const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
   const [logScaling, setLogScaling] = useStoredStateBoolean(
-    'pletzer-genome-browser:logScaling',
+    'pletzer-lab-genome-browser:logScaling',
     true,
   );
   const [globalScaling, setGlobalScaling] = useStoredStateBoolean(
-    'pletzer-genome-browser:globalScaling',
+    'pletzer-lab-genome-browser:globalScaling',
     true,
   );
   const [colorByCds, setColorByCDS] = useStoredStateBoolean(
-    'pletzer-genome-browser:colorByCDS',
+    'pletzer-lab-genome-browser:colorByCDS',
     false,
   );
+
+  useEffect(() => {
+    console.log(myConf[bacterium]);
+    if (!myConf[bacterium]) {
+      setBacterium(bacteria[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bacterium, bacteria]);
 
   // config full reload (for things jbrowse cant handle via DOM)
   useEffect(() => {
@@ -38,9 +47,11 @@ function App() {
       buildConfig(config, {
         conditionA,
         conditionB,
-        loc: [0, 5000],
+        loc: [0, 5000], // TODO figure out keeping loc same for condition changes only
       }),
     );
+
+    console.log('viewState::', JSON.stringify(state));
 
     setViewState(state);
   }, [bacterium, conditionA, conditionB]);

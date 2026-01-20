@@ -142,6 +142,7 @@ export function buildConfig(
     firstRegion,
     ncbiName,
     dataDir,
+    trixName,
     data: { refSeq, genomic, coverage },
     extras,
   }: JBrowseCustomConfig,
@@ -152,6 +153,7 @@ export function buildConfig(
     conditionB = [1, 0],
   } = {},
 ): JBrowseConfig {
+  if (!trixName) trixName = ncbiName;
   if (!dataDir) dataDir = `/data/${ncbiName}`;
   if (!refSeq) refSeq = 'refseq.fna.gz';
 

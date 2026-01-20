@@ -9,6 +9,7 @@ export type ViewModel = ReturnType<typeof createViewState>;
 export interface JBrowseCustomConfig {
   ncbiName: string; // e.g., 'GCF_000014625'
   dataDir?: string; // default '/data/$ncbiName/'
+  trixName?: string; // defaults to $ncbiName
   firstRegion: string; // e.g., 'NC_008463.1'
   data: {
     refSeq?: string; // default 'REFSEQ.faa.gz'

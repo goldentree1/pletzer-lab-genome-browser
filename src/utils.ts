@@ -18,7 +18,7 @@ export function useStoredStateBoolean(key: string, defaultValue: boolean) {
 export function useStoredStateString(key: string, defaultValue: string) {
   const [value, setValue] = useState<string>(() => {
     const stored = localStorage.getItem(key);
-    return stored === null ? defaultValue : stored;
+    return stored ?? defaultValue;
   });
 
   useEffect(() => {

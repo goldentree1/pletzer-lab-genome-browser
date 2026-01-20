@@ -1,9 +1,12 @@
 (IMPORTANT, aka what Daniel/Sam want):
 X GET SEARCH WORKING AGAIN! (aliases too for old_locus_tag= names??)
+- Script to rebuild based on pre-defined dir structure.
+- Ask about using bamCoverage vs bamAverage? Im no longer using bamAverage, and instead
+  just merged bigwigs into one .merged.bw file and then used bamCoverage on THAT. MAKE SURE
+  it does same thing ... testing.
 - Do BAM -> BW for S.Aureus (sam gave me more BAM files)
 - "Use Binsizes of 10. CPM Normalization is good, it should be the default" -- Sam.
-- Script to rebuild based on pre-defined dir structure.
-- Make multi-chromosome stuff display ALL chroms!!!! (bugfix)
+- Make multi-chromosome stuff display ALL chroms!!!! Actually, Sam doesnt necessarily want that he said. one at a time fine and good, or just some nice easy UI i think is fine. Said its fine as is also - because search can be used to change chromosome we are on (but think he was annoyed it didnt align with refseq - ie each chrom is indexed from 0... should at least fix that, perhaps by programming logic to read .fai and jump forward to relevant index for defaultSession.views)
 - WordPress deployment (either static plugin or redirect to Vercel or something):
 	Plan:: https://chatgpt.com/c/69698a86-b490-8324-8ec5-9144cc671191
 	We can just upload the ENTIRE directory to the 'Wordpress uploads' dir.
@@ -15,6 +18,7 @@ X GET SEARCH WORKING AGAIN! (aliases too for old_locus_tag= names??)
     -- simple averaging check (2+3+1)/3 = 2, for example.
     -- CPM normalise (formula == value/(n_reads/1000000)) (because counts per million, so div million)
     -- Get Sam to check again when happy (the PA14 stuff was good and btw, diff conditions to Weizmann)
+- do quick test in fresh VM to make sure easily-reproducible environment of packages (think they use ubuntu server or something in microbiology for bioinformatics stuff)
 
 (minor):
 - Sam counts from FAA file displayed.
