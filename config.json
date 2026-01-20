@@ -1,0 +1,96 @@
+{
+  "genome1": {
+    "ncbiName": "genome1",
+    "dataDir": "/data/genome1",
+    "firstRegion": "chr1",
+    "trixName": "asm",
+    "data": {
+      "refSeq": "refseq.fasta.gz",
+      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "coverage": [
+        [
+          "reads/sample1/sample1.average.bw",
+          "reads/sample1/sample1.1.bw",
+          "reads/sample1/sample1.2.bw",
+          "reads/sample1/sample1.3.bw",
+          "reads/sample1/sample1.average.cpm.bw",
+          "reads/sample1/sample1.1.cpm.bw",
+          "reads/sample1/sample1.2.cpm.bw",
+          "reads/sample1/sample1.3.cpm.bw"
+        ],
+        [
+          "reads/sample2/sample2.1.bw",
+          "reads/sample2/sample2.1.cpm.bw"
+        ]
+      ]
+    },
+    "extras": []
+  },
+  "genome1-minimal-FIXME": {
+    "ncbiName": "genome1-minimal-FIXME",
+    "dataDir": "/data/genome1-minimal-FIXME",
+    "firstRegion": "chr1",
+    "trixName": "asm",
+    "data": {
+      "refSeq": "refseq.fasta.gz",
+      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "coverage": [
+        [
+          "reads/sample1/sample1.1.bw",
+          "reads/sample1/sample1.1.cpm.bw"
+        ]
+      ]
+    },
+    "extras": []
+  },
+  "genome2-averaging": {
+    "ncbiName": "genome2-averaging",
+    "dataDir": "/data/genome2-averaging",
+    "firstRegion": "chr1",
+    "trixName": "asm",
+    "data": {
+      "refSeq": "refseq.fasta.gz",
+      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "coverage": [
+        [
+          "reads/sample1/sample1.average.bw",
+          "reads/sample1/sample1.1.bw",
+          "reads/sample1/sample1.2.bw",
+          "reads/sample1/sample1.3.bw",
+          "reads/sample1/sample1.average.cpm.bw",
+          "reads/sample1/sample1.1.cpm.bw",
+          "reads/sample1/sample1.2.cpm.bw",
+          "reads/sample1/sample1.3.cpm.bw"
+        ],
+        [
+          "reads/sample2/sample2.1.bw",
+          "reads/sample2/sample2.1.cpm.bw"
+        ]
+      ]
+    },
+    "extras": []
+  },
+  "genome2-FIXME-one-bam-condition": {
+    "ncbiName": "genome2-FIXME-one-bam-condition",
+    "dataDir": "/data/genome2-FIXME-one-bam-condition",
+    "firstRegion": "chr1",
+    "trixName": "asm",
+    "data": {
+      "refSeq": "refseq.fasta.gz",
+      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "coverage": [
+        [
+          "reads/single-sample/single-sample.average.bw",
+          "reads/single-sample/sample1.1.bw",
+          "reads/single-sample/sample1.2.bw",
+          "reads/single-sample/sample1.3.bw",
+          "reads/single-sample/single-sample.average.cpm.bw",
+          "reads/single-sample/sample1.1.cpm.bw",
+          "reads/single-sample/sample1.2.cpm.bw",
+          "reads/single-sample/sample1.3.cpm.bw"
+        ]
+      ]
+    },
+    "extras": []
+  }
+}

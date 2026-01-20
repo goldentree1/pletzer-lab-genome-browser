@@ -1,7 +1,7 @@
 #!/bin/bash
-#
 
-ALL_TESTS_PASSED=true
+N_TESTS_TOTAL=0
+N_TESTS_PASSED=0
 
 print_passed_test(){
     ARG_TEST_DESCRIPTION="$1"
@@ -33,13 +33,15 @@ check_output() {
     done <<<"$expected"
 
     # Return 0 if success, 1 if failed
+    N_TESTS_TOTAL=$((N_TESTS_TOTAL + 1))
     if $failed; then
-        ALL_TESTS_PASSED=false
         return 1
     else
+        N_TESTS_PASSED=$((N_TESTS_PASSED + 1))
         return 0
     fi
 }
+
 
 # Clean up previous test files
 rm -rf ./tmp
@@ -78,25 +80,29 @@ fi
 # with multiple different errors that should be thrown. See expected output below.
 
 # setup test files in a tmp dir
-cp -r ./examples/invalid1/ ./tmp/invalid1
+cp -r ./examples/invalid/ ./tmp/invalid
 
 # run cmd and capture output
-cmd_stdout=$(scripts/plgb-build.sh -y ./tmp/invalid1 | tee /dev/tty)
+cmd_stdout=$(scripts/plgb-build.sh -y ./tmp/invalid | tee /dev/tty)
 clean_stdout=$(echo "$cmd_stdout" | sed 's/\x1B\[[0-9;]*[mK]//g')
 
 # expected output:
 read -r -d '' expected <<'EOF'
-[FAIL] simple-invalid
+Checking for errors...
+[FAIL] invalid
     - Chromosome mismatch in 'genes.gff': chr5
-    - Condition 'empty-sample' has no BAM files
+    - Condition 'empty-sample' has no BAM files.
     - Chromosome mismatch in 'sample1.1.bam': notchrom1
     - Chromosome mismatch in 'sample1.2.bam': badchrom2
     - Chromosome mismatch in 'sample1.3.bam': badchr3
     - BAM file 'sample1.badnum.bam' does not have a valid .<number>.bam extension
     - BAM file 'sample2.unnumbered.bam' does not have a valid .<number>.bam extension
-[FAIL] simple-invalid-empty
-    - 'refseq.fasta' empty or missing — cannot check further
-[OK] simple-valid
+[FAIL] invalid-empty
+    - 'refseq.fasta' empty or missing.
+    - 'genes.gff' empty or missing.
+    - Reads directory './tmp/invalid/invalid-empty/reads' does not exist.
+[OK] valid
+
 EOF
 
 # Check & print success/failure message
@@ -107,11 +113,11 @@ else
 fi
 
 # setup test files in a tmp dir
-cp -r ./examples/valid1 ./tmp/valid1
+cp -r ./examples/valid ./tmp/valid
 
 # run cmd and capture output
 
-cmd_stdout=$(scripts/plgb-build.sh -y ./tmp/valid1 | tee /dev/tty)
+cmd_stdout=$(scripts/plgb-build.sh -y ./tmp/valid | tee /dev/tty)
 clean_stdout=$(echo "$cmd_stdout" | sed 's/\x1B\[[0-9;]*[mK]//g')
 
 # ===============================================================
@@ -128,12 +134,13 @@ for file in ./tmp/simple-valid/reads/sample1/*.bw; do
     fi
 done
 
-if $ALL_TESTS_PASSED; then
+if (($N_TESTS_PASSED == $N_TESTS_TOTAL)); then
     echo -e "\n\e[32m==============================================\e[0m"
     echo -e "\n\n\e[32m    All 'scripts/plgb-build.sh' tests passed!\e[0m"
     echo -e "\n\n\e[32m==============================================\e[0m"
 else
     echo -e "\n\e[31m==============================================\e[0m"
     echo -e "\n\n\e[31m    TESTS FAILED FOR 'scripts/plgb-build.sh'!\e[0m"
+    echo -e "\n\n\=========== $N_TESTS_PASSED/$N_TESTS_TOTAL ============="
     echo -e "\n\n\e[31m==============================================\e[0m"
 fi
