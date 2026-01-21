@@ -154,7 +154,8 @@ export function buildConfig(
   } = {},
 ): JBrowseConfig {
   if (!trixName) trixName = ncbiName;
-  if (!dataDir) dataDir = `/data/${ncbiName}`;
+  const baseUri = new URL('.', window.location.href).href;
+  if (!dataDir) dataDir = `${baseUri}data/${ncbiName}`;
   if (!refSeq) refSeq = 'refseq.fna.gz';
 
   const conf = {

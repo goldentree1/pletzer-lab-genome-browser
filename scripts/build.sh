@@ -247,7 +247,6 @@ main() {
         const config = {
             "$(basename "$genome_dir")": {
                     ncbiName: "$(basename "$genome_dir")",
-                    dataDir: "/data/$(basename "$genome_dir")",
                     firstRegion: "$first_region",
                     trixName: "asm",
                     data: {
@@ -265,11 +264,16 @@ EOF
     done
     # TODO make this function and catch Javascript errors and throw if so
 
+    echo "Data-processing is complete!"
+
+    echo "Generating site configuration..."
     merged_config_file="$DATA_DIR/config.json"
     merge_json_configs "$merged_config_file" "${generated_config_files[@]}"
     # TODO catch Javascript errors and throw if so
 
-    echo "Successfully processed your data!"
+    echo "Replacing old website data with new data..."
+    replace_public_data "$DATA_DIR"
+    # TODO check for cp errs??
 
     # Prompt user to overwrite current website with new data.
     if [[ "$PROMPT_TO_CONTINUE" == true ]]; then
@@ -279,7 +283,8 @@ EOF
             exit 0
         fi
     fi
-    replace_public_data "$DATA_DIR"
+
+    npm run build
 }
 
 
@@ -333,22 +338,11 @@ merge_json_configs() {
 EOF
 }
 
-# prompt_user_to_continue(){
-#     local message="$1"
-#     read -r -p "$message (Y/n)" reply
-#     if [[ ! -z "$reply" && ! "$reply" =~ ^[Yy]$ ]]; then
-#         echo -e "\033[0;31mAborted.\033[0m"
-#         exit 0
-#     fi
-# }
-
 replace_public_data(){
     local dir="$1"
-    echo "Rebuilding website from path: '$dir'..."
     cp "$dir/config.json" "config.json"
     rm -rf ./public/data/
     cp -r "$dir/" ./public/data
-    echo "Success!"
 }
 
 print_minimal_help() {
