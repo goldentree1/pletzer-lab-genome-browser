@@ -209,15 +209,15 @@ export function buildConfig(
         type: 'TrixTextSearchAdapter',
         textSearchAdapterId: 'text-search',
         ixFilePath: {
-          uri: `${dataDir}/trix/${ncbiName}.ix`,
+          uri: `${dataDir}/trix/${trixName}.ix`,
           locationType: 'UriLocation',
         },
         ixxFilePath: {
-          uri: `${dataDir}/trix/${ncbiName}.ixx`,
+          uri: `${dataDir}/trix/${trixName}.ixx`,
           locationType: 'UriLocation',
         },
         metaFilePath: {
-          uri: `${dataDir}/trix/${ncbiName}_meta.json`,
+          uri: `${dataDir}/trix/${trixName}_meta.json`,
           locationType: 'UriLocation',
         },
         assemblyNames: ['asm'],
