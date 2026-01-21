@@ -17,6 +17,7 @@ function App() {
   const [viewState, setViewState] = useState<ViewModel>();
   const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
   const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
+
   const [logScaling, setLogScaling] = useStoredStateBoolean(
     'pletzer-lab-genome-browser:logScaling',
     true,
@@ -30,15 +31,18 @@ function App() {
     false,
   );
 
+  // if selected bacterium does not exist, use default
   useEffect(() => {
-    console.log(myConf[bacterium]);
-    if (!myConf[bacterium]) {
-      setBacterium(bacteria[0]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bacterium, bacteria]);
+    if (!myConf[bacterium]) setBacterium(bacteria[0]);
+  }, [bacterium, bacteria, setBacterium]);
 
-  // config full reload (for things jbrowse cant handle via DOM)
+  // use default conditions on bacterium change
+  useEffect(() => {
+    setConditionA([0, 0]);
+    setConditionB([1, 0]);
+  }, [bacterium]);
+
+  // full-refresh jbrowse required for bacterium or conditions changes
   useEffect(() => {
     const config = myConf[bacterium];
     if (!config) return;
@@ -47,49 +51,40 @@ function App() {
       buildConfig(config, {
         conditionA,
         conditionB,
-        loc: [0, 5000], // TODO figure out keeping loc same for condition changes only
+        loc: [0, 5000], // TODO: keep loc constant for condition changes only
       }),
     );
-
-    console.log('viewState::', JSON.stringify(state));
 
     setViewState(state);
   }, [bacterium, conditionA, conditionB]);
 
-  // edit browser via DOM manipulation (JBrowse functions)
+  // DOM manipulation works for some JBrowse features - like scaling and CDS colouring.
+  // Smoother and faster than a full-refresh, so use it where possible.
   useEffect(() => {
     const linearView = viewState?.session.views.find(
       v => v.type === 'LinearGenomeView',
     );
     if (!linearView) return;
 
-    // log scale + autoscaling
     linearView.tracks.forEach(track => {
       /** @ts-expect-error display is 'any' */
       track.displays.forEach(display => {
         if (display.type.includes('Wiggle')) {
           const wantedScale = logScaling ? 'log' : 'linear';
-          if (display.scaleType !== wantedScale) {
+          if (display.scaleType !== wantedScale)
             display.setScaleType(wantedScale);
-          }
-          if (display.autoscale !== (globalScaling ? 'global' : 'local')) {
+          if (display.autoscale !== (globalScaling ? 'global' : 'local'))
             display.setAutoscale(globalScaling ? 'global' : 'local');
-          }
         }
       });
     });
 
-    // colour by CDS
     linearView.setColorByCDS(colorByCds);
-  }, [logScaling, colorByCds, globalScaling, viewState]);
-
-  useEffect(() => {
-    // revert conditions to defaults on bacterium change
-    setConditionA([0, 0]);
-    setConditionB([1, 0]);
-  }, [bacterium]);
+  }, [viewState, logScaling, globalScaling, colorByCds]);
 
   if (!viewState) return null;
+
+  const coverage = myConf[bacterium].data.coverage;
 
   return (
     <>
@@ -98,108 +93,147 @@ function App() {
           <img src="./pletzerlab-icon.webp" alt="Pletzer Lab Icon" />
           <h1>Pletzer Lab Genome Browser</h1>
         </div>
-        <nav className="header-genome-chooser">
-          <select
-            defaultValue={bacteria.find(b => b === bacterium) || bacteria[0]}
-            onChange={e => setBacterium(e.target.value)}
-          >
-            {bacteria.map(b => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </select>
 
-          {myConf[bacterium].data.coverage.length >= 2 && (
+        <nav className="header-genome-chooser">
+          <GenomeSelector
+            bacteria={bacteria}
+            selected={bacterium}
+            onChange={setBacterium}
+          />
+
+          {coverage.length >= 2 && (
             <div className="header-condition-chooser">
-              <select
-                className="condition-select"
+              <ConditionSelect
                 id="select-condition-a"
-                onChange={e => {
-                  const [c, r] = e.target.value.split(',').map(Number);
-                  setConditionA([c, r]);
-                }}
-                value={conditionA.join(',')}
-              >
-                {myConf[bacterium].data.coverage.map((arr, i) => (
-                  <optgroup
-                    key={`condA-group-${i}`}
-                    label={`Condition ${i + 1}`}
-                  >
-                    {arr.map((fname, j) => (
-                      <option key={`condA-${i}-${j}`} value={`${i},${j}`}>
-                        {fname}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
+                label="Condition"
+                coverage={coverage}
+                value={conditionA}
+                onChange={setConditionA}
+              />
               <span>vs.</span>
-              <select
-                className="condition-select"
+              <ConditionSelect
                 id="select-condition-b"
-                onChange={e => {
-                  const [c, r] = e.target.value.split(',').map(Number);
-                  setConditionB([c, r]);
-                }}
-                value={conditionB.join(',')}
-              >
-                {myConf[bacterium].data.coverage.map((arr, i) => (
-                  <optgroup
-                    key={`condB-group-${i}`}
-                    label={`Condition ${i + 1}`}
-                  >
-                    {arr.map((fname, j) => (
-                      <option key={`condB-${i}-${j}`} value={`${i},${j}`}>
-                        {fname}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
+                label="Condition"
+                coverage={coverage}
+                value={conditionB}
+                onChange={setConditionB}
+              />
             </div>
           )}
         </nav>
 
         <div className="header-buttons-container">
           <div className="header-buttons">
-            <div className="checkbox">
-              <label htmlFor="logScaleCheckbox">Log Scale</label>
-              <input
-                type="checkbox"
-                id="logScaleCheckbox"
-                checked={logScaling}
-                onChange={e => setLogScaling(e.target.checked)}
-              />
-            </div>
-            <div className="checkbox">
-              <label htmlFor="globalScaleCheckbox">Global Scaling</label>
-              <input
-                type="checkbox"
-                id="globalScaleCheckbox"
-                checked={globalScaling}
-                onChange={e => setGlobalScaling(e.target.checked)}
-              />
-            </div>
-
-            <div className="checkbox">
-              <label htmlFor="aminoAcidsCheckbox">CDS+Amino</label>
-              <input
-                type="checkbox"
-                id="aminoAcidsCheckbox"
-                checked={colorByCds}
-                onChange={e => setColorByCDS(e.target.checked)}
-              />
-            </div>
+            <BooleanCheckbox
+              label="Log2"
+              checked={logScaling}
+              onChange={setLogScaling}
+              hoverDescription="Use base-2 log scale"
+            />
+            <BooleanCheckbox
+              label="Global"
+              checked={globalScaling}
+              onChange={setGlobalScaling}
+              hoverDescription="Fix Y-axis between global minimum and maximum"
+            />
+            <BooleanCheckbox
+              label="CDS+Amino"
+              checked={colorByCds}
+              onChange={setColorByCDS}
+              hoverDescription="Colour by CDS and amino acids"
+            />
           </div>
         </div>
       </header>
 
       <div className="jbrowse-container">
-        {viewState && <JBrowseLinearGenomeView viewState={viewState} />}
+        <JBrowseLinearGenomeView viewState={viewState} />
       </div>
     </>
   );
 }
 
 export default App;
+
+function GenomeSelector({
+  bacteria,
+  selected,
+  onChange,
+}: {
+  bacteria: string[];
+  selected: string;
+  onChange: (b: string) => void;
+}) {
+  return (
+    <select value={selected} onChange={e => onChange(e.target.value)}>
+      {bacteria.map(b => (
+        <option key={b} value={b}>
+          {b}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function ConditionSelect({
+  label,
+  coverage,
+  value,
+  onChange,
+  id,
+}: {
+  label: string;
+  coverage: string[][];
+  value: [number, number];
+  onChange: (val: [number, number]) => void;
+  className?: string;
+  id: string;
+}) {
+  return (
+    <select
+      className="condition-select"
+      id={id}
+      value={value.join(',')}
+      onChange={e => {
+        const [c, r] = e.target.value.split(',').map(Number);
+        onChange([c, r]);
+      }}
+    >
+      {coverage.map((arr, i) => (
+        <optgroup key={`${id}--group-${i}`} label={`${label} ${i + 1}`}>
+          {arr.map((fname, j) => (
+            <option key={`${id}--group-${i}-item-${j}`} value={`${i},${j}`}>
+              {fname}
+            </option>
+          ))}
+        </optgroup>
+      ))}
+    </select>
+  );
+}
+
+function BooleanCheckbox({
+  label,
+  checked,
+  onChange,
+  hoverDescription,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (b: boolean) => void;
+  hoverDescription: string;
+}) {
+  const id = label.replace(/\s+/g, '');
+  return (
+    <div className="checkbox">
+      <label htmlFor={id}>{label}</label>
+      <input
+        type="checkbox"
+        id={id}
+        checked={checked}
+        onChange={e => onChange(e.target.checked)}
+        title={hoverDescription}
+      />
+    </div>
+  );
+}

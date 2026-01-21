@@ -6,69 +6,101 @@ Made for Pletzer Lab by Elliott Brown.
 
 This project uses [JBrowse2 Linear Genome View](https://github.com/GMOD/jbrowse-react-linear-genome-view-vite-demo) to build the genome browser website. Scripts are provided to fetch, transform and prepare the data.
 
-## Usage
+## User Guide
 
-### Prepare your files
+To run the data-processing pipeline and rebuild the website, follow these steps:
 
-With a dir structure like so:
-GCF_000014625/
-├── genes.gff
-├── reads/
-│   ├── PA14_I/
-│   │   ├── PA14_I.1.bam
-│   │   ├── PA14_I.2.bam
-│   │   └── PA14_I.3.bam
-│   └── PA14_Un/
-│       ├── PA14_Un.1.bam
-│       ├── PA14_Un.2.bam
-│       └── PA14_Un.3.bam
-└── refseq.fna
-```bash
+1. Change into the root directory of this project:
 
-```
+    ```bash
+    cd PletzerLabGenomeBrowser/
+      ```
+    <strong>If this is your first time using this project, you will need to setup a few things first:</strong>
+    
+    - First ensure you have the necessary dependencies installed:
+      - Node.js
+      - npm
+      - Python 3
+    
+    - Create a conda environment and install requirements:
+    
+      ```bash
+      conda create -n plgb python=3.8
+      conda activate plgb
+      pip install -r requirements.txt
+      ```
 
-### To prepare a genome counts comparison
-```bash
+2. Create a directory structure like so:
 
-# === Make dir and get reference genome data from NCBI ===
+    ```text
+    data/
+    ├── GCF_000014625/
+    │   ├── refseq.fna
+    │   ├── genes.gff
+    │   └── reads/
+    │       ├── PA14_I/
+    │       │   ├── PA14_I.1.bam
+    │       │   ├── PA14_I.2.bam
+    │       │   └── PA14_I.3.bam
+    │       └── PA14_Un/
+    │           ├── PA14_Un.1.bam
+    │           ├── PA14_Un.2.bam
+    │           └── PA14_Un.3.bam
+    └── GCF_000026645.1/
+        ├── refseq.fna
+        └── ...
+    ```
 
-mkdir -p public/data/GCF_000006765.1
+3. Run the build script on your directory:
 
-# Download the reference genome from ncbi
-scripts/download_and_prepare_from_ncbi.sh GCF_000006765.1
+    ```bash
+    scripts/plgb-build.sh /path/to/data/
+    ```
 
-# === Prepare the BAM files (coverage) ===
-cp /path/to/bamfile.bam public/data/GCF_000006765.1/ # copy BAM to directory
+    If there are errors in the data or your directory structure is incorrect, the script will abort and list the errors it encountered. You will need to fix these errors and try again. 
 
-# 1. Check that the header names match the .fai file
-scripts/extract_bam_names.sh < public/data/GCF_000006765.1/bamfile.bam
-# 2. Reheader if needed
-scripts/reheader-bam.sh public/data/GCF_000006765.1/bamfile.bam "BAD_HEADER" "NEW_HEADER"
-# 3. Prepare BigWig from BAM (for compatibility w/ website)
-scripts/bam-to-bw.sh public/data/GCF_000006765.1/bamfile.bam bwfile.bw
+    A common issue will be that the names of chromosomes are not consistent across files. For example:
 
-# === Build the config ===
-# Edit src/config.
-```
+    ```bash
+    (plgb) user@computer:~/PletzerLabGenomeBrowser$ scripts/plgb-build.sh /path/to/data/
+    ```
+
+4. View your changes:
+    ```bash
+    npm run dev 
+    ```
+
+5. If you are happy with the changes, re-build the production website:
+
+    ```bash
+    npm run build
+    ```
+
+    Website will be output to [dist/](./dist/). To serve the production website:
+    ```bash
+    npm start
+    ```
+
+## Development
 
 ### Install npm dependencies:
 ```bash
-yarn
+npm install
 ```
 
 ### Run dev server:
 ```bash
-yarn dev
+npm run dev
 ```
 
 ### Build for production:
 ```bash
-yarn build # prod-ready static website, output to ./dist/
+npm run build # prod-ready static website, output to ./dist/
 ```
 
 ### Run production build:
 ```bash
-yarn start
+npm start
 ```
 
 ### Project structure
