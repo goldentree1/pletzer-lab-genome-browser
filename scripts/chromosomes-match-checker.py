@@ -4,7 +4,7 @@ import subprocess
 
 """
 Checks that files match the reference genome (ie chromosome names are not mismatched).
-Usage: ./gene_mismatch_checker.py <reference FAI file> <...other files (GFF,BED,BAM,VCF) >
+Usage: ./gene_mismatch_checker.py <reference FASTA/FAI file> <...other files (GFF,BED,BAM,VCF) >
 
     How it works:
         1. Read the reference FAI file and store a map of chromosome names.
@@ -21,15 +21,40 @@ def main():
         )
         parser.add_argument("ref", help="The reference FAI file")
         parser.add_argument("files", nargs="*", help="Other files (GFF,BED,BAM,VCF)")
+        parser.add_argument(
+            "-v", "--verbose", action="store_true", help="Enable verbose output"
+        )
 
         args = parser.parse_args()
 
-        if not args.ref or not args.ref.endswith(".fai"):
-            print(f"Invalid reference file '{args.ref}' (must be a .fai file)")
+        if not args.ref or not (
+            args.ref.endswith(".fai")
+            or args.ref.endswith(".fasta")
+            or args.ref.endswith(".fa")
+            or args.ref.endswith(".fna")
+        ):
+            print(f"Invalid reference file '{args.ref}' (must be a .fai or .fa file)")
             exit(1)
 
         # Read reference file chromsomes
-        ref_chroms = fai_extract_chromosomes(args.ref)
+        ref_chroms = None
+        if args.ref.endswith(".fai"):
+            ref_chroms = fai_extract_chromosomes(args.ref)
+        elif (
+            args.ref.endswith(".fasta")
+            or args.ref.endswith(".fa")
+            or args.ref.endswith(".fna")
+        ):
+            ref_chroms = fasta_extract_chromosomes(args.ref)
+
+        if ref_chroms is None:
+            print(f"Unable to parse '{args.ref}': unrecognised format")
+            exit(1)
+
+        if len(args.files) == 0:
+            print(f"--- reference: [[ {', '.join(ref_chroms)} ]]:")
+            if args.verbose:
+                print(ref_chroms)
 
         # Read all other files, checking for mismatches against the reference
         n_issues = 0
@@ -47,15 +72,23 @@ def main():
                 print(f"Unable to parse '{file}': unrecognised format")
                 exit(1)
 
+            if args.verbose:
+                print(f"--- {file}:")
+                print(chroms)
+
             chrom_issues = check_mismatches(ref_chroms, list(chroms))
             if len(chrom_issues) > 0:
                 print(
-                    f"Chromosome mismatch{'es' if len(chrom_issues) > 1 else ''} in '{basename(file)}': [[ {', '.join(chrom_issues)} ]] not in ref: [[ {', '.join(ref_chroms)} ]]"
+                    f"MISMATCH{'ES' if len(chrom_issues) > 1 else ''} ({basename(file)}): [ {', '.join(chrom_issues)} ] not in reference: [ {', '.join(ref_chroms)} ]"
                 )
                 n_issues += 1
         if n_issues == 0:
+            if args.verbose:
+                print("OK. All files match reference!")
             exit(0)
         else:
+            if args.verbose:
+                print(f"{n_issues}/{len(args.files)} did not match reference!")
             exit(1)
 
     except Exception as e:
@@ -76,6 +109,23 @@ def fai_extract_chromosomes(file: str) -> dict[str, tuple[int, int]]:
             feature_len = int(fields[1]) if len(fields) > 1 else None
             feature_offset = int(fields[2]) if len(fields) > 2 else None
             chroms[fields[0]] = (feature_len, feature_offset)
+    return chroms
+
+
+def fasta_extract_chromosomes(file: str) -> dict[str, tuple[int, int]]:
+    chroms = {}
+
+    cmd = ["samtools", "faidx", file, "-o", "-"]
+
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    for line in result.stdout.splitlines():
+        fields = line.rstrip().split()
+        if len(fields) < 1:
+            continue
+        feature_len = int(fields[1]) if len(fields) > 1 else None
+        feature_offset = int(fields[2]) if len(fields) > 2 else None
+        chroms[fields[0]] = (feature_len, feature_offset)
+
     return chroms
 
 

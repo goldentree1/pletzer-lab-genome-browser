@@ -1,95 +1,78 @@
 {
-  "genome1": {
-    "ncbiName": "genome1",
-    "dataDir": "/data/genome1",
-    "firstRegion": "chr1",
+  "GCF_000006765.1 (P.aeruginosa PA01)": {
+    "ncbiName": "GCF_000006765.1 (P.aeruginosa PA01)",
+    "dataDir": "/data/GCF_000006765.1 (P.aeruginosa PA01)",
+    "firstRegion": "NC_002516.2",
     "trixName": "asm",
     "data": {
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff.gz",
       "coverage": [
         [
-          "reads/sample1/sample1.average.bw",
-          "reads/sample1/sample1.1.bw",
-          "reads/sample1/sample1.2.bw",
-          "reads/sample1/sample1.3.bw",
-          "reads/sample1/sample1.merged.bw",
-          "reads/sample1/sample1.average.cpm.bw",
-          "reads/sample1/sample1.1.cpm.bw",
-          "reads/sample1/sample1.2.cpm.bw",
-          "reads/sample1/sample1.3.cpm.bw",
-          "reads/sample1/sample1.merged.cpm.bw"
+          "reads/relA_In/relA_In.average.bw",
+          "reads/relA_In/relA_In.1.bw",
+          "reads/relA_In/relA_In.2.bw",
+          "reads/relA_In/relA_In.average.cpm.bw",
+          "reads/relA_In/relA_In.1.cpm.bw",
+          "reads/relA_In/relA_In.2.cpm.bw"
         ],
         [
-          "reads/sample2/sample2.1.bw",
-          "reads/sample2/sample2.1.cpm.bw"
+          "reads/relA_Un/relA_Un.average.bw",
+          "reads/relA_Un/relA_Un.1.bw",
+          "reads/relA_Un/relA_Un.2.bw",
+          "reads/relA_Un/relA_Un.average.cpm.bw",
+          "reads/relA_Un/relA_Un.1.cpm.bw",
+          "reads/relA_Un/relA_Un.2.cpm.bw"
         ]
       ]
     },
     "extras": []
   },
-  "genome1-minimal-FIXME": {
-    "ncbiName": "genome1-minimal-FIXME",
-    "dataDir": "/data/genome1-minimal-FIXME",
-    "firstRegion": "chr1",
+  "GCF_000014625 (P.aeruginosa PA14)": {
+    "ncbiName": "GCF_000014625 (P.aeruginosa PA14)",
+    "dataDir": "/data/GCF_000014625 (P.aeruginosa PA14)",
+    "firstRegion": "NC_008463.1",
     "trixName": "asm",
     "data": {
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff.gz",
       "coverage": [
         [
-          "reads/sample1/sample1.1.bw",
-          "reads/sample1/sample1.1.cpm.bw"
-        ]
-      ]
-    },
-    "extras": []
-  },
-  "genome2-averaging": {
-    "ncbiName": "genome2-averaging",
-    "dataDir": "/data/genome2-averaging",
-    "firstRegion": "chr1",
-    "trixName": "asm",
-    "data": {
-      "refSeq": "refseq.fasta.gz",
-      "genomic": "genes.gff.sorted.noregion.gff.gz",
-      "coverage": [
-        [
-          "reads/sample1/sample1.average.bw",
-          "reads/sample1/sample1.1.bw",
-          "reads/sample1/sample1.2.bw",
-          "reads/sample1/sample1.3.bw",
-          "reads/sample1/sample1.average.cpm.bw",
-          "reads/sample1/sample1.1.cpm.bw",
-          "reads/sample1/sample1.2.cpm.bw",
-          "reads/sample1/sample1.3.cpm.bw"
+          "reads/PA14_I/PA14_I.average.bw",
+          "reads/PA14_I/PA14_I.1.bw",
+          "reads/PA14_I/PA14_I.2.bw",
+          "reads/PA14_I/PA14_I.3.bw",
+          "reads/PA14_I/PA14_I.average.cpm.bw",
+          "reads/PA14_I/PA14_I.1.cpm.bw",
+          "reads/PA14_I/PA14_I.2.cpm.bw",
+          "reads/PA14_I/PA14_I.3.cpm.bw"
         ],
         [
-          "reads/sample2/sample2.1.bw",
-          "reads/sample2/sample2.1.cpm.bw"
+          "reads/PA14_Un/PA14_Un.average.bw",
+          "reads/PA14_Un/PA14_Un.1.bw",
+          "reads/PA14_Un/PA14_Un.2.bw",
+          "reads/PA14_Un/PA14_Un.3.bw",
+          "reads/PA14_Un/PA14_Un.average.cpm.bw",
+          "reads/PA14_Un/PA14_Un.1.cpm.bw",
+          "reads/PA14_Un/PA14_Un.2.cpm.bw",
+          "reads/PA14_Un/PA14_Un.3.cpm.bw"
         ]
       ]
     },
     "extras": []
   },
-  "genome2-FIXME-one-bam-condition": {
-    "ncbiName": "genome2-FIXME-one-bam-condition",
-    "dataDir": "/data/genome2-FIXME-one-bam-condition",
-    "firstRegion": "chr1",
+  "GCF_000026645.1 (P.aeruginosa LESB58)": {
+    "ncbiName": "GCF_000026645.1 (P.aeruginosa LESB58)",
+    "dataDir": "/data/GCF_000026645.1 (P.aeruginosa LESB58)",
+    "firstRegion": "NC_011770.1",
     "trixName": "asm",
     "data": {
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff.gz",
       "coverage": [
         [
-          "reads/single-sample/single-sample.average.bw",
-          "reads/single-sample/sample1.1.bw",
-          "reads/single-sample/sample1.2.bw",
-          "reads/single-sample/sample1.3.bw",
-          "reads/single-sample/single-sample.average.cpm.bw",
-          "reads/single-sample/sample1.1.cpm.bw",
-          "reads/single-sample/sample1.2.cpm.bw",
-          "reads/single-sample/sample1.3.cpm.bw"
+          "reads/s1/Pa_BF_s1Aligned.sortedByCoord.out.1.bw",
+          "reads/s1/Pa_BF_s1Aligned.sortedByCoord.out.1.cpm.bw"
         ]
       ]
     },

@@ -2,7 +2,7 @@
 Genome browser website and related scripting utilities.
 Made for Pletzer Lab by Elliott Brown.
 
-## Overview
+### Overview
 
 This project uses [JBrowse2 Linear Genome View](https://github.com/GMOD/jbrowse-react-linear-genome-view-vite-demo) to build the genome browser website. Scripts are provided to fetch, transform and prepare the data.
 
@@ -13,7 +13,7 @@ To run the data-processing pipeline and rebuild the website, follow these steps:
 1. Change into the root directory of this project:
 
     ```bash
-    cd PletzerLabGenomeBrowser/
+    cd pletzer-lab-genome-browser/
       ```
     <strong>If this is your first time using this project, you will need to setup a few things first:</strong>
     
@@ -54,7 +54,7 @@ To run the data-processing pipeline and rebuild the website, follow these steps:
 3. Run the build script on your directory:
 
     ```bash
-    scripts/plgb-build.sh /path/to/data/
+    scripts/build.sh /path/to/data/
     ```
 
     If there are errors in the data or your directory structure is incorrect, the script will abort and list the errors it encountered. You will need to fix these errors and try again. 
@@ -62,7 +62,7 @@ To run the data-processing pipeline and rebuild the website, follow these steps:
     A common issue will be that the names of chromosomes are not consistent across files. For example:
 
     ```bash
-    (plgb) user@computer:~/PletzerLabGenomeBrowser$ scripts/plgb-build.sh /path/to/data/
+    (plgb) user@computer:~/PletzerLabGenomeBrowser$ scripts/build.sh /path/to/data/
     ```
 
 4. View your changes:

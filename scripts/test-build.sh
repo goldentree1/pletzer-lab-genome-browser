@@ -57,12 +57,9 @@ clean_stdout=$(echo "$cmd_stdout" | sed 's/\x1B\[[0-9;]*[mK]//g')
 
 # expected output:
 read -r -d '' expected <<'EOF'
-Directory './NOT/A/DIR' does not exist.
+Directory './NOT/A/DIR' does not exist or is not readable.
 Usage: scripts/plgb-build.sh [options] <data_directory>
-Options:
-  -y|--yes       Automatically answer 'yes' to all prompts
-  -b|--bin-size  Bin size for BigWig files (default: 10)
-  -h|--help      Display this help message
+Run 'scripts/plgb-build.sh --help' for full options.
 EOF
 
 # Check & print success/failure message
@@ -90,11 +87,10 @@ clean_stdout=$(echo "$cmd_stdout" | sed 's/\x1B\[[0-9;]*[mK]//g')
 read -r -d '' expected <<'EOF'
 Checking for errors...
 [FAIL] invalid
-    - Chromosome mismatch in 'genes.gff': chr5
-    - Condition 'empty-sample' has no BAM files.
-    - Chromosome mismatch in 'sample1.1.bam': notchrom1
-    - Chromosome mismatch in 'sample1.2.bam': badchrom2
-    - Chromosome mismatch in 'sample1.3.bam': badchr3
+    - MISMATCH (genes.gff): [ chr5 ] not in reference: [ chr1 ]
+    - MISMATCH (sample1.1.bam): [ notchrom1 ] not in reference: [ chr1 ]
+    - MISMATCH (sample1.2.bam): [ badchrom2 ] not in reference: [ chr1 ]
+    - MISMATCH (sample1.3.bam): [ badchr3 ] not in reference: [ chr1 ]
     - BAM file 'sample1.badnum.bam' does not have a valid .<number>.bam extension
     - BAM file 'sample2.unnumbered.bam' does not have a valid .<number>.bam extension
 [FAIL] invalid-empty
@@ -102,7 +98,6 @@ Checking for errors...
     - 'genes.gff' empty or missing.
     - Reads directory './tmp/invalid/invalid-empty/reads' does not exist.
 [OK] valid
-
 EOF
 
 # Check & print success/failure message
