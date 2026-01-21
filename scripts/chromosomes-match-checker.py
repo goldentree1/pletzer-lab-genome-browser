@@ -50,7 +50,7 @@ def main():
             chrom_issues = check_mismatches(ref_chroms, list(chroms))
             if len(chrom_issues) > 0:
                 print(
-                    f"Chromosome mismatch{'es' if len(chrom_issues) > 1 else ''} in '{basename(file)}': {', '.join(chrom_issues)}"
+                    f"Chromosome mismatch{'es' if len(chrom_issues) > 1 else ''} in '{basename(file)}': [[ {', '.join(chrom_issues)} ]] not in ref: [[ {', '.join(ref_chroms)} ]]"
                 )
                 n_issues += 1
         if n_issues == 0:

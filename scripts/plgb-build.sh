@@ -6,9 +6,11 @@
 main() {
     # user-controllable variables
     DATA_DIR="${1%/}"
-    BIN_SIZE=10
-    PROMPT_TO_CONTINUE=true
-    REBUILD_BIGWIGS=true
+    BIN_SIZE=10 # Bin size used for bioinformatics calculations with BAM/BigWig files.
+    PROMPT_TO_CONTINUE=true # Give user prompt of (Y\n) to continue.
+    DO_BUILD=true # if true, build, otherwise just error check.
+    REBUILD_BIGWIGS=true # always rebuild bigwigs
+    SKIP_PROCESSED_BAMS=false # if a .bam already has .bw of same name, skip it.
     N_THREADS=1
 
     # ======================================
@@ -24,6 +26,14 @@ main() {
                 ;;
             --skip-bam-processing)
                 REBUILD_BIGWIGS=false
+                shift
+                ;;
+            --skip-processed-bams)
+                SKIP_PROCESSED_BAMS=true
+                shift
+                ;;
+            --no-build|--skip-build)
+                DO_BUILD=false
                 shift
                 ;;
             --n-threads)
@@ -52,7 +62,6 @@ main() {
                 ;;
             -*)
                 echo "Unknown option: $1"
-                usage
                 exit 1
                 ;;
             *)
@@ -96,6 +105,10 @@ main() {
     fi
 
     echo -e "\033[0;32mAll OK!\n\033[0m"
+
+    if [[  $DO_BUILD == false ]]; then
+        exit 0
+    fi
 
     # ===============================================
     #     ===    Prepare data for JBrowse    ===
@@ -146,6 +159,9 @@ main() {
             avg_bw="$condition_dir/$(basename "$condition_dir").average.bw"
             cpm_avg_bw="$condition_dir/$(basename "$condition_dir").average.cpm.bw"
             for bam_file in "$condition_dir"/*.bam; do
+                if [[ "$(basename "$bam_file")" == *.merged.bam ]]; then
+                  continue
+                fi
                 bam_files+=( "$bam_file" )
                 n_replicates=$((n_replicates + 1))
             done
@@ -156,6 +172,12 @@ main() {
                 bw_file="$condition_dir/${bam_name}.bw"
                 cpm_bw_file="$condition_dir/${bam_name}.cpm.bw"
                 if [[ "$REBUILD_BIGWIGS" == true ]]; then
+
+                    if [[ "$SKIP_PROCESSED_BAMS" == true ]] && [[ -f "$bw_file" && -f "$cpm_bw_file" ]]; then
+                        echo "Skipping BAM '$bam_name' as BigWigs already exist."
+                        continue
+                    fi
+
                     echo "Processing BAM '$bam_name' into BigWig..."
                     samtools index "$bam_file"
                     bamCoverage --numberOfProcessors "$N_THREADS" -b "$bam_file" -o "$bw_file" --binSize "$BIN_SIZE" > /dev/null 2>&1
@@ -167,13 +189,19 @@ main() {
 
             # Generate averaged BigWigs (>= 2 replicates)
             if (( n_replicates >= 2 )); then
-                echo "Detected multiple replicates: creating averaged BigWigs from all replicates..."
+                echo "Detected multiple replicates to be averaged..."
                 merged_bam="$condition_dir/$(basename "$condition_dir").merged.bam"
                 if [[ "$REBUILD_BIGWIGS" == true ]]; then
-                    samtools merge -f "$merged_bam" "${bam_files[@]}"
-                    samtools index "$merged_bam"
-                    bamCoverage --numberOfProcessors "$N_THREADS" -b "$merged_bam" -o "$avg_bw" --binSize "$BIN_SIZE" > /dev/null 2>&1
-                    bamCoverage --numberOfProcessors "$N_THREADS" -b "$merged_bam" -o "$cpm_avg_bw" --normalizeUsing CPM --binSize "$BIN_SIZE" > /dev/null 2>&1
+                    if [[ "$SKIP_PROCESSED_BAMS" == true ]] && [[ -f "$avg_bw" && -f "$cpm_avg_bw" ]]; then
+                        echo "Skipping already-processed BigWig averages..."
+                    else
+                        echo "Merging replicates..."
+                        samtools merge -f "$merged_bam" "${bam_files[@]}"
+                        samtools index "$merged_bam"
+                        echo "Creating averaged BigWigs..."
+                        bamCoverage --numberOfProcessors "$N_THREADS" -b "$merged_bam" -o "$avg_bw" --binSize "$BIN_SIZE" > /dev/null 2>&1
+                        bamCoverage --numberOfProcessors "$N_THREADS" -b "$merged_bam" -o "$cpm_avg_bw" --normalizeUsing CPM --binSize "$BIN_SIZE" > /dev/null 2>&1
+                    fi
                 fi
                 bw_files=( "\"reads/$(basename "$condition_dir")/$(basename "$condition_dir").average.bw\"" "${bw_files[@]}" )
                 cpm_bw_files=( "\"reads/$(basename "$condition_dir")/$(basename "$condition_dir").average.cpm.bw\"" "${cpm_bw_files[@]}" )
@@ -231,6 +259,26 @@ EOF
 # -------
 # HELPERS
 # -------
+#
+
+# # These are all generated while checking the FASTA/GFF, but we might not wanna keep them
+# cleanup_FASTA_build_artefacts(){
+#     refseq_junk=(
+#       "refseq.fasta.chrom.sizes"
+#       "refseq.fasta.gz"
+#       "refseq.fasta.gz.fai"
+#       "refseq.fasta.gz.gzi"
+#     )
+
+#     for f in "${refseq_junk[@]}"; do
+#       if [[ -f "$1/$f" ]]; then
+#         echo "Removing $1/$f"
+#         rm "$1/$f"
+#       else
+#         echo "File $1/$f does not exist"
+#       fi
+#     done
+# }
 
 merge_json_configs() {
     local output_file="$1"
