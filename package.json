@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "concurrently -k -n site,data \"vite --port 5173\" \"npx serve -S ./public/data -p 5174\"",
     "build": "tsc -b && vite build",
-    "start": "npx serve -S ./dist/",
+    "start": "serve -S dist",
     "lint": "eslint ."
   },
   "dependencies": {

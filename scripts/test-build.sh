@@ -12,7 +12,7 @@ print_passed_test(){
         echo -e "  Passed: $1"
         echo -e "\n\e[32m--------------------\e[0m"
     else
-        echo -e "\e[31mTEST FAILED\e[0m (scripts/plgb-build.sh ./tmp)"
+        echo -e "\e[31mTEST FAILED\e[0m (scripts/build.sh ./tmp)"
     fi
 }
 
@@ -52,14 +52,14 @@ mkdir -p ./tmp/
 # by the program with error message.
 
 # run cmd and capture output
-cmd_stdout=$(scripts/plgb-build.sh -y ./NOT/A/DIR | tee /dev/tty)
+cmd_stdout=$(scripts/build.sh -y ./NOT/A/DIR | tee /dev/tty)
 clean_stdout=$(echo "$cmd_stdout" | sed 's/\x1B\[[0-9;]*[mK]//g')
 
 # expected output:
 read -r -d '' expected <<'EOF'
 Directory './NOT/A/DIR' does not exist or is not readable.
-Usage: scripts/plgb-build.sh [options] <data_directory>
-Run 'scripts/plgb-build.sh --help' for full options.
+Usage: scripts/build.sh [options] <data_directory>
+Run 'scripts/build.sh --help' for full options.
 EOF
 
 # Check & print success/failure message
@@ -80,7 +80,7 @@ fi
 cp -r ./examples/invalid/ ./tmp/invalid
 
 # run cmd and capture output
-cmd_stdout=$(scripts/plgb-build.sh -y ./tmp/invalid | tee /dev/tty)
+cmd_stdout=$(scripts/build.sh -y ./tmp/invalid | tee /dev/tty)
 clean_stdout=$(echo "$cmd_stdout" | sed 's/\x1B\[[0-9;]*[mK]//g')
 
 # expected output:
@@ -112,7 +112,7 @@ cp -r ./examples/valid ./tmp/valid
 
 # run cmd and capture output
 
-cmd_stdout=$(scripts/plgb-build.sh -y ./tmp/valid | tee /dev/tty)
+cmd_stdout=$(scripts/build.sh -y ./tmp/valid | tee /dev/tty)
 clean_stdout=$(echo "$cmd_stdout" | sed 's/\x1B\[[0-9;]*[mK]//g')
 
 # ===============================================================
@@ -131,11 +131,11 @@ done
 
 if (($N_TESTS_PASSED == $N_TESTS_TOTAL)); then
     echo -e "\n\e[32m==============================================\e[0m"
-    echo -e "\n\n\e[32m    All 'scripts/plgb-build.sh' tests passed!\e[0m"
+    echo -e "\n\n\e[32m    All 'scripts/build.sh' tests passed!\e[0m"
     echo -e "\n\n\e[32m==============================================\e[0m"
 else
     echo -e "\n\e[31m==============================================\e[0m"
-    echo -e "\n\n\e[31m    TESTS FAILED FOR 'scripts/plgb-build.sh'!\e[0m"
+    echo -e "\n\n\e[31m    TESTS FAILED FOR 'scripts/build.sh'!\e[0m"
     echo -e "\n\n\=========== $N_TESTS_PASSED/$N_TESTS_TOTAL ============="
     echo -e "\n\n\e[31m==============================================\e[0m"
 fi

@@ -1,21 +1,18 @@
-# Pletzer JBrowse +
+# Pletzer Lab Genome Browser
 Genome browser website and related scripting utilities.
 Made for Pletzer Lab by Elliott Brown.
 
-### Overview
-
-This project uses [JBrowse2 Linear Genome View](https://github.com/GMOD/jbrowse-react-linear-genome-view-vite-demo) to build the genome browser website. Scripts are provided to fetch, transform and prepare the data.
-
 ## User Guide
 
-To run the data-processing pipeline and rebuild the website, follow these steps:
+To rebuild the website with new data, follow the steps below:
 
 1. Change into the root directory of this project:
 
     ```bash
     cd pletzer-lab-genome-browser/
-      ```
-    <strong>If this is your first time using this project, you will need to setup a few things first:</strong>
+    ```
+
+    <strong>If this is your first time using this project, you will need to setup a few things:</strong>
     
     - First ensure you have the necessary dependencies installed:
       - Node.js
@@ -28,6 +25,12 @@ To run the data-processing pipeline and rebuild the website, follow these steps:
       conda create -n plgb python=3.8
       conda activate plgb
       pip install -r requirements.txt
+      ```
+    
+    - Install website dependencies:
+    
+      ```bash
+      npm install
       ```
 
 2. Create a directory structure like so:
@@ -62,23 +65,7 @@ To run the data-processing pipeline and rebuild the website, follow these steps:
     A common issue will be that the names of chromosomes are not consistent across files. For example:
 
     ```bash
-    (plgb) user@computer:~/PletzerLabGenomeBrowser$ scripts/build.sh /path/to/data/
-    ```
-
-4. View your changes:
-    ```bash
-    npm run dev 
-    ```
-
-5. If you are happy with the changes, re-build the production website:
-
-    ```bash
-    npm run build
-    ```
-
-    Website will be output to [dist/](./dist/). To serve the production website:
-    ```bash
-    npm start
+    (plgb) user@computer:~/PletzerLabGenomeBrowser$ scripts/build.sh -y /path/to/data/
     ```
 
 ## Development
@@ -143,3 +130,8 @@ Run `yarn` and then `yarn dev` to start a development instance
 
 Run `yarn build` which produces a `build` directory that can be deployed to a
 static web server
+
+
+### Overview
+
+This project uses [JBrowse2 Linear Genome View](https://github.com/GMOD/jbrowse-react-linear-genome-view-vite-demo) to build the genome browser website. Scripts are provided to fetch, transform and prepare the data.
