@@ -227,7 +227,7 @@ export function buildConfig(
   } satisfies JBrowseConfig;
 
   // add multiwig coverage if at least 2 conditions exist
-  if (coverage.length >= 2) {
+  if (coverage.length) {
     conf.tracks.push({
       type: 'MultiQuantitativeTrack',
       trackId: 'multiwig-coverage',
@@ -239,8 +239,13 @@ export function buildConfig(
         /** @ts-expect-error works at runtime */
         bigWigs: [
           coverage[conditionA[0]][conditionA[1]],
-          coverage[conditionB[0]][conditionB[1]],
-        ].map(fname => `${dataDir}/${fname}`),
+
+          // quick hacky fix to get only one coverage condition working
+          coverage.length >= 2 ? coverage[conditionB[0]][conditionB[1]] : null,
+        ]
+          .filter(Boolean)
+
+          .map(fname => `${dataDir}/${fname}`),
       },
       displays: [
         {

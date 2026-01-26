@@ -17,44 +17,36 @@ def main():
     try:
         # Parse cli args
         parser = argparse.ArgumentParser(
-            description="Check that all files match the reference (i.e., no chromosome name mismatches)"
+            description="Check that all files match the reference FASTA file (first FASTA/FAI file)"
         )
-        parser.add_argument("ref", help="The reference FAI file")
-        parser.add_argument("files", nargs="*", help="Other files (GFF,BED,BAM,VCF)")
+        parser.add_argument(
+            "files", nargs="*", help="Files (FA,FNA,FASTA,FAI,GFF,BED,BAM,VCF)"
+        )
         parser.add_argument(
             "-v", "--verbose", action="store_true", help="Enable verbose output"
         )
 
         args = parser.parse_args()
 
-        if not args.ref or not (
-            args.ref.endswith(".fai")
-            or args.ref.endswith(".fasta")
-            or args.ref.endswith(".fa")
-            or args.ref.endswith(".fna")
-        ):
-            print(f"Invalid reference file '{args.ref}' (must be a .fai or .fa file)")
-            exit(1)
-
-        # Read reference file chromsomes
+        ref_chroms_file = None
         ref_chroms = None
-        if args.ref.endswith(".fai"):
-            ref_chroms = fai_extract_chromosomes(args.ref)
-        elif (
-            args.ref.endswith(".fasta")
-            or args.ref.endswith(".fa")
-            or args.ref.endswith(".fna")
-        ):
-            ref_chroms = fasta_extract_chromosomes(args.ref)
+        for file in args.files:
+            if (
+                file.endswith(".fai")
+                or file.endswith(".fasta")
+                or file.endswith(".fa")
+                or file.endswith(".fna")
+            ):
+                ref_chroms_file = file
+                ref_chroms = (
+                    fai_extract_chromosomes(file)
+                    if file.endswith(".fai")
+                    else fasta_extract_chromosomes(file)
+                )
+                break
 
-        if ref_chroms is None:
-            print(f"Unable to parse '{args.ref}': unrecognised format")
-            exit(1)
-
-        if len(args.files) == 0:
-            print(f"--- reference: [[ {', '.join(ref_chroms)} ]]:")
-            if args.verbose:
-                print(ref_chroms)
+        if args.verbose and ref_chroms is not None and ref_chroms_file is not None:
+            print(f"--- (refseq) '{basename(ref_chroms_file)}': {ref_chroms}")
 
         # Read all other files, checking for mismatches against the reference
         n_issues = 0
@@ -68,28 +60,31 @@ def main():
                 chroms = bed_extract_chromosomes(file)
             elif file.endswith(".bam"):
                 chroms = bam_extract_chromosomes(file)
+            elif (
+                file.endswith(".fasta")
+                or file.endswith(".fa")
+                or file.endswith(".fna")
+                or file.endswith(".fai")
+            ):
+                continue
             else:
                 print(f"Unable to parse '{file}': unrecognised format")
                 exit(1)
 
             if args.verbose:
-                print(f"--- {file}:")
-                print(chroms)
+                print(f"--- '{basename(file)}': {chroms}")
 
-            chrom_issues = check_mismatches(ref_chroms, list(chroms))
-            if len(chrom_issues) > 0:
-                print(
-                    f"Mismatch{'es' if len(chrom_issues) > 1 else ''} in '{basename(file)}': [ {', '.join(chrom_issues)} ] not in reference: [ {', '.join(ref_chroms)} ]"
-                )
-                n_issues += 1
-        if n_issues == 0:
-            if args.verbose:
-                print("OK. All files match reference!")
-            exit(0)
-        else:
-            if args.verbose:
-                print(f"{n_issues}/{len(args.files)} did not match reference!")
-            exit(1)
+            if ref_chroms is not None and chroms is not None:
+                chrom_issues = check_mismatches(ref_chroms, list(chroms))
+                if len(chrom_issues) > 0:
+                    print(
+                        f"Mismatch{'es' if len(chrom_issues) > 1 else ''} in '{basename(file)}': [ {', '.join(chrom_issues)} ] not in reference: [ {', '.join(ref_chroms)} ]"
+                    )
+                    n_issues += 1
+        if args.verbose and ref_chroms and n_issues == 0:
+            print("Success! No mismatches found.")
+
+        exit(0 if n_issues == 0 else 1)
 
     except Exception as e:
         print(str(e))

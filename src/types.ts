@@ -15,6 +15,7 @@ export interface JBrowseCustomConfig {
     refSeq?: string; // default 'REFSEQ.faa.gz'
     genomic: string; // default 'GENOME.gff'
     coverage: string[][];
+    coverage_condition_names: string[];
   };
   extras?: JBrowseConfig['tracks'];
 }

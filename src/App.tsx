@@ -85,6 +85,8 @@ function App() {
   if (!viewState) return null;
 
   const coverage = myConf[bacterium].data.coverage;
+  const coverageConditionNames =
+    myConf[bacterium].data.coverage_condition_names;
 
   return (
     <>
@@ -101,23 +103,27 @@ function App() {
             onChange={setBacterium}
           />
 
-          {coverage.length >= 2 && (
+          {coverage.length >= 1 && (
             <div className="header-condition-chooser">
               <ConditionSelect
                 id="select-condition-a"
                 label="Condition"
                 coverage={coverage}
+                coverageConditionNames={coverageConditionNames}
                 value={conditionA}
                 onChange={setConditionA}
               />
-              <span>vs.</span>
-              <ConditionSelect
-                id="select-condition-b"
-                label="Condition"
-                coverage={coverage}
-                value={conditionB}
-                onChange={setConditionB}
-              />
+              {coverage.length > 1 && <span>vs.</span>}
+              {coverage.length > 1 && (
+                <ConditionSelect
+                  id="select-condition-b"
+                  label="Condition"
+                  coverage={coverage}
+                  coverageConditionNames={coverageConditionNames}
+                  value={conditionB}
+                  onChange={setConditionB}
+                />
+              )}
             </div>
           )}
         </nav>
@@ -131,7 +137,7 @@ function App() {
               hoverDescription="Use base-2 log scale"
             />
             <BooleanCheckbox
-              label="Global"
+              label="Global Y-axis"
               checked={globalScaling}
               onChange={setGlobalScaling}
               hoverDescription="Fix Y-axis between global minimum and maximum"
@@ -176,14 +182,15 @@ function GenomeSelector({
 }
 
 function ConditionSelect({
-  label,
   coverage,
+  coverageConditionNames,
   value,
   onChange,
   id,
 }: {
   label: string;
   coverage: string[][];
+  coverageConditionNames: string[];
   value: [number, number];
   onChange: (val: [number, number]) => void;
   className?: string;
@@ -200,16 +207,37 @@ function ConditionSelect({
       }}
     >
       {coverage.map((arr, i) => (
-        <optgroup key={`${id}--group-${i}`} label={`${label} ${i + 1}`}>
-          {arr.map((fname, j) => (
+        <optgroup
+          key={`${id}--group-${i}`}
+          label={`Condition ${i + 1}: ${coverageConditionNames[i]}`}
+        >
+          {arr.map((filepath, j) => (
             <option key={`${id}--group-${i}-item-${j}`} value={`${i},${j}`}>
-              {fname}
+              {optname(filepath)}
             </option>
           ))}
         </optgroup>
       ))}
     </select>
   );
+
+  function optname(filepath: string) {
+    let filename = filepath.substring(filepath.lastIndexOf('/') + 1);
+    if (filename.endsWith('.average.bw')) {
+      filename = `${filename.substring(0, filename.length - 11)} (average)`;
+    } else if (filename.endsWith('.average.cpm.bw')) {
+      filename = `${filename.substring(0, filename.length - 15)} (CPM average)`;
+    } else if (filename.match(/\d+\.bw$/)) {
+      const noBw = filename.substring(0, filename.length - 3);
+      const replicateN = parseInt(noBw.substring(noBw.lastIndexOf('.') + 1));
+      filename = `${noBw.substring(0, noBw.lastIndexOf('.'))} (replicate #${replicateN})`;
+    } else if (filename.match(/\d+\.cpm\.bw$/)) {
+      const noBw = filename.substring(0, filename.length - 7);
+      const replicateN = parseInt(noBw.substring(noBw.lastIndexOf('.') + 1));
+      filename = `${noBw.substring(0, noBw.lastIndexOf('.'))} (CPM replicate #${replicateN})`;
+    }
+    return `${filename}`;
+  }
 }
 
 function BooleanCheckbox({

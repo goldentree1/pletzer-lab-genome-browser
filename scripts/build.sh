@@ -88,7 +88,7 @@ main() {
     fi
 
     # check for errors + print them
-    if ! genome_sanity_ritual "$DATA_DIR"; then
+    if ! genome_error_check_routine "$DATA_DIR"; then
         printf "\033[0;31mAborting due to errors.\n\033[0m"
         exit 1
     fi
@@ -135,8 +135,10 @@ main() {
 
     echo "Overwriting data in 'public/data'..."
     replace_public_data "$DATA_DIR"
-    echo
     # TODO check for cp errs??
+    echo "Removing unnecessary files from 'public/data'..."
+    clean_public_data
+    echo
 
     if [[ "$SKIP_WEBSITE" == true ]]; then
         echo "Complete!"
@@ -155,7 +157,7 @@ main() {
     fi
 
     # Re-build the website
-    echo "Building website to "dist/"... (this may take a minute or two)"
+    echo "Building website to 'dist/'... (this may take a minute or two)"
     npm run build > /dev/null 2>&1
     echo "Complete!"
 }
@@ -165,25 +167,6 @@ main() {
 # HELPERS
 # -------
 #
-
-# # These are all generated while checking the FASTA/GFF, but we might not wanna keep them
-# cleanup_FASTA_build_artefacts(){
-#     refseq_junk=(
-#       "refseq.fasta.chrom.sizes"
-#       "refseq.fasta.gz"
-#       "refseq.fasta.gz.fai"
-#       "refseq.fasta.gz.gzi"
-#     )
-
-#     for f in "${refseq_junk[@]}"; do
-#       if [[ -f "$1/$f" ]]; then
-#         echo "Removing $1/$f"
-#         rm "$1/$f"
-#       else
-#         echo "File $1/$f does not exist"
-#       fi
-#     done
-# }
 
 print_minimal_help() {
     echo "Usage: $0 [options] <data_directory>"
@@ -206,10 +189,14 @@ print_full_help() {
     echo "      --bin-size=<n>          "
     echo
     echo "Arguments:"
-    echo "  data_directory              Directory containing genome data"
+    echo "  <data_directory>              Directory with following structure:"
+    echo "                                - refseq.fasta"
+    echo "                                - genes.gff"
+    echo "                                - reads/<condition>/*.<N>.bam"
+    echo "  (Where <condition> is the name of the condition and <N> is the number of the replicate)"
     echo
     echo "Example:"
-    echo "  scripts/build.sh --yes --n-threads 8 --bin-size 50 /path/to/data_directory"
+    echo "  scripts/build.sh --yes --bin-size=50 /path/to/<data_directory>"
 }
 
 
@@ -221,7 +208,7 @@ print_full_help() {
 # - a "reads" directory (reads) with subfolders for each condition
 # - reads/<condition>/* must contain at least one .bam file
 # - all chromosome names in .bam and .gff files must match reference sequence
-genome_sanity_ritual(){
+genome_error_check_routine(){
     local data_dir="$1"
     should_exit=false
     echo
@@ -300,16 +287,17 @@ genome_sanity_ritual(){
                         continue
                     fi
 
-                    # err check: BAM chromosome names must match refseq.fasta
-                    # (e.g., refseq with 'chr' and BAM with 'chrom1' is invalid)
-                    bam_mismatches=$(scripts/chromosome-check.py "$refseq_file" "$bam_file" 2>&1)
-                    rc=$?
-                    if (( rc != 0 )); then
-                        while IFS= read -r line; do
-                            errors+=("$line")
-                        done <<< "$bam_mismatches"
-                    fi
                 done
+
+                # err check: BAM chromosome names must match refseq.fasta
+                # (e.g., refseq with 'chr' and BAM with 'chrom1' is invalid)
+                bam_mismatches=$(scripts/chromosome-check.py "$refseq_file" "${bam_files[@]}")
+                rc=$?
+                if (( rc != 0 )); then
+                    while IFS= read -r line; do
+                        errors+=("$line")
+                    done <<< "$bam_mismatches"
+                fi
             done
         fi
 
@@ -390,6 +378,8 @@ genome_data_processing_ritual(){
     jbrowse text-index --attributes Name,old_locus_tag,locus_tag --exclude CDS,exon --force
     cd "$prev_dir"
 
+
+    condition_names_json="["
     # Check and convert BAMs into BigWigs for JBrowse
     coverage_json="["  # start JSON array
 
@@ -397,6 +387,7 @@ genome_data_processing_ritual(){
     for condition_dir in "$reads_dir"/*; do
 
         [[ -d "$condition_dir" ]] || continue # skip non-directories
+        condition_names_json+="\"$(basename "$condition_dir")\","
 
         # collect allll the BAM files
         n_replicates=0
@@ -467,8 +458,10 @@ genome_data_processing_ritual(){
         coverage_json+=$'\n  ['"$(IFS=,; echo "${bw_files[*]}")"','"$(IFS=,; echo "${cpm_bw_files[*]}")"'],'
     done
 
+
     coverage_json="${coverage_json%,}"
     coverage_json+=$'\n]'
+    condition_names_json+="]"
     generated_config_file="$genome_dir/generated-config.json"
     generated_config_files+=("$generated_config_file")
 
@@ -493,7 +486,12 @@ genome_data_processing_ritual(){
                 data: {
                     refSeq: "refseq.fasta.gz",
                     genomic: "genes.gff.sorted.noregion.gff.gz",
-                    coverage: $coverage_json
+                    coverage: $coverage_json.map((arr) => arr.sort((a, b) => {
+                        if (a.endsWith(".cpm.bw") && !b.endsWith(".cpm.bw")) return -1; // a goes first
+                        if (!a.endsWith(".cpm.bw") && b.endsWith(".cpm.bw")) return 1;  // b goes first
+                        return 0;
+                    })),
+                    coverage_condition_names: $condition_names_json
                 },
                 extras: []
             }
@@ -514,6 +512,7 @@ merge_json_configs() {
     js_array="[ $(printf '%s\n' "${files[@]}" | sed 's/.*/"&"/' | paste -sd, -) ]"
 
     # this might be even worse hackery...
+    # i gave up and just used javascript to read each file and parse
     node <<-EOF
     const fs = require('fs');
 
@@ -535,6 +534,20 @@ replace_public_data(){
     cp "$dir/config.json" "config.json"
     rm -rf ./public/data/
     cp -r "$dir/" ./public/data
+}
+
+clean_public_data(){
+    local dir="./public/data"
+    find "$dir" -type f -name "*.bam" -delete
+    find "$dir" -type f -name "*.bam.bai" -delete
+    find "$dir" -type f -name "*.bam.ORIGINAL" -delete
+    find "$dir" -type f -name "*.gff" -delete
+    find "$dir" -type f -name "*.gff.sorted" -delete
+    find "$dir" -type f -name "*.agat" -delete
+    find "$dir" -type f -name "*.fasta" -delete
+    find "$dir" -type f -name "*.fa" -delete
+    find "$dir" -type f -name "*.fna" -delete
+    find "$dir" -maxdepth 2 -type f -name "*.json" -delete
 }
 
 main "$@"
