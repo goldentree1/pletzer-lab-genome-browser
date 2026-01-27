@@ -1,0 +1,12 @@
+name: plgb
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - agat
+  - deeptools
+  - ucsc-bedtobigbed
+  - ucsc-fetchchromsizes
+  - ucsc-bigwigsummary
+  - ucsc-bigwigtobedgraph

@@ -77,7 +77,7 @@ main() {
 
 
     # Check for missing packages
-    bash scripts/deps-check.sh
+    bash scripts/deps-check.sh --no-conda-check
     if [ $? -ne 0 ]; then
         exit 1
     fi
@@ -128,6 +128,7 @@ main() {
         reads_dir="$genome_dir/reads"
 
         [ -d "$genome_dir" ] || continue # ignore non-directories
+        echo
         printf " --- \033[0;34m$(basename "$genome_dir")\033[0m --- \n"
 
         # Create all necessary files for JBrowse
@@ -166,9 +167,11 @@ main() {
     fi
 
     # Re-build the website
-    echo "Building website to 'dist/'... (this will take a minute or two)"
+    echo "Building website to 'dist'... (this will take a minute or two)"
     npm run build > /dev/null 2>&1
     echo "Complete!"
+    echo "To preview your website, you can serve it locally with:"
+    echo "      npm start"
 }
 
 

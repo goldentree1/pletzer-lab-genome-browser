@@ -2,11 +2,42 @@
 Genome browser website and related scripting utilities.
 Made for Pletzer Lab by Elliott Brown.
 
+## **Setup**
+On first use, you must setup the dependencies for this project.
+To check what you're missing, run:
+
+```bash
+scripts/deps-check.sh
+```
+
+Then install the listed missing packages.
+
+
+Next, create & activate the [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) environment:
+```bash
+conda env create --name plgb --file requirements.conda 
+conda activate plgb
+```
+
 ## **User Guide**
 
 To rebuild the website with new data, follow the steps below:
 
-1. **Change into the root directory of this project:**
+## **Setup**
+On first use, you must setup the dependencies for this project. Check what you're missing:
+```bash
+scripts/deps-check.sh
+```
+Then install the listed missing packages.
+
+Next create the [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) environment:
+```bash
+conda env create --name plgb --file requirements.yaml 
+conda activate plgb
+```
+---
+
+1. **Change into the root directory of this project & activate Conda:**
 
    ```bash
    cd pletzer-lab-genome-browser/
@@ -65,8 +96,6 @@ To rebuild the website with new data, follow the steps below:
         #  - BF_SA_BF.1.bam.ORIGINAL (the original file with mismatched chromosomes)
         #  - BF_SA_BF.1.bam (the fixed file)
         ```
-
-
     ---
 
 4. To preview your website, run the following command:
@@ -75,7 +104,7 @@ To rebuild the website with new data, follow the steps below:
     ```
 
 5. Once happy, copy the entire "dist/" folder to your web server or hosting provider.
-   If hosting on Wordpress, go to your [Wordpress Admin Dashboard](https://pletzerlab.com/wp-admin), and upload the "dist/" folder using WP File Manager. Rename it to 'pletzer-lab-genome-browser', and it will be available at [https://pletzerlab.com/pletzer-lab-genome-browser](https://pletzerlab.com/pletzer-lab-genome-browser).
+   For Wordpress, go to your [Wordpress Admin Dashboard](https://pletzerlab.com/wp-admin), and upload the "dist/" folder using 'WP File Manager' in the sidebar. Once uploaded, rename "dist" to 'pletzer-lab-genome-browser', and it will be available at [https://pletzerlab.com/pletzer-lab-genome-browser](https://pletzerlab.com/pletzer-lab-genome-browser).
 
 ## Developer Guide
 

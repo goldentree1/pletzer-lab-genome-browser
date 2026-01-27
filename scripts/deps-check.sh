@@ -6,33 +6,82 @@
 
 set -e
 
+# ------------------
+# PACKAGE REQUIREMENTS:
+# ------------------
 declare -A requirements=(
     [node]="https://nodejs.org/en/download/current"
     [npm]="https://nodejs.org/en/download/current"
     [python3]="https://www.python.org/downloads/"
+    [pip]="https://pip.pypa.io/en/stable/installation/"
     [conda]="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html"
     [perl]="https://www.perl.org/get.html"
 )
 
-# check which packages are missing
-missing=()
-for pkg in "${!requirements[@]}"; do
-    if ! command -v "$pkg" &>/dev/null; then
-        missing+=("$pkg")
-    fi
-done
+# ------------------
+# CONDA REQUIREMENTS:
+# ------------------
+# name: bioinf
+# channels:
+#   - conda-forge
+#   - bioconda
+#   - defaults
+#   - https://conda.anaconda.org/conda-forge
+# dependencies:
+#   - agat
+#   - deeptools
+#   - ucsc-bedtobigbed
+#   - ucsc-fetchchromsizes
+#   - ucsc-bigwigsummary
+#   - ucsc-bigwigtobedgraph
+conda_env_check(){
 
-# exit if missing packages (show the pkg name and website URL to be helpful)
-if [ ${#missing[@]} -gt 0 ]; then
-    echo -e "\033[0;31mMissing required software. Please install the following packages:\033[0m"
-    for pkg in "${missing[@]}"; do
-        echo "- $pkg (see ${requirements[$pkg]})"
+    if [[ -z "$CONDA_PREFIX" ]]; then
+        echo "Conda is installed, but you are not in a conda environment. Require:"
+        echo "  conda env create --name plgb --file requirements.yml"
+        echo "  conda activate plgb"
+        echo
+        read -r -p "Would you like me to setup Conda for you? (Y/n) " reply
+        if [[ ! -z "$reply" && ! "$reply" =~ ^[Yy]$ ]]; then
+            exit 1
+        else
+            conda env create --name plgb --file requirements.yaml
+            conda activate plgb
+            exit 0
+        fi
+    fi
+
+    required=(
+        agat
+        deeptools
+        ucsc-bedtobigbed
+        ucsc-fetchchromsizes
+        ucsc-bigwigsummary
+        ucsc-bigwigtobedgraph
+    )
+
+    # Find missing packages
+    missing=()
+
+    for pkg in "${required[@]}"; do
+        if ! conda list -n "$(basename "$CONDA_PREFIX")" | grep -qw "$pkg"; then
+            missing+=("$pkg")
+        fi
     done
 
-    exit 1 # TEMP - idk if we want ubuntu release stuff?
+    if [ ${#missing[@]} -ne 0 ]; then
+        echo "Missing packages:"
+        for m in "${missing[@]}"; do
+            echo "  - $m"
+        done
+        exit 1
+    fi
 
+}
+
+install_deps_ubuntu(){
     if [[ -f /etc/os-release ]] && grep -qi "ubuntu" /etc/os-release; then
-        read -r -p "Looks like you're running Ubuntu. Would you like to install the missing packages automatically? (Y/n) " reply
+        read -r -p "Looks like you're running Ubuntu. Would you like to try install missing packages automatically? (Y/n) " reply
         if [[ ! -z "$reply" && ! "$reply" =~ ^[Yy]$ ]]; then
             exit 1
         else
@@ -68,23 +117,59 @@ if [ ${#missing[@]} -gt 0 ]; then
                 # for non-interactive shells, just prepend to PATH
                 export PATH="$HOME/miniconda3/bin:$PATH"
             fi
+
         fi
     else
         exit 1
     fi
+}
 
-     # check if install actually worked
-     still_missing=()
-     for pkg in "${missing[@]}"; do
-         if ! command -v "$pkg" &>/dev/null; then
-             still_missing+=("$pkg")
-         fi
-     done
+
+# check which packages are missing
+missing=()
+for pkg in "${!requirements[@]}"; do
+    if ! command -v "$pkg" &>/dev/null; then
+        missing+=("$pkg")
+    fi
+done
+
+# exit if missing packages (show the pkg name and website URL to be helpful)
+if [ ${#missing[@]} -gt 0 ]; then
+    echo -e "\033[0;31mMissing required software. Please install the following packages:\033[0m"
+    for pkg in "${missing[@]}"; do
+        echo "- $pkg (see ${requirements[$pkg]})"
+    done
+
+    # exit 1 # TEMP - idk if we want ubuntu release stuff?
+
+    # try to setup & install deps (ubuntu-only)
+    install_deps_ubuntu
+
+    # check it worked
+    still_missing=()
+    for pkg in "${missing[@]}"; do
+        if ! command -v "$pkg" &>/dev/null; then
+            still_missing+=("$pkg")
+        fi
+    done
     if [ ${#still_missing[@]} -gt 0 ]; then
         echo -e "\033[0;31mERROR: The following packages are still missing after attempted install:\033[0m"
         for pkg in "${still_missing[@]}"; do
             echo "- $pkg"
         done
-        exit 1
     fi
 fi
+
+# Default: run conda check
+RUN_CONDA_CHECK=1
+for arg in "$@"; do
+    if [[ "$arg" == "--no-conda-check" ]]; then
+        RUN_CONDA_CHECK=0
+        break
+    fi
+done
+if [[ $RUN_CONDA_CHECK -eq 1 ]] && command -v conda &>/dev/null; then
+    conda_env_check
+fi
+
+exit 0
