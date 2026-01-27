@@ -1,4 +1,36 @@
 {
+  "GCF_000006765.1 (P.aeruginosa PA01)": {
+    "ncbiName": "GCF_000006765.1 (P.aeruginosa PA01)",
+    "firstRegion": "NC_002516.2",
+    "trixName": "asm",
+    "data": {
+      "refSeq": "refseq.fasta.gz",
+      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "coverage": [
+        [
+          "reads/relA_In/relA_In.average.cpm.bw",
+          "reads/relA_In/relA_In.1.cpm.bw",
+          "reads/relA_In/relA_In.2.cpm.bw",
+          "reads/relA_In/relA_In.average.bw",
+          "reads/relA_In/relA_In.1.bw",
+          "reads/relA_In/relA_In.2.bw"
+        ],
+        [
+          "reads/relA_Un/relA_Un.average.cpm.bw",
+          "reads/relA_Un/relA_Un.1.cpm.bw",
+          "reads/relA_Un/relA_Un.2.cpm.bw",
+          "reads/relA_Un/relA_Un.average.bw",
+          "reads/relA_Un/relA_Un.1.bw",
+          "reads/relA_Un/relA_Un.2.bw"
+        ]
+      ],
+      "coverage_condition_names": [
+        "relA_In",
+        "relA_Un"
+      ]
+    },
+    "extras": []
+  },
   "GCF_000013465.1 (S.aureus USA300LAC)": {
     "ncbiName": "GCF_000013465.1 (S.aureus USA300LAC)",
     "firstRegion": "NC_007793.1",
