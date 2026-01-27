@@ -2,83 +2,72 @@
 Genome browser website and related scripting utilities.
 Made for Pletzer Lab by Elliott Brown.
 
-## User Guide
+## **User Guide**
 
 To rebuild the website with new data, follow the steps below:
 
-1. Change into the root directory of this project:
+1. **Change into the root directory of this project:**
 
-    ```bash
-    cd pletzer-lab-genome-browser/
-    ```
+   ```bash
+   cd pletzer-lab-genome-browser/
+   ```
+---
 
-    <strong>If this is your first time using this project, you will need to setup a few things:</strong>
-    
-    - First ensure you have the necessary dependencies installed:
-      - Node.js
-      - npm
-      - Python 3
-    
-    - Create a conda environment and install requirements:
-    
-      ```bash
-      conda create -n plgb python=3.8
-      conda activate plgb
-      pip install -r requirements.txt
-      ```
-    
-    - Install website dependencies:
-    
-      ```bash
-      npm install
-      ```
-
-2. Create a directory structure like so:
+2. **Create a directory structure like so:**
 
     ```text
-    data/
-    ├── GCF_000014625/
-    │   ├── refseq.fna
-    │   ├── genes.gff
-    │   └── reads/
-    │       ├── PA14_I/
-    │       │   ├── PA14_I.1.bam
-    │       │   ├── PA14_I.2.bam
-    │       │   └── PA14_I.3.bam
-    │       └── PA14_Un/
-    │           ├── PA14_Un.1.bam
-    │           ├── PA14_Un.2.bam
-    │           └── PA14_Un.3.bam
-    └── GCF_000026645.1/
-        ├── ...
+      data/
+      ├── GCF_000014625/
+      │   ├── refseq.fna
+      │   ├── genes.gff
+      │   └── reads/
+      │       ├── PA14_I/
+      │       │   ├── PA14_I.1.bam
+      │       │   ├── PA14_I.2.bam
+      │       │   └── PA14_I.3.bam
+      │       └── PA14_Un/
+      │           ├── PA14_Un.1.bam
+      │           ├── PA14_Un.2.bam
+      │           └── PA14_Un.3.bam
+      └── GCF_000026645.1/
+          ├── ...
     ```
 
-3. Run the build script on your data directory:
+---
+
+3. **Run the build script on your data directory:**
 
     ```bash
-    ./build /path/to/data/
+    ./scripts/build /path/to/data/ --n-threads=10 --bin-size=10 --yes
     ```
 
-    If there are errors in the data or your directory structure is incorrect, the script will abort and list the errors it encountered. You will need to fix these errors and try again. 
+    If the data is malformed, the script will abort and list errors.
 
-    A common issue will be that the names of chromosomes are not consistent across files. For example:
-    ```bash
-    ./build /path/to/data/
-    ```
-    ```text
-    Checking for errors...
-    [OK] GCF_000006765.1 (P.aeruginosa PA01)
-    [FAIL] GCF_000013465.1 (S.aureus USA300LAC)
-        - Mismatch in 'BF_SA_BF.1.bam': [ CP000255.1 ] not in reference: [ NC_007793.1, NC_007790.1 ]
-        - Mismatch in 'BF_SA_BF.2.bam': [ CP000255.1 ] not in reference: [ NC_007793.1, NC_007790.1 ]
-    Aborting due to errors.
-    ```
+    #### Common Errors:
+    - Chromosome names are inconsistent:
+        A common issue will be that the names of chromosomes are not consistent across files. For example:
+        ```bash
+        ./scripts/build /path/to/data/
+        ```
+        ```text
+        Checking for errors...
+        [OK] GCF_000006765.1 (P.aeruginosa PA01)
+        [FAIL] GCF_000013465.1 (S.aureus USA300LAC)
+            - Mismatch in 'BF_SA_BF.1.bam': [ CP000255.1 ] not in reference: [ NC_007793.1, NC_007790.1 ]
+            - Mismatch in 'BF_SA_BF.2.bam': [ CP000255.1 ] not in reference: [ NC_007793.1, NC_007790.1 ]
+        Aborting due to errors.
+        ```
+    
+        If we know that "CP000255.1" chromosome maps to "NC_007793.1", we can fix this by renaming the chromosome in the BAM file to match the reference sequence using `./scripts/bam-reheader`:
+        ```bash
+        ./scripts/bam-reheader /path/to/BF_SA_BF.1.bam "CP000255.1" "NC_007793.1"
+        # After this, there will be two files:
+        #  - BF_SA_BF.1.bam.ORIGINAL (the original file with mismatched chromosomes)
+        #  - BF_SA_BF.1.bam (the fixed file)
+        ```
 
-    If we know that "CP000255.1" chromosome maps to "NC_007793.1", we can fix this by renaming the chromosome in the BAM file to match the reference sequence using my `./bam-reheader` script:
-    ```bash
-    ./bam-reheader /path/to/BF_SA_BF.1.bam "CP000255.1" "NC_007793.1"
-    ./bam-reheader /path/to/BF_SA_BF.2.bam "CP000255.1" "NC_007793.1"
-    ```
+
+    ---
 
 4. To preview your website, run the following command:
     ```bash

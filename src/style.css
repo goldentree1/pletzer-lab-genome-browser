@@ -263,8 +263,8 @@ select {
   padding-block: 2px;
   padding-inline: 1rem 1.5rem;
   font-weight: 500;
-  max-width: 200px;
-  min-width: 200px;
+  max-width: 240px;
+  min-width: 240px;
 }
 
 .condition-select > optgroup:first-child {

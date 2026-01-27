@@ -7,9 +7,9 @@ X "Use Binsizes of 10. CPM Normalization is good, it should be the default" - Sa
 - do better test-case for averaging bigwigs (test build test-build.sh)
 - Do BAM -> BW for S.Aureus (sam gave me more BAM files)
 - Make multi-chromosome stuff display ALL chroms!!!! Actually, Sam doesnt necessarily want that he said. one at a time fine and good, or just some nice easy UI i think is fine. Said its fine as is also - because search can be used to change chromosome we are on (but think he was annoyed it didnt align with refseq - ie each chrom is indexed from 0... should at least fix that, perhaps by programming logic to read .fai and jump forward to relevant index for defaultSession.views)
-- WordPress deployment (either static plugin or redirect to Vercel or something):
-	1. Upload entire dir to wp-uploads/genome-browser (install WP File Manager)
-	2. Ask Daniel whether he wants page or just to link to it
+X Wordpress available via WP File Manager
+- Ask Daniel whether he wants page or just to link to it
+
 
 (me):
 - Tests! Sam seems happy enough that it works after visually inspecting though. BUT

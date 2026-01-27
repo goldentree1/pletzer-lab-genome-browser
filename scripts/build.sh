@@ -2,6 +2,7 @@
 
 # Usage: scripts/build.sh [options] <DIRECTORY>
 # Example: scripts/build.sh -y --bin-size 50 "path/to/dir"
+set -e
 
 main() {
 
@@ -74,6 +75,14 @@ main() {
         esac
     done
 
+
+    # Check for missing packages
+    bash scripts/deps-check.sh
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
+
+    # exit if user provided no directory
     if [[ "$DATA_DIR" == "" ]]; then
         echo -e "\033[0;31mA directory must be provided.\033[0m"
         print_minimal_help
@@ -87,7 +96,7 @@ main() {
         exit 1
     fi
 
-    # check for errors + print them
+    # check directory structure and file errors... print them and exit.
     if ! genome_error_check_routine "$DATA_DIR"; then
         printf "\033[0;31mAborting due to errors.\n\033[0m"
         exit 1
@@ -124,7 +133,7 @@ main() {
         # Create all necessary files for JBrowse
         genome_data_processing_ritual "$refseq_file" "$genes_file" "$genome_dir" "$N_THREADS" "$BIN_SIZE" "$REBUILD_BIGWIGS" "$SKIP_PROCESSED_BAMS"
     done
-    # TODO make this function and catch Javascript errors and throw if so
+    # TODO make this function and catch Javascript errors and throw if so?
 
     echo "Data processing is complete!"
 
@@ -157,7 +166,7 @@ main() {
     fi
 
     # Re-build the website
-    echo "Building website to 'dist/'... (this may take a minute or two)"
+    echo "Building website to 'dist/'... (this will take a minute or two)"
     npm run build > /dev/null 2>&1
     echo "Complete!"
 }
@@ -199,8 +208,6 @@ print_full_help() {
     echo "  scripts/build.sh --yes --bin-size=50 /path/to/<data_directory>"
 }
 
-
-
 # Error checker for input files.
 # Each directory (genome strain) requires:
 # - a "refseq.fasta" (reference sequence)
@@ -233,7 +240,7 @@ genome_error_check_routine(){
         # err check: chromosome names match reference sequence in genes.gff
         if [[ -f "$refseq_file"  ]] && [[ -f "$genes_file" ]]; then
             # jbrowse_prepare_fasta "$refseq_file" # need fai indexes to check chromosome names
-            chrom_name_mismatches=$(scripts/chromosome-check.py "$refseq_file" "$genes_file" 2>&1)
+            chrom_name_mismatches=$(python3 scripts/chromosome-check.py "$refseq_file" "$genes_file" 2>&1)
             ret_code=$?
             if (( ret_code != 0 )); then
                 while IFS= read -r line; do
@@ -291,7 +298,7 @@ genome_error_check_routine(){
 
                 # err check: BAM chromosome names must match refseq.fasta
                 # (e.g., refseq with 'chr' and BAM with 'chrom1' is invalid)
-                bam_mismatches=$(scripts/chromosome-check.py "$refseq_file" "${bam_files[@]}")
+                bam_mismatches=$(python3 scripts/chromosome-check.py "$refseq_file" "${bam_files[@]}")
                 rc=$?
                 if (( rc != 0 )); then
                     while IFS= read -r line; do
@@ -383,7 +390,7 @@ genome_data_processing_ritual(){
     # Check and convert BAMs into BigWigs for JBrowse
     coverage_json="["  # start JSON array
 
-    echo "Preparing BAM files... (this can take a few minutes for each file)"
+    echo "Preparing BAM files... (this may take a few minutes per file)"
     for condition_dir in "$reads_dir"/*; do
 
         [[ -d "$condition_dir" ]] || continue # skip non-directories
