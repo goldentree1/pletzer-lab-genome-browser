@@ -4,43 +4,51 @@ Made for Pletzer Lab by Elliott Brown.
 
 ## **Setup**
 On first use, you must setup the dependencies for this project.
-To check what you're missing, run:
 
+1. **Change into the root directory of this project:**
+
+   ```bash
+   cd pletzer-lab-genome-browser/
+   ```
+---
+
+2. **Check what packages you're missing:**
+    ```bash
+    scripts/deps-check.sh
+    ```
+    On Ubuntu, the script should prompt you to install packages automatically! 
+
+    Otherwise, you can install manually:
+      - Install the missing listed packages
+      - Install npm dependencies:
+        ```bash
+        npm install
+        npm install -g @jbrowse/cli
+        ```
+      - Install conda dependencies:
+        ```bash
+        conda env create --name plgb --file requirements.yaml 
+        ```
+---
+
+3. **Run this to make sure commands are available:**
 ```bash
-scripts/deps-check.sh
-```
-
-Then install the listed missing packages.
-
-
-Next, create & activate the [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) environment:
-```bash
-conda env create --name plgb --file requirements.conda 
-conda activate plgb
+# node/npm
+export PATH="$HOME/miniconda3/bin:$PATH"
+conda init
+source ~/.bashrc
 ```
 
 ## **User Guide**
 
 To rebuild the website with new data, follow the steps below:
 
-## **Setup**
-On first use, you must setup the dependencies for this project. Check what you're missing:
-```bash
-scripts/deps-check.sh
-```
-Then install the listed missing packages.
 
-Next create the [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) environment:
-```bash
-conda env create --name plgb --file requirements.yaml 
-conda activate plgb
-```
----
-
-1. **Change into the root directory of this project & activate Conda:**
+1. **Change into the root directory of this project and activate conda:**
 
    ```bash
    cd pletzer-lab-genome-browser/
+   conda activate plgb
    ```
 ---
 
@@ -48,37 +56,51 @@ conda activate plgb
 
     ```text
       data/
-      ├── GCF_000014625/
+      ├── genome1_name (ncbi_name)/
       │   ├── refseq.fna
       │   ├── genes.gff
       │   └── reads/
-      │       ├── PA14_I/
-      │       │   ├── PA14_I.1.bam
-      │       │   ├── PA14_I.2.bam
-      │       │   └── PA14_I.3.bam
-      │       └── PA14_Un/
-      │           ├── PA14_Un.1.bam
-      │           ├── PA14_Un.2.bam
-      │           └── PA14_Un.3.bam
-      └── GCF_000026645.1/
+      │       ├── condition1/
+      │       │   ├── condition1.1.bam
+      │       │   ├── condition1.2.bam
+      │       │   ├── ...
+      │       │   └── condition1.N.bam
+      │       └── condition2/
+      │           ├── condition2.1.bam
+      │           ├── condition2.2.bam
+      │           ├── ...
+      │           └── condition2.N.bam
+      │
+      └── genome2_name (ncbi_name)/
           ├── ...
+    ```
+
+    Essentially, you can have as many genomes as you like within the data directory.
+    However, each genome directory requires:
+    - "refseq.fna" - this is the reference sequence FASTA file, containing the nucleotide sequence.
+    - "genes.gff" - this is the genes file, containing the coordinates and names for each gene.
+    - "reads/" - this directory contains BAM files with reads for a certain condition. Make sure the directory exists, has at least one condition, and each BAM file must be follow: 
+        data/<genome_name>/reads/<condition_name>/<condition_name>.<sample_number>.bam
+    
+    You may find the `scripts/ncbi-download.sh` script handy. If your target genome directory is ./data/, then:
+    ```bash
     ```
 
 ---
 
-3. **Run the build script on your data directory:**
+3. **Run the build script on your data/ directory:**
 
     ```bash
-    ./scripts/build /path/to/data/ --n-threads=10 --bin-size=10 --yes
+    ./scripts/build.sh /path/to/data/ --n-threads=10 --bin-size=10 --yes
     ```
 
     If the data is malformed, the script will abort and list errors.
 
-    #### Common Errors:
+    #### Common build errors:
     - Chromosome names are inconsistent:
         A common issue will be that the names of chromosomes are not consistent across files. For example:
         ```bash
-        ./scripts/build /path/to/data/
+        ./scripts/build.sh /path/to/data/
         ```
         ```text
         Checking for errors...
@@ -89,13 +111,18 @@ conda activate plgb
         Aborting due to errors.
         ```
     
-        If we know that "CP000255.1" chromosome maps to "NC_007793.1", we can fix this by renaming the chromosome in the BAM file to match the reference sequence using `./scripts/bam-reheader`:
+        If we know that "CP000255.1" conchromosome maps to "NC_007793.1", we can fix this by renaming the chromosome in the BAM file to match the reference sequence using `scripts/bam-reheader`:
         ```bash
-        ./scripts/bam-reheader /path/to/BF_SA_BF.1.bam "CP000255.1" "NC_007793.1"
+        scripts/bam-reheader /path/to/BF_SA_BF.1.bam "CP000255.1" "NC_007793.1"
         # After this, there will be two files:
         #  - BF_SA_BF.1.bam.ORIGINAL (the original file with mismatched chromosomes)
         #  - BF_SA_BF.1.bam (the fixed file)
         ```
+        
+      This script may be helpful for investigating chromosomes:
+      ```bash
+      scripts/
+      ```
     ---
 
 4. To preview your website, run the following command:
@@ -108,9 +135,9 @@ conda activate plgb
 
 ## Developer Guide
 
-### Install npm dependencies:
+### Install dependencies:
 ```bash
-npm install
+scripts/deps-check.sh # automated on Ubuntu
 ```
 
 ### Run dev server:
@@ -131,19 +158,16 @@ npm start
 ### Project structure
 
 - #### [scripts](./scripts) directory
-Scripts and utilities for processing bioinformatics data.
+Scripts for processing bioinformatics data and building the project.
 
 - #### [src](./src) directory
-The raw source code for the website.
+Source code for the website.
 
 - #### [public](./public) directory
-Static data (e.g., icons, pre-processed bioinformatics data)
+Public assets for the website (e.g., images, data, styles).
 
 - #### [dist](./dist) directory
-After generation of appropriate data and building the website, this directory will contain assets and the webpage running JBrowse. Run this directory as a server (for example, with "npx serve -S ./dist") to make the website available on localhost.
-
-
-
+After running the build script, the outputted website files will be here. Run the directory as a server (e.g., "npx serve -S ./dist") to make the website available on [localhost:3000](http://localhost:3000).
 
 
 

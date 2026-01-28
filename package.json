@@ -1,11 +1,11 @@
 {
   "name": "pletzer-lab-genome-browser",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n site,data \"vite --port 5173\" \"npx serve -S ./public/data -p 5174\"",
+    "dev": "concurrently -k -n site,data \"vite --port 5173 --host 0.0.0.0\" \"npx serve -S ./public/data -p 5174\"",
     "build": "tsc -b && vite build",
     "start": "serve -S dist",
     "lint": "eslint ."

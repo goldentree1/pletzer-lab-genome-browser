@@ -10,9 +10,11 @@ check_l2_linked_to_l3: true
 check_sequential: true
 check_utrs: true
 clean_attributes_from_template: 0
+cpu: 1
 create_l3_for_l2_orphan: true
 debug: 0
 deflate_attribute: 0
+force: 0
 force_gff_input_version: 0
 gff_output_version: 3
 gtf_output_version: relax
@@ -21,10 +23,12 @@ locus_tag:
   - gene_id
 log: true
 merge_loci: 0
+minimum_chunk_size: 100000
 output_format: gff
 prefix_new_id: agat
 progress_bar: true
 remove_orphan_l1: true
 tabix: true
 throw_fasta: 0
+url_encode_out: true
 verbose: 1

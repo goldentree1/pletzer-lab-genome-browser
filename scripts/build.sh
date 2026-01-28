@@ -75,13 +75,6 @@ main() {
         esac
     done
 
-
-    # Check for missing packages
-    bash scripts/deps-check.sh --no-conda-check
-    if [ $? -ne 0 ]; then
-        exit 1
-    fi
-
     # exit if user provided no directory
     if [[ "$DATA_DIR" == "" ]]; then
         echo -e "\033[0;31mA directory must be provided.\033[0m"
