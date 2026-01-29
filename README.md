@@ -16,9 +16,10 @@ On first use, you must setup the dependencies for this project.
     ```bash
     scripts/deps-check.sh
     ```
-    On Ubuntu, the script should prompt you to install packages automatically! 
 
-    Otherwise, you can install manually:
+    On Ubuntu, the script should prompt you to install packages automatically (recommended).
+
+    **Alternatively**, you can install dependencies manually:
       - Install the missing listed packages
       - Install npm dependencies:
         ```bash
@@ -32,12 +33,13 @@ On first use, you must setup the dependencies for this project.
 ---
 
 3. **Run this to make sure commands are available:**
-```bash
-export PATH="$HOME/miniconda3/bin:$PATH"
-source ~/.bashrc
-conda init
-conda activate plgb
-```
+    ```bash
+    export PATH="$HOME/miniconda3/bin:$PATH"
+    source ~/.bashrc
+    conda init
+    conda activate plgb
+    ```
+---
 
 ## **User Guide**
 
@@ -56,7 +58,7 @@ To rebuild the website with new data, follow the steps below:
 
     ```text
       data/
-      ├── genome1_name (ncbi_name)/
+      ├── genome1_name/
       │   ├── refseq.fna
       │   ├── genes.gff
       │   └── reads/
@@ -71,21 +73,19 @@ To rebuild the website with new data, follow the steps below:
       │           ├── ...
       │           └── condition2.N.bam
       │
-      └── genome2_name (ncbi_name)/
+      └── genome2_name/
           ├── ...
     ```
 
-    Essentially, you can have as many genomes as you like within the data directory.
-    However, each genome directory requires:
-    - "refseq.fna" - this is the reference sequence FASTA file, containing the nucleotide sequence.
-    - "genes.gff" - this is the genes file, containing the coordinates and names for each gene.
-    - "reads/" - this directory contains BAM files with reads for a certain condition. Make sure the directory exists, has at least one condition, and each BAM file must be follow: 
-        data/<genome_name>/reads/<condition_name>/<condition_name>.<sample_number>.bam
+    Note:
+    - `refseq.fna` is the reference sequence FASTA file, containing the nucleotide sequence.
+    - `genes.gff` is the genes file, containing the coordinates and names for each gene.
+    - `reads/` - contains BAM files. Make sure it follows the structure shown above. BAM files **must** have extension `.<sample_number>.bam` (e.g., `condition1.1.bam` for condition #1, sample #1).
     
-    You may find `scripts/ncbi-download.sh` helpful to quickly download the reference sequence and genes from the NCBI.
-    ```bash
-    scripts/ncbi-download.sh GCF_000026645.1 ./data/000026645.1_PA_LESB58
-    ```
+      You may find `scripts/ncbi-download.sh` helpful to auto-download "refseq.fna" and "genes.gff" from NCBI database, example:
+      ```bash
+      scripts/ncbi-download.sh GCF_000026645.1 ./data/000026645.1_PA_LESB58
+      ```
 
 ---
 
@@ -122,7 +122,7 @@ To rebuild the website with new data, follow the steps below:
         
       This script may be helpful for investigating chromosomes:
       ```bash
-      scripts/
+      scripts/chromosome-check.py
       ```
     ---
 
@@ -132,26 +132,36 @@ To rebuild the website with new data, follow the steps below:
     ```
 
 5. Once happy, copy the entire "dist/" folder to your web server or hosting provider.
-   For Wordpress, go to your [Wordpress Admin Dashboard](https://pletzerlab.com/wp-admin), and upload the "dist/" folder using 'WP File Manager' in the sidebar. Once uploaded, rename "dist" to 'pletzer-lab-genome-browser', and it will be available at [https://pletzerlab.com/pletzer-lab-genome-browser](https://pletzerlab.com/pletzer-lab-genome-browser).
+
+    **WordPress deployment on pletzerlab.com:**
+    1. Go to the [Pletzer Lab Wordpress Admin Dashboard](https://pletzerlab.com/backend-login/) and login.
+    2. In the sidebar, click 'WP File Manager'.
+    3. Click the upload button, and upload the generated [dist/](./dist/) directory
+        ![Upload Button Screenshot](./scrnsht-wp-upload.png)
+    4. Rename the uploaded `dist` folder to `pletzer-lab-genome-browser`.
+        ![Rename 'dist' Screenshot](./scrnsht-wp-rename.png)
+    5. Done! It should now be available at [pletzerlab.com/genome-browser]
+        
+    For Wordpress, go to your [Wordpress Admin Dashboard](https://pletzerlab.com/wp-admin), and upload the "dist/" folder using 'WP File Manager' in the sidebar. Once uploaded, rename "dist" to 'pletzer-lab-genome-browser', and it will be available at [https://pletzerlab.com/pletzer-lab-genome-browser](https://pletzerlab.com/pletzer-lab-genome-browser).
 
 ## Developer Guide
 
-### Install dependencies:
+#### Install dependencies:
 ```bash
 scripts/deps-check.sh # automated on Ubuntu
 ```
 
-### Run dev server:
+#### Run dev server:
 ```bash
 npm run dev
 ```
 
-### Build for production:
+#### Build for production:
 ```bash
 npm run build # prod-ready static website, output to ./dist/
 ```
 
-### Run production build:
+#### Run production build:
 ```bash
 npm start
 ```

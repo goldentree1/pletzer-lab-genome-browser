@@ -140,13 +140,13 @@ function App() {
               label="Global Y-axis"
               checked={globalScaling}
               onChange={setGlobalScaling}
-              hoverDescription="Fix Y-axis between global minimum and maximum"
+              hoverDescription="Fix Y-axis between global minimum and maximum values"
             />
             <BooleanCheckbox
               label="CDS+Amino"
               checked={colorByCds}
               onChange={setColorByCDS}
-              hoverDescription="Colour by CDS and amino acids"
+              hoverDescription="Colour by CDS and amino acids (shows codon alignments by colour)"
             />
           </div>
         </div>
@@ -251,10 +251,12 @@ function BooleanCheckbox({
   onChange: (b: boolean) => void;
   hoverDescription: string;
 }) {
-  const id = label.replace(/\s+/g, '');
+  const id = label.replace(/\s+/g, '').toLowerCase();
   return (
     <div className="checkbox">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id} title={hoverDescription}>
+        {label}
+      </label>
       <input
         type="checkbox"
         id={id}
