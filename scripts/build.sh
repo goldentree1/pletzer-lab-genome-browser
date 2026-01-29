@@ -157,42 +157,56 @@ main() {
     done
     # TODO make this function and catch Javascript errors and throw if so?
 
-    echo "Data processing is complete!"
+    echo
 
     echo "Replacing site configuration..."
     merged_config_file="$DATA_DIR/config.json"
     merge_json_configs "$merged_config_file" "${generated_config_files[@]}"
     # TODO catch Javascript errors and throw if so
-
-    echo "Overwriting data in 'public/data'..."
+    #
+    echo "Overwriting website data ('./public/data') (this may take a couple of minutes)..."
     replace_public_data "$DATA_DIR"
     # TODO check for cp errs??
-    echo "Removing unnecessary files from 'public/data'..."
+
+    echo "Removing unnecessary files..."
     clean_public_data
-    echo
+    echo -e "\033[0;32mData was processed successfully!\033[0m"
 
     if [[ "$SKIP_WEBSITE" == true ]]; then
-        echo "Complete!"
+        echo -e "\033[0;32mComplete!\033[0m"
         exit 0
     fi
 
+    echo
     # Prompt user to overwrite current website with new data.
     if [[ "$PROMPT_TO_CONTINUE" == true ]]; then
         read -r -p "Re-build Pletzer Lab Genome Browser website now? (Y/n) " reply
         if [[ ! -z "$reply" && ! "$reply" =~ ^[Yy]$ ]]; then
             echo "You can rebuild it manually by running:"
             echo "      npm run build"
-            echo -e "\033[0;31mExiting.\033[0m"
+            echo
             exit 0
         fi
     fi
 
-    # Re-build the website
-    echo "Building website to 'dist'... (this may take a minute or two)"
-    npm run build > /dev/null 2>&1
-    echo "Complete!"
-    echo "To preview your website, you can serve it locally with:"
-    echo "      npm start"
+    # Run build: discard stdout, capture stderr
+    echo "Building website to 'dist' (this may take a couple of minutes)... "
+    set +e # unset throw on err so we can print build issues
+    BUILD_LOGS=$(npm run build)
+    EXIT_CODE=$?
+    set -e
+    if [ $EXIT_CODE -ne 0 ]; then
+        echo -e "\033[0;31mEncountered errors while building! Logs:\033[0m"
+        echo "$BUILD_LOGS"
+        echo "Build failed, exiting."
+        echo -e "\033[0;31mFailed to build website.\033[0m"
+        exit 1
+    else
+        echo -e "\033[0;32mComplete!\033[0m"
+        echo "To preview your website, you can serve it locally with:"
+        echo "      npm start"
+        echo
+    fi
 }
 
 

@@ -6,7 +6,7 @@ import '@fontsource/roboto';
 import myConf from './config';
 import { buildConfig, myCreateViewState } from './jbrowse-custom';
 import { useStoredStateBoolean, useStoredStateString } from './utils';
-import Select from './components/Select';
+// import Select from './components/Select';
 import { autorun } from 'mobx';
 
 function getLocString(linearView: any) {
