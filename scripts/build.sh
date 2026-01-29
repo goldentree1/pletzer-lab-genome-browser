@@ -1,13 +1,20 @@
 #!/bin/bash
 
 # Usage: scripts/build.sh [options] <DIRECTORY>
-# Example: scripts/build.sh -y --bin-size 50 "path/to/dir"
+# Examples:
+#
+#   # this is equivalent to
+#   scripts/build.sh ./data
+#   # this command.
+#   scripts/build.sh ./data/ --bin-size=10 --n-threads=10
+#
+
 set -e
 
 main() {
 
     # user-controllable variables
-    DATA_DIR="${1%/}"
+    DATA_DIR=""
     BIN_SIZE=10 # Bin size used for bioinformatics calculations with BAM/BigWig files.
     PROMPT_TO_CONTINUE=true # Give user prompt of (Y\n) to continue.
     REBUILD_BIGWIGS=true # always rebuild bigwigs
@@ -15,6 +22,8 @@ main() {
     SKIP_WEBSITE=false
     CHECK_ONLY=false
     N_THREADS=1
+    GENES_LABEL_TYPES="name,locus_tag,old_locus_tag" # TODO
+    BAMCOV_NORMALISATIONS="cpm,none" # TODO
 
     # parse flags + args
     while [[ $# -gt 0 ]]; do
@@ -69,23 +78,37 @@ main() {
                 exit 1
                 ;;
             *)
-                DATA_DIR="$1"
+                DATA_DIR="${1%/}"
                 shift
                 ;;
         esac
     done
 
-    echo "Running build script with settings:"
-    echo " - Bin size = $BIN_SIZE"
-    echo " - Number of threads = $N_THREADS"
-    echo
-
     # exit if user provided no directory
     if [[ "$DATA_DIR" == "" ]]; then
-        echo -e "\033[0;31mA directory must be provided.\033[0m"
+        echo -e "\033[0;31mA directory is required.\033[0m"
         print_minimal_help
         exit 1
+
+        # AUTO-fill with ./data/
+        # if [[ "$PROMPT_TO_CONTINUE" != true ]] || [[ ! -d ./data ]]; then
+        #     read -r -p "Use './data/'? (Y/n) " reply
+        #     if [[ ! -z "$reply" && ! "$reply" =~ ^[Yy]$ ]]; then
+        #         echo -e "\033[0;31mAborted.\033[0m"
+        #         exit 0
+        #     fi
+        #     DATA_DIR="./data"
+        # fi
     fi
+
+    echo "Building with settings:"
+    echo " - Data directory: '$DATA_DIR'"
+    echo " - Bin size: $BIN_SIZE"
+    echo " - Number of threads: $N_THREADS"
+    echo " - Rebuild all BAMs: $REBUILD_BIGWIGS"
+    echo " - Rebuild processed BAMs: $SKIP_PROCESSED_BAMS"
+    echo " - Rebuild website: $SKIP_WEBSITE"
+    echo
 
     # exit if user provided invalid directory
     if [[ ! -d "$DATA_DIR" ]]  then
@@ -165,7 +188,7 @@ main() {
     fi
 
     # Re-build the website
-    echo "Building website to 'dist'... (this will take a minute or two)"
+    echo "Building website to 'dist'... (this may take a minute or two)"
     npm run build > /dev/null 2>&1
     echo "Complete!"
     echo "To preview your website, you can serve it locally with:"

@@ -5,26 +5,35 @@ X Script to rebuild based on pre-defined dir structure
 X "Use Binsizes of 10. CPM Normalization is good, it should be the default" - Sam.
 X Do BAM -> BW for S.Aureus (sam gave me more BAM files)
 X Wordpress available via WP File Manager
-- ASK SAM: S.aureus USA300 reads only have one chromosome, but there are 4 in reference sequence?
-- do better test-case for averaging bigwigs (test build test-build.sh)
-- Make multi-chromosome stuff display ALL chroms!!!! Actually, Sam doesnt necessarily want that he said. one at a time fine and good, or just some nice easy UI i think is fine. Said its fine as is also because search can be used to change chromosome we are on (but think he was annoyed it didnt align with refseq - ie each chrom is indexed from 0... should at least fix that, perhaps by programming logic to read .fai and jump forward to relevant index for defaultSession.views)
-- UI fixes/touchups
+
+UI fixes/touchups:
+- loc string... keep it same on condition changes / gene label changes / normalisation? Alternatively, could keep big
+map of all genomes and where the person was at
+- secondary label for anything else (default to note)
+- make steezy
+
+Bugfix:
+ - build.sh:
+
 Ask Daniel:
 - whether he wants page or just to link to it
 ASK SAM:
-- Do we want variants.vcf? Gene counts.fa? Easy to add.
+- S.aureus USA300 reads only have one chromosome, but there are 4 in reference sequence?
+- Multichromosome: is it issue they dont align with refseq? Could:
+    A. Do nothing. (when you search, it comes up with chromosomes)
+    B. read .fai, save to json, show all?
+    C.
+- Do we want variants.vcf? Gene counts.faa? Easy to add.
 - Should gene labels be changeable? They are searchable by all tags now (old_locus,locus,name) + changeable
-- Secondary label for genes to show
+- Secondary label for genes to show... do you want notes? Or scrap changeable and just do name/old_locus_tag combo?
 
 (me):
 - Tests! Sam seems happy enough that it works after visually inspecting though. BUT
     X test the scripts work by using VERY simple BAM files with a few coords only
     - simple averaging check (2+3+1)/3 = 2, for example.
     - CPM normalise (formula == value/(n_reads/1000000)) (because counts per million, so  value/1,000,000)
+    - formal test with Jest or something (check CPM normalize + simple average, though i have informally checked and its fine, PS CPM == counts per million == value/(n_reads/1000000))
 X do quick test in fresh VM to make sure easily-reproducible environment of packages (think they use ubuntu server or something in microbiology for bioinformatics stuff)
 
 (minor):
-- change UI better for CPM-normalise? (minor)
-- Sam counts from FAA file displayed (minor)
-- Change name to old_locus_tag (minor)
 - Some UI thing to change chromosome?? (minor, sam can already search for them)

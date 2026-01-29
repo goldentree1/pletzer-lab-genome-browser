@@ -1,12 +1,32 @@
 import type { ViewModel } from './types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { JBrowseLinearGenomeView } from '@jbrowse/react-linear-genome-view2';
 // @ts-expect-error no types for font
 import '@fontsource/roboto';
 import myConf from './config';
 import { buildConfig, myCreateViewState } from './jbrowse-custom';
 import { useStoredStateBoolean, useStoredStateString } from './utils';
-// import Select from './components/Select';
+import Select from './components/Select';
+import { autorun } from 'mobx';
+
+function getLocString(linearView: any) {
+  if (!linearView.displayedRegions.length) return;
+  const region = linearView.displayedRegions[0];
+
+  const bpPerPx = linearView.bpPerPx;
+  const offsetPx = linearView.offsetPx;
+  const widthPx = linearView.width;
+
+  const start = region.start + Math.floor(offsetPx * bpPerPx) + 1;
+  const end = region.start + Math.floor((offsetPx + widthPx) * bpPerPx);
+
+  const s = Math.max(start, 1);
+  const e = Math.min(end, region.end);
+
+  return region.reversed
+    ? `${region.refName}:${e}..${s}`
+    : `${region.refName}:${s}..${e}`;
+}
 
 function App() {
   const bacteria: string[] = Object.keys(myConf).sort();
@@ -19,6 +39,7 @@ function App() {
   const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
   const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
   const [norms, setNorms] = useState(['none']);
+  const loc = useRef<string | null>(null);
 
   const [genesLabelType, setGenesLabelType] = useStoredStateString(
     'pletzer-lab-genome-browser:genesLabelType',
@@ -40,40 +61,6 @@ function App() {
     'pletzer-lab-genome-browser:colorByCDS',
     false,
   );
-
-  // use default conditions on bacterium change
-  useEffect(() => {
-    setConditionA([0, 0]);
-    setConditionB([1, 0]);
-  }, [bacterium]);
-
-  // full-refresh jbrowse required for bacterium or conditions changes
-  useEffect(() => {
-    const config = myConf[bacterium];
-    if (!config) {
-      setBacterium(bacteria[0]);
-      return;
-    }
-
-    setNorms(config.norms);
-
-    if (!config.norms.includes(normType)) {
-      setNormType(config.norms[0]);
-      return;
-    }
-
-    const state = myCreateViewState(
-      buildConfig(config, {
-        conditionA,
-        conditionB,
-        loc: [0, 5000], // TODO: keep loc constant for condition changes only
-        normType,
-        genesLabelType,
-      }),
-    );
-
-    setViewState(state);
-  }, [bacterium, conditionA, conditionB, normType, genesLabelType]);
 
   // DOM manipulation works for some JBrowse features - like scaling and CDS colouring.
   // Smoother and faster than a full-refresh, so use it where possible.
@@ -98,6 +85,67 @@ function App() {
 
     linearView.setColorByCDS(colorByCds);
   }, [viewState, logScaling, globalScaling, colorByCds]);
+
+  useEffect(() => {
+    const linearView = viewState?.session.views.find(
+      v => v.type === 'LinearGenomeView',
+    );
+    if (!linearView) return;
+
+    const dispose = autorun(() => {
+      loc.current = getLocString(linearView) || null;
+    });
+
+    return () => dispose();
+  }, [viewState]);
+
+  // revert default conditions + loc on bacterium change
+  useEffect(() => {
+    setConditionA([0, 0]);
+    setConditionB([1, 0]);
+    loc.current = null;
+  }, [bacterium]);
+
+  // full-refresh jbrowse required for bacterium or conditions changes
+  useEffect(() => {
+    const newLoc = [0, 5000];
+    if (loc.current) {
+      const [newStartLoc, newEndLoc] = loc.current
+        .split(':')[1]
+        .split('..')
+        .map(Number);
+      newLoc[0] = newStartLoc;
+      newLoc[1] = newEndLoc;
+      loc.current = null;
+    }
+
+    const config = myConf[bacterium];
+    if (!config) {
+      setBacterium(bacteria[0]);
+      return;
+    }
+
+    setNorms(config.norms);
+
+    if (!config.norms.includes(normType)) {
+      setNormType(config.norms[0]);
+      return;
+    }
+
+    console.log('using loc:', newLoc);
+
+    const state = myCreateViewState(
+      buildConfig(config, {
+        conditionA,
+        conditionB,
+        loc: newLoc, // TODO: keep loc constant for condition changes only
+        normType,
+        genesLabelType,
+      }),
+    );
+
+    setViewState(state);
+  }, [bacterium, conditionA, conditionB, normType, genesLabelType]);
 
   const coverage = viewState ? myConf[bacterium].data.coverage : [];
   const coverageConditionNames = viewState
