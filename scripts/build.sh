@@ -75,6 +75,11 @@ main() {
         esac
     done
 
+    echo "Running build script with settings:"
+    echo " - Bin size = $BIN_SIZE"
+    echo " - Number of threads = $N_THREADS"
+    echo
+
     # exit if user provided no directory
     if [[ "$DATA_DIR" == "" ]]; then
         echo -e "\033[0;31mA directory must be provided.\033[0m"
@@ -214,7 +219,6 @@ print_full_help() {
 genome_error_check_routine(){
     local data_dir="$1"
     should_exit=false
-    echo
     echo "Checking for errors..."
     for genome_dir in "$data_dir"/*; do
         genome_dir="${genome_dir%/}"  # remove trailing slash from each genome_dir

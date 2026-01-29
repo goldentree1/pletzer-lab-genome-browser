@@ -26,3 +26,4 @@ dist-ssr
 /data*
 /public/data*
 /tmp
+/agat_log_genes

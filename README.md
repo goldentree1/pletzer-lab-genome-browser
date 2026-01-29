@@ -33,10 +33,10 @@ On first use, you must setup the dependencies for this project.
 
 3. **Run this to make sure commands are available:**
 ```bash
-# node/npm
 export PATH="$HOME/miniconda3/bin:$PATH"
-conda init
 source ~/.bashrc
+conda init
+conda activate plgb
 ```
 
 ## **User Guide**
@@ -82,8 +82,9 @@ To rebuild the website with new data, follow the steps below:
     - "reads/" - this directory contains BAM files with reads for a certain condition. Make sure the directory exists, has at least one condition, and each BAM file must be follow: 
         data/<genome_name>/reads/<condition_name>/<condition_name>.<sample_number>.bam
     
-    You may find the `scripts/ncbi-download.sh` script handy. If your target genome directory is ./data/, then:
+    You may find `scripts/ncbi-download.sh` helpful to quickly download the reference sequence and genes from the NCBI.
     ```bash
+    scripts/ncbi-download.sh GCF_000026645.1 ./data/000026645.1_PA_LESB58
     ```
 
 ---

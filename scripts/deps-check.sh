@@ -172,7 +172,8 @@ fi
 echo
 echo "Dependencies are installed! Run this to make sure your environment is activated:"
 echo
-echo "  source ~/.bashrc"
 echo '  export PATH="$HOME/miniconda3/bin:$PATH"'
+echo "  source ~/.bashrc"
+echo '  conda init'
 echo '  conda activate plgb'
 echo
