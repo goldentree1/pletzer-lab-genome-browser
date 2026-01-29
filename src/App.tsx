@@ -17,7 +17,12 @@ function App() {
   const [viewState, setViewState] = useState<ViewModel>();
   const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
   const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
+  const [norms, setNorms] = useState(['none']);
 
+  const [normType, setNormType] = useStoredStateString(
+    'pletzer-lab-genome-browser:normType',
+    'none',
+  );
   const [logScaling, setLogScaling] = useStoredStateBoolean(
     'pletzer-lab-genome-browser:logScaling',
     true,
@@ -31,11 +36,6 @@ function App() {
     false,
   );
 
-  // if selected bacterium does not exist, use default
-  useEffect(() => {
-    if (!myConf[bacterium]) setBacterium(bacteria[0]);
-  }, [bacterium, bacteria, setBacterium]);
-
   // use default conditions on bacterium change
   useEffect(() => {
     setConditionA([0, 0]);
@@ -45,18 +45,29 @@ function App() {
   // full-refresh jbrowse required for bacterium or conditions changes
   useEffect(() => {
     const config = myConf[bacterium];
-    if (!config) return;
+    if (!config) {
+      setBacterium(bacteria[0]);
+      return;
+    }
+
+    setNorms(config.norms);
+
+    if (!config.norms.includes(normType)) {
+      setNormType(config.norms[0]);
+      return;
+    }
 
     const state = myCreateViewState(
       buildConfig(config, {
         conditionA,
         conditionB,
         loc: [0, 5000], // TODO: keep loc constant for condition changes only
+        normType,
       }),
     );
 
     setViewState(state);
-  }, [bacterium, conditionA, conditionB]);
+  }, [bacterium, conditionA, conditionB, normType]);
 
   // DOM manipulation works for some JBrowse features - like scaling and CDS colouring.
   // Smoother and faster than a full-refresh, so use it where possible.
@@ -82,11 +93,10 @@ function App() {
     linearView.setColorByCDS(colorByCds);
   }, [viewState, logScaling, globalScaling, colorByCds]);
 
-  if (!viewState) return null;
-
-  const coverage = myConf[bacterium].data.coverage;
-  const coverageConditionNames =
-    myConf[bacterium].data.coverage_condition_names;
+  const coverage = viewState ? myConf[bacterium].data.coverage : [];
+  const coverageConditionNames = viewState
+    ? myConf[bacterium].data.coverage_condition_names
+    : [];
 
   return (
     <>
@@ -130,6 +140,14 @@ function App() {
 
         <div className="header-buttons-container">
           <div className="header-buttons">
+            <div className="norm-type-select">
+              <label htmlFor="norm-type">Normalization Type: </label>
+              <NormTypeSelect
+                norms={norms}
+                normType={normType}
+                setNormType={setNormType}
+              />
+            </div>
             <BooleanCheckbox
               label="Log2"
               checked={logScaling}
@@ -153,7 +171,7 @@ function App() {
       </header>
 
       <div className="jbrowse-container">
-        <JBrowseLinearGenomeView viewState={viewState} />
+        {viewState && <JBrowseLinearGenomeView viewState={viewState} />}
       </div>
     </>
   );
@@ -238,6 +256,26 @@ function ConditionSelect({
     }
     return `${filename}`;
   }
+}
+
+function NormTypeSelect({
+  norms,
+  normType,
+  setNormType,
+}: {
+  norms: string[];
+  normType: string;
+  setNormType: (value: string) => void;
+}) {
+  return (
+    <select value={normType} onChange={e => setNormType(e.target.value)}>
+      {norms.map((norm, index) => (
+        <option key={index} value={norm}>
+          {norm}
+        </option>
+      ))}
+    </select>
+  );
 }
 
 function BooleanCheckbox({

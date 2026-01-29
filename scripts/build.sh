@@ -462,9 +462,8 @@ genome_data_processing_ritual(){
         fi
 
         # disgusting hackery to make a JSON array of BigWigs... in bash
-        coverage_json+=$'\n  ['"$(IFS=,; echo "${bw_files[*]}")"','"$(IFS=,; echo "${cpm_bw_files[*]}")"'],'
+        coverage_json+=$'\n  ['"$(IFS=,; echo "${bw_files[*]}")"'],'
     done
-
 
     coverage_json="${coverage_json%,}"
     coverage_json+=$'\n]'
@@ -490,6 +489,7 @@ genome_data_processing_ritual(){
                 ncbiName: "$(basename "$genome_dir")",
                 firstRegion: "$first_region",
                 trixName: "asm",
+                norms: ['cpm', 'none'],
                 data: {
                     refSeq: "refseq.fasta.gz",
                     genomic: "genes.gff.sorted.noregion.gff.gz",

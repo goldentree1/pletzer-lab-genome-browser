@@ -143,6 +143,7 @@ export function buildConfig(
     ncbiName,
     dataDir,
     trixName,
+    norms,
     data: { refSeq, genomic, coverage },
     extras,
   }: JBrowseCustomConfig,
@@ -151,6 +152,7 @@ export function buildConfig(
     logScale = true,
     conditionA = [0, 0],
     conditionB = [1, 0],
+    normType = 'none',
   } = {},
 ): JBrowseConfig {
   if (!trixName) trixName = ncbiName;
@@ -244,8 +246,13 @@ export function buildConfig(
           coverage.length >= 2 ? coverage[conditionB[0]][conditionB[1]] : null,
         ]
           .filter(Boolean)
-
-          .map(fname => `${dataDir}/${fname}`),
+          .map(fname => {
+            const fpath = `${dataDir}/${fname}`;
+            if (normType.toLowerCase() === 'cpm' && norms.includes('cpm')) {
+              return `${fpath?.substring(0, fpath.length - 3)}.cpm.bw`;
+            }
+            return `${dataDir}/${fname}`;
+          }),
       },
       displays: [
         {
