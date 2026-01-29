@@ -12,6 +12,7 @@ export interface JBrowseCustomConfig {
   trixName?: string; // defaults to $ncbiName
   firstRegion: string; // e.g., 'NC_008463.1'
   norms: string[]; //e.g., ['cpm', 'none', 'rpkm']
+  genesLabelTypes?: string[];
   data: {
     refSeq?: string; // default 'REFSEQ.faa.gz'
     genomic: string; // default 'GENOME.gff'

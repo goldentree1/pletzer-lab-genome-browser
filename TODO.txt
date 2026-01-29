@@ -8,8 +8,13 @@ X Wordpress available via WP File Manager
 - ASK SAM: S.aureus USA300 reads only have one chromosome, but there are 4 in reference sequence?
 - do better test-case for averaging bigwigs (test build test-build.sh)
 - Make multi-chromosome stuff display ALL chroms!!!! Actually, Sam doesnt necessarily want that he said. one at a time fine and good, or just some nice easy UI i think is fine. Said its fine as is also because search can be used to change chromosome we are on (but think he was annoyed it didnt align with refseq - ie each chrom is indexed from 0... should at least fix that, perhaps by programming logic to read .fai and jump forward to relevant index for defaultSession.views)
-- Ask Daniel whether he wants page or just to link to it
 - UI fixes/touchups
+Ask Daniel:
+- whether he wants page or just to link to it
+ASK SAM:
+- Do we want variants.vcf? Gene counts.fa? Easy to add.
+- Should gene labels be changeable? They are searchable by all tags now (old_locus,locus,name) + changeable
+- Secondary label for genes to show
 
 (me):
 - Tests! Sam seems happy enough that it works after visually inspecting though. BUT

@@ -7,6 +7,11 @@
       "cpm",
       "none"
     ],
+    "genesLabelTypes": [
+      "name",
+      "locus_tag",
+      "old_locus_tag"
+    ],
     "data": {
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff.gz",
@@ -36,6 +41,11 @@
     "norms": [
       "cpm",
       "none"
+    ],
+    "genesLabelTypes": [
+      "name",
+      "locus_tag",
+      "old_locus_tag"
     ],
     "data": {
       "refSeq": "refseq.fasta.gz",
@@ -69,6 +79,11 @@
       "cpm",
       "none"
     ],
+    "genesLabelTypes": [
+      "name",
+      "locus_tag",
+      "old_locus_tag"
+    ],
     "data": {
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff.gz",
@@ -100,6 +115,11 @@
     "norms": [
       "cpm",
       "none"
+    ],
+    "genesLabelTypes": [
+      "name",
+      "locus_tag",
+      "old_locus_tag"
     ],
     "data": {
       "refSeq": "refseq.fasta.gz",

@@ -6,6 +6,7 @@ import '@fontsource/roboto';
 import myConf from './config';
 import { buildConfig, myCreateViewState } from './jbrowse-custom';
 import { useStoredStateBoolean, useStoredStateString } from './utils';
+// import Select from './components/Select';
 
 function App() {
   const bacteria: string[] = Object.keys(myConf).sort();
@@ -19,6 +20,10 @@ function App() {
   const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
   const [norms, setNorms] = useState(['none']);
 
+  const [genesLabelType, setGenesLabelType] = useStoredStateString(
+    'pletzer-lab-genome-browser:genesLabelType',
+    'name',
+  );
   const [normType, setNormType] = useStoredStateString(
     'pletzer-lab-genome-browser:normType',
     'none',
@@ -63,11 +68,12 @@ function App() {
         conditionB,
         loc: [0, 5000], // TODO: keep loc constant for condition changes only
         normType,
+        genesLabelType,
       }),
     );
 
     setViewState(state);
-  }, [bacterium, conditionA, conditionB, normType]);
+  }, [bacterium, conditionA, conditionB, normType, genesLabelType]);
 
   // DOM manipulation works for some JBrowse features - like scaling and CDS colouring.
   // Smoother and faster than a full-refresh, so use it where possible.
@@ -101,21 +107,19 @@ function App() {
   return (
     <>
       <header className="header">
-        <div className="header-title">
-          <img src="./pletzerlab-icon.webp" alt="Pletzer Lab Icon" />
-          <h1>Pletzer Lab Genome Browser</h1>
-        </div>
-
         <nav className="header-genome-chooser">
+          <div className="header-title">
+            <img src="./pletzerlab-icon.webp" alt="Pletzer Lab Icon" />
+            {/*<h1>Pletzer Lab Genome Browser</h1>*/}
+          </div>
           <GenomeSelector
             bacteria={bacteria}
             selected={bacterium}
             onChange={setBacterium}
           />
-
           {coverage.length >= 1 && (
             <div className="header-condition-chooser">
-              <ConditionSelect
+              <ConditionsSelect
                 id="select-condition-a"
                 label="Condition"
                 coverage={coverage}
@@ -125,7 +129,7 @@ function App() {
               />
               {coverage.length > 1 && <span>vs.</span>}
               {coverage.length > 1 && (
-                <ConditionSelect
+                <ConditionsSelect
                   id="select-condition-b"
                   label="Condition"
                   coverage={coverage}
@@ -140,14 +144,16 @@ function App() {
 
         <div className="header-buttons-container">
           <div className="header-buttons">
-            <div className="norm-type-select">
-              <label htmlFor="norm-type">Normalization Type: </label>
-              <NormTypeSelect
-                norms={norms}
-                normType={normType}
-                setNormType={setNormType}
-              />
-            </div>
+            <GenesLabelTypeSelect
+              geneLabelTypes={['name', 'locus_tag', 'old_locus_tag']}
+              geneLabelType={genesLabelType}
+              setGeneLabelType={setGenesLabelType}
+            />
+            <NormTypeSelect
+              norms={norms}
+              normType={normType}
+              setNormType={setNormType}
+            />
             <BooleanCheckbox
               label="Log2"
               checked={logScaling}
@@ -199,7 +205,7 @@ function GenomeSelector({
   );
 }
 
-function ConditionSelect({
+function ConditionsSelect({
   coverage,
   coverageConditionNames,
   value,
@@ -243,16 +249,10 @@ function ConditionSelect({
     let filename = filepath.substring(filepath.lastIndexOf('/') + 1);
     if (filename.endsWith('.average.bw')) {
       filename = `${filename.substring(0, filename.length - 11)} (average)`;
-    } else if (filename.endsWith('.average.cpm.bw')) {
-      filename = `${filename.substring(0, filename.length - 15)} (CPM average)`;
     } else if (filename.match(/\d+\.bw$/)) {
       const noBw = filename.substring(0, filename.length - 3);
       const replicateN = parseInt(noBw.substring(noBw.lastIndexOf('.') + 1));
       filename = `${noBw.substring(0, noBw.lastIndexOf('.'))} (replicate #${replicateN})`;
-    } else if (filename.match(/\d+\.cpm\.bw$/)) {
-      const noBw = filename.substring(0, filename.length - 7);
-      const replicateN = parseInt(noBw.substring(noBw.lastIndexOf('.') + 1));
-      filename = `${noBw.substring(0, noBw.lastIndexOf('.'))} (CPM replicate #${replicateN})`;
     }
     return `${filename}`;
   }
@@ -268,13 +268,49 @@ function NormTypeSelect({
   setNormType: (value: string) => void;
 }) {
   return (
-    <select value={normType} onChange={e => setNormType(e.target.value)}>
-      {norms.map((norm, index) => (
-        <option key={index} value={norm}>
-          {norm}
-        </option>
-      ))}
-    </select>
+    <div>
+      <label htmlFor="norm-type-select">Normalisation: </label>
+      <select
+        id="norm-type-select"
+        value={normType}
+        className="norm-type-select"
+        onChange={e => setNormType(e.target.value)}
+      >
+        {norms.map((norm, index) => (
+          <option key={index} value={norm}>
+            {norm}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function GenesLabelTypeSelect({
+  geneLabelTypes,
+  geneLabelType,
+  setGeneLabelType,
+}: {
+  geneLabelTypes: string[];
+  geneLabelType: string;
+  setGeneLabelType: (value: string) => void;
+}) {
+  return (
+    <div>
+      <label htmlFor="genes-label-type-select">Gene Labels:</label>
+      <select
+        id="genes-label-type-select"
+        value={geneLabelType}
+        className="genes-label-type-select"
+        onChange={e => setGeneLabelType(e.target.value)}
+      >
+        {geneLabelTypes.map((geneLabelType, index) => (
+          <option key={index} value={geneLabelType}>
+            {geneLabelType}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
 

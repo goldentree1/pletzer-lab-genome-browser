@@ -60,7 +60,8 @@ select {
   background-color: #155b8e;
   border-radius: 2rem;
   padding: 0.2rem;
-  width: 2rem;
+  width: 3rem;
+  margin-right: 0.1rem;
   display: block;
 }
 
@@ -140,6 +141,7 @@ select {
 .jbrowse-container > div {
   background-color: #e1e1e1 !important;
 }
+
 /**ridiculous hacks so jbrowse doesnt show it's logo and menu.
 we 'can' remove logo, but menu would be confusing and unnecessary.
 other option is to fork project, and i'm not quite that desperate yet. */
@@ -165,10 +167,10 @@ select {
 }
 
 select {
-  font-size: 0.89rem;
+  font-size: 1rem;
   display: flex;
   justify-content: space-between;
-  min-width: 300px;
+  min-width: 350px;
   align-items: center;
   color: white;
   padding-block: 5px;
@@ -263,11 +265,54 @@ select {
   padding-block: 2px;
   padding-inline: 1rem 1.5rem;
   font-weight: 500;
-  max-width: 240px;
-  min-width: 240px;
+  /*max-width: 200px;*/
+  min-width: 200px;
 }
 
+/** I actually really like look of this, but we'd need to make it work on all selects */
+/*.condition-select > optgroup {
+  padding-inline: 0.2rem;
+}*/
+
 .condition-select > optgroup:first-child {
+  padding-top: 0.37rem;
+}
+
+.norm-type-select {
+  font-size: 0.78rem;
+  color: #155b8e;
+  background: white
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
+    right 10px center / 18px no-repeat;
+  border: 1px solid gray; /* Changed border color to gray */
+  border-radius: 0.5rem; /* Less rounded border */
+  padding-block: 2px;
+  padding-inline: 0.9rem 1rem; /* Slightly less padding */
+  font-weight: 500;
+  max-width: 6rem;
+  min-width: 6rem;
+}
+
+.norm-type-select > optgroup:first-child {
+  padding-top: 0.37rem;
+}
+
+.genes-label-type-select {
+  font-size: 0.78rem;
+  color: #155b8e;
+  background: white
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
+    right 10px center / 18px no-repeat;
+  border: 1px solid gray; /* Changed border color to gray */
+  border-radius: 0.5rem; /* Less rounded border */
+  padding-block: 2px;
+  padding-inline: 1rem 1.3rem; /* Slightly less padding */
+  font-weight: 500;
+  max-width: 8.5rem;
+  min-width: 8.5rem;
+}
+
+.genes-label-type-select > optgroup:first-child {
   padding-top: 0.37rem;
 }
 

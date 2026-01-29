@@ -490,6 +490,7 @@ genome_data_processing_ritual(){
                 firstRegion: "$first_region",
                 trixName: "asm",
                 norms: ['cpm', 'none'],
+                genesLabelTypes: ['name', 'locus_tag', 'old_locus_tag'],
                 data: {
                     refSeq: "refseq.fasta.gz",
                     genomic: "genes.gff.sorted.noregion.gff.gz",

@@ -3,122 +3,113 @@ import type PluginManager from '@jbrowse/core/PluginManager';
 import { applyPatch } from 'mobx-state-tree';
 import { createViewState } from '@jbrowse/react-linear-genome-view2';
 import Plugin from '@jbrowse/core/Plugin';
+/**@ts-ignore */
+import TestPlugin from './plugin-test';
 
-/** My custom plugin for JBrowse (allows more customisation) */
+// /** My custom plugin for JBrowse (allows more customisation) */
+/**@ts-ignore */
+import { getSnapshot } from 'mobx-state-tree';
 export default class MyJbrowsePlugin extends Plugin {
   name = 'MyJbrowsePlugin';
-
+  /**@ts-ignore */
   install(pluginManager: PluginManager) {
-    console.log('[MyJbrowsePlugin] installed');
+    // Keep this just to see it fire
+    console.log('--- PLUGIN INSTALLING ---');
+  }
 
-    // example: remove track menu for GFF3 FeatureTracks
-    pluginManager.addToExtensionPoint('TrackMenuItems', (items, ctx) => {
-      const model = ctx?.model;
+  configure(pluginManager: PluginManager) {
+    console.log('--- PLUGIN CONFIGURING (System should be ready) ---');
 
-      if (
-        /** @ts-expect-error fk typescript */
-        model?.configuration?.trackType === 'FeatureTrack' &&
-        /** @ts-expect-error fk typescript */
-        model?.adapterConfig?.type === 'Gff3TabixAdapter'
-      ) {
-        return []; // meant to remove ... menu but doesnt work
-      }
+    const epNames = Object.keys(pluginManager);
 
-      pluginManager.addToExtensionPoint('FeatureMenuItems', (items, ctx) => {
-        /** @ts-expect-error fk typescript */
-        if (ctx?.track?.adapterConfig?.type === 'Gff3TabixAdapter') {
-          return [];
-        }
-        return items;
-      });
+    console.log('EPs available now:', epNames);
+    // console.log(JSON.stringify(pluginManager));
 
-      return items;
-    });
+    // Now try to add the menu item
+    // Usually 'TrackMenuItems' or 'LinearGenomeView-TrackMenu'
+    // const menuName = epNames.includes('LinearGenomeView-TrackMenu')
+    //   ? 'LinearGenomeView-TrackMenu'
+    //   : 'TrackMenuItems';
+
+    // if (epNames.length > 0) {
+    //   pluginManager.addToExtensionPoint(menuName, (items, ctx) => {
+    //     console.log('Menu hook finally fired!');
+    //     return [
+    //       /** @ts-expect-error */
+    //       ...items,
+    //       {
+    //         label: 'Force Locus Tags',
+    //         onClick: () => {
+    //           // Brute force patch
+    //           const target = ctx.track || ctx.model;
+    //           /** @ts-expect-error */
+    //           applyPatch(target.configuration.renderer, [
+    //             {
+    //               op: 'replace',
+    //               path: '/labels/name',
+    //               value: "jexl:get(feature, 'old_locus_tag')",
+    //             },
+    //           ]);
+    //         },
+    //       },
+    //     ];
+    //   });
+    // }
   }
 }
-
 /** JBrowse config with my custom styling + plugins */
-const jbrowseCustomisations: Omit<JBrowseConfig, 'assembly' | 'tracks'> = {
-  configuration: {
-    // custom styling
-    theme: {
-      palette: {
-        primary: {
-          main: '#155B8E',
+const staticJBrowseCustomisations: Omit<JBrowseConfig, 'assembly' | 'tracks'> =
+  {
+    configuration: {
+      // custom styling
+      theme: {
+        palette: {
+          primary: {
+            main: '#155B8E',
+          },
+          secondary: {
+            main: '#155B8E',
+          },
+          tertiary: {
+            main: '#e58703',
+          },
+          quaternary: {
+            main: '#22cb04',
+          },
         },
-        secondary: {
-          main: '#155B8E',
-        },
-        tertiary: {
-          main: '#e58703',
-        },
-        quaternary: {
-          main: '#22cb04',
+        typography: { fontSize: 12 },
+        spacing: 5,
+        logoPath: {
+          uri: '',
         },
       },
-      typography: { fontSize: 12 },
-      spacing: 5,
-      logoPath: {
-        uri: '',
+
+      // allow multi-threading (worker)
+      rpc: {
+        defaultDriver: 'WebWorkerRpcDriver',
       },
     },
 
     // allow multi-threading (worker)
-    rpc: {
-      defaultDriver: 'WebWorkerRpcDriver',
+    makeWorkerInstance: () => {
+      return new Worker(new URL('./rpcWorker', import.meta.url), {
+        type: 'module',
+      });
     },
-  },
 
-  // allow multi-threading (worker)
-  makeWorkerInstance: () => {
-    return new Worker(new URL('./rpcWorker', import.meta.url), {
-      type: 'module',
-    });
-  },
-
-  // add plugins
-  plugins: [MyJbrowsePlugin],
-};
+    // add plugins
+    plugins: [MyJbrowsePlugin],
+  };
 
 /** JBrowse's createViewState() ... but with my customisations */
 export function myCreateViewState(config: JBrowseConfig): ViewModel {
-  // overwrite conf with customisations
-  const newConf = {
+  const newConf: JBrowseConfig = {
     ...config,
-    ...jbrowseCustomisations,
+    ...staticJBrowseCustomisations,
+    plugins: [MyJbrowsePlugin],
   };
-
-  // track patches
-  for (const track of newConf.tracks || []) {
-    // add reverse/forward strand colouring to genes (GFF3 track)
-    if (
-      track.type === 'FeatureTrack' &&
-      track?.adapter?.type === 'Gff3TabixAdapter'
-    ) {
-      track.displays = [
-        {
-          type: 'LinearBasicDisplay',
-          displayId: 'GFF3GeneTrack-LinearBasicDisplay',
-          height: 130,
-          renderer: {
-            type: 'SvgFeatureRenderer',
-            color1: "jexl:get(feature,'strand')>0?'#00FF00':'#ff0000'",
-            color2: "jexl:get(feature,'strand')>0?'#029f02':'#af0101'",
-            height: 15,
-          },
-        },
-      ];
-    }
-  }
-
-  // edit default session settings
-  if (newConf.defaultSession?.view) {
-    newConf.defaultSession.view.trackLabels = 'overlapping';
-    newConf.defaultSession.view.colorByCDS = false;
-  }
-
   // build the views
-  const state = createViewState({ ...newConf });
+  const state = createViewState(newConf);
 
   const view = state.session.views[0];
   if (!view || !view.tracks) return state;
@@ -144,6 +135,7 @@ export function buildConfig(
     dataDir,
     trixName,
     norms,
+    genesLabelTypes,
     data: { refSeq, genomic, coverage },
     extras,
   }: JBrowseCustomConfig,
@@ -153,6 +145,7 @@ export function buildConfig(
     conditionA = [0, 0],
     conditionB = [1, 0],
     normType = 'none',
+    genesLabelType = 'name',
   } = {},
 ): JBrowseConfig {
   if (!trixName) trixName = ncbiName;
@@ -176,7 +169,7 @@ export function buildConfig(
       {
         type: 'FeatureTrack',
         trackId: 'genomic',
-        name: 'GFF3 Track',
+        name: 'Genes',
         assemblyNames: ['asm'],
         adapter: {
           type: 'Gff3TabixAdapter',
@@ -226,7 +219,7 @@ export function buildConfig(
         assemblyNames: ['asm'],
       },
     ],
-  } satisfies JBrowseConfig;
+  } satisfies JBrowseConfig; // satisfies so it knows it's not a proper volatile config yet
 
   // add multiwig coverage if at least 2 conditions exist
   if (coverage.length) {
@@ -259,7 +252,7 @@ export function buildConfig(
           type: 'MultiLinearWiggleDisplay',
           displayId: 'Coverage_multiwiggle-MultiLinearWiggleDisplay',
           renderer: { type: 'XYPlotRenderer' },
-          height: 300,
+          height: 340,
           scaleType: logScale ? 'log' : 'linear',
           autoscale: 'global',
         },
@@ -276,5 +269,45 @@ export function buildConfig(
     }
   }
 
-  return conf;
+  const finalConf = conf as JBrowseConfig; // as, so we can add new properties
+  // track patches
+  for (const track of finalConf.tracks || []) {
+    // add reverse/forward strand colouring to genes (GFF3 track)
+    console.log('requested-lbl', genesLabelType);
+    const finalLbl = genesLabelTypes?.includes(genesLabelType)
+      ? genesLabelType
+      : 'name';
+    console.log('finallbl', finalLbl);
+    if (
+      track.type === 'FeatureTrack' &&
+      track?.adapter?.type === 'Gff3TabixAdapter'
+    ) {
+      track.displays = [
+        {
+          type: 'LinearBasicDisplay',
+          displayId: 'GFF3GeneTrack-LinearBasicDisplay',
+          height: 175,
+          renderer: {
+            type: 'SvgFeatureRenderer',
+            color1: "jexl:get(feature,'strand')>0?'#00FF00':'#ff0000'",
+            color2: "jexl:get(feature,'strand')>0?'#029f02':'#af0101'",
+            height: 15,
+            labels: {
+              // main label
+              name: `jexl:get(feature, '${finalLbl}')`,
+              // description: "jexl:get(feature, 'old_locus_tag')", // secondary label (we may want?)
+            },
+          },
+        },
+      ];
+    }
+  }
+
+  // edit default session settings
+  if (finalConf.defaultSession?.view) {
+    finalConf.defaultSession.view.trackLabels = 'overlapping';
+    finalConf.defaultSession.view.colorByCDS = false;
+  }
+
+  return finalConf;
 }
