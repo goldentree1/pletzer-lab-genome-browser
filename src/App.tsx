@@ -9,6 +9,7 @@ import { useStoredStateBoolean, useStoredStateString } from './utils';
 // import Select from './components/Select';
 import { autorun } from 'mobx';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getLocString(linearView: any) {
   if (!linearView.displayedRegions.length) return;
   const region = linearView.displayedRegions[0];
@@ -145,7 +146,7 @@ function App() {
     );
 
     setViewState(state);
-  }, [bacterium, conditionA, conditionB, normType, genesLabelType]);
+  }, [bacterium, conditionA, conditionB, normType, genesLabelType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const coverage = viewState ? myConf[bacterium].data.coverage : [];
   const coverageConditionNames = viewState

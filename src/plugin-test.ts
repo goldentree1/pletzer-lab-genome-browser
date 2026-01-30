@@ -33,6 +33,7 @@ export default class TestPlugin extends Plugin {
     // Add a new function called 'linkout' to the plugin manager's Jexl engine
     pluginManager.jexl.addFunction(
       'linkout',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (dict: Record<string, string>, feature: { dbxref: any }) => {
         if (!feature.dbxref) {
           // If the feature has no dbxref, return an empty string

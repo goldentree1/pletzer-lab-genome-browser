@@ -1,39 +1,70 @@
-(IMPORTANT, aka what Daniel/Sam want):
+(20/01):
 X GET SEARCH WORKING AGAIN!
 X Search aliases via old_locus_tag
 X Script to rebuild based on pre-defined dir structure
 X "Use Binsizes of 10. CPM Normalization is good, it should be the default" - Sam.
 X Do BAM -> BW for S.Aureus (sam gave me more BAM files)
 X Wordpress available via WP File Manager
-
-UI fixes/touchups:
-- loc string... keep it same on condition changes / gene label changes / normalisation? Alternatively, could keep big
+X loc string... keep it same on condition changes / gene label changes / normalisation? Alternatively, could keep big
 map of all genomes and where the person was at
-- secondary label for anything else (default to note)
-- make steezy
+X secondary label for anything else (default to note). NO - fine as is.
 
-Bugfix:
- - build.sh:
-
-Ask Daniel:
-- whether he wants page or just to link to it
-ASK SAM:
-- S.aureus USA300 reads only have one chromosome, but there are 4 in reference sequence?
-- Multichromosome: is it issue they dont align with refseq? Could:
+(30/01):
+X S.aureus USA300 reads only have one chromosome, but there are 4 in reference sequence? THIS IS FINE
+X Multichromosome: is it issue they dont align with refseq? Could: NO THEY ARE FINE
     A. Do nothing. (when you search, it comes up with chromosomes)
     B. read .fai, save to json, show all?
-    C.
-- Do we want variants.vcf? Gene counts.faa? Easy to add.
-- Should gene labels be changeable? They are searchable by all tags now (old_locus,locus,name) + changeable
-- Secondary label for genes to show... do you want notes? Or scrap changeable and just do name/old_locus_tag combo?
+    C. Select thing at top?
+X Should gene labels be changeable? They are searchable by all tags now (old_locus,locus,name) + changeable. DONE
+X Secondary label for genes to show... do you want notes? Or scrap changeable and just do name/old_locus_tag combo? NO.
 
-(me):
-- Tests! Sam seems happy enough that it works after visually inspecting though. BUT
-    X test the scripts work by using VERY simple BAM files with a few coords only
-    - simple averaging check (2+3+1)/3 = 2, for example.
-    - CPM normalise (formula == value/(n_reads/1000000)) (because counts per million, so  value/1,000,000)
-    - formal test with Jest or something (check CPM normalize + simple average, though i have informally checked and its fine, PS CPM == counts per million == value/(n_reads/1000000))
-X do quick test in fresh VM to make sure easily-reproducible environment of packages (think they use ubuntu server or something in microbiology for bioinformatics stuff)
+TODO
+- EXPERIMENTS Select:: Genome -> experiment -> conditions. So nested dir. Change build.sh and change
+    (MAJOR: DO FIRST)
+    1. Add combobox for experiment.
+    2. Change build script to use <genome_name>/experiments/<experiment_name>/<condition_name>/*.bam
+    3.
 
-(minor):
-- Some UI thing to change chromosome?? (minor, sam can already search for them)
+- (Sam) info.txt as optional in build.sh (info.txt should be an 'info' button on top bar - and should show a popup with literally just whatever text was thrown in). should be a 'info' button, that gives text about the EXPERIMENT.
+    1. Change build script to detect experiments/<experiment_name>/'info.txt'
+    2. if infoFile: add 'infoFile' to generated config.json for that /experiments/<experiment_name>/
+    3. edit jbrowse-custom.ts to load them.
+    4. (i) <- that is an 'info' button. it should show the text for the current experiment (if info.txt file exists).
+
+- (Daniel/Sam) Deploy on Daniel site w/ navbar  + footer incl! Sam thinks this would be great.
+    (test locally via WP Local first, then do it on Daniel's site)
+    1. Setup new page on WordPress
+    2. Remove everything except for header/footer.
+    3. iframe my site into it
+    4. Adjust my site for iframe + Daniel's site.
+
+- (Sam minor) compare >= 3 conditions. Perhaps just a + button if > 3.
+    1. Just as is - except theres a check for >=3 conditions: if so, add a (+) button.
+    1.1 Or... there could just ALWAYS be + button??
+    2. idk how to do this... will be annoying... cuz currently we have conditionA and conditionB as separated vars.
+
+- (Sam minor) SHIFT-scrolling for left right scroll.
+    1. Ummm idk aye, this might actually be quite hard.
+    2. Actually, theres probably some way to move JBrowse left/right.
+        So when:
+         - shift clicked
+         - mouse inside JBrowse window,
+         -
+
+- Variants as optional in build.sh
+    1. Change build script to detect 'variants.vcf'
+    2. vcf-rm-empty-metadata-for-jbrowse < variants.vcf > variants.jbrowse-compat.vcf
+    3. if vcfFile: add 'vcfFile' to generated config.json, and edit jbrowse-custom.ts to load them.
+
+- (minor) build.sh improvements - make it pick up whether old_locus_tag and locus_tag EXIST before adding options
+
+- (minor) build.sh improvements - BAMCOV_NORMALISATIONS = "cpm,none" should actually do stuff...
+
+- (minor) make steezier:
+    1. hovering normalisation OR gene labels should give 'title' popup (perhaps indicating eg in case of normalisation, that eg CPM = Counts Per Million)
+
+- (minor) more basic tests + fix build test (eg CPM test, mean test)
+
+- (very minor) GTF files accepted as well as GFF.
+
+- (very minor) accept FASTA, FA, FNA, FAA extensions for refseq.fasta

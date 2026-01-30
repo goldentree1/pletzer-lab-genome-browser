@@ -1,62 +1,62 @@
 import type { JBrowseCustomConfig, JBrowseConfig, ViewModel } from './types';
-import type PluginManager from '@jbrowse/core/PluginManager';
+// import type PluginManager from '@jbrowse/core/PluginManager';
 import { applyPatch } from 'mobx-state-tree';
 import { createViewState } from '@jbrowse/react-linear-genome-view2';
-import Plugin from '@jbrowse/core/Plugin';
-/**@ts-ignore */
-import TestPlugin from './plugin-test';
+// import Plugin from '@jbrowse/core/Plugin';
+// /**@ts-expect-error tssucks */
+// import TestPlugin from './plugin-test';
 
-// /** My custom plugin for JBrowse (allows more customisation) */
-/**@ts-ignore */
-import { getSnapshot } from 'mobx-state-tree';
-export default class MyJbrowsePlugin extends Plugin {
-  name = 'MyJbrowsePlugin';
-  /**@ts-ignore */
-  install(pluginManager: PluginManager) {
-    // Keep this just to see it fire
-    console.log('--- PLUGIN INSTALLING ---');
-  }
+// // /** My custom plugin for JBrowse (allows more customisation) */
+// /**@ts-expect-error tssucks */
+// import { getSnapshot } from 'mobx-state-tree';
+// export default class MyJbrowsePlugin extends Plugin {
+//   name = 'MyJbrowsePlugin';
+//   /**@ts-expect-error tssucks */
+//   install(pluginManager: PluginManager) {
+//     // Keep this just to see it fire
+//     console.log('--- PLUGIN INSTALLING ---');
+//   }
 
-  configure(pluginManager: PluginManager) {
-    console.log('--- PLUGIN CONFIGURING (System should be ready) ---');
+//   configure(pluginManager: PluginManager) {
+//     console.log('--- PLUGIN CONFIGURING (System should be ready) ---');
 
-    const epNames = Object.keys(pluginManager);
+//     const epNames = Object.keys(pluginManager);
 
-    console.log('EPs available now:', epNames);
-    // console.log(JSON.stringify(pluginManager));
+//     console.log('EPs available now:', epNames);
+//     // console.log(JSON.stringify(pluginManager));
 
-    // Now try to add the menu item
-    // Usually 'TrackMenuItems' or 'LinearGenomeView-TrackMenu'
-    // const menuName = epNames.includes('LinearGenomeView-TrackMenu')
-    //   ? 'LinearGenomeView-TrackMenu'
-    //   : 'TrackMenuItems';
+//     // Now try to add the menu item
+//     // Usually 'TrackMenuItems' or 'LinearGenomeView-TrackMenu'
+//     // const menuName = epNames.includes('LinearGenomeView-TrackMenu')
+//     //   ? 'LinearGenomeView-TrackMenu'
+//     //   : 'TrackMenuItems';
 
-    // if (epNames.length > 0) {
-    //   pluginManager.addToExtensionPoint(menuName, (items, ctx) => {
-    //     console.log('Menu hook finally fired!');
-    //     return [
-    //       /** @ts-expect-error */
-    //       ...items,
-    //       {
-    //         label: 'Force Locus Tags',
-    //         onClick: () => {
-    //           // Brute force patch
-    //           const target = ctx.track || ctx.model;
-    //           /** @ts-expect-error */
-    //           applyPatch(target.configuration.renderer, [
-    //             {
-    //               op: 'replace',
-    //               path: '/labels/name',
-    //               value: "jexl:get(feature, 'old_locus_tag')",
-    //             },
-    //           ]);
-    //         },
-    //       },
-    //     ];
-    //   });
-    // }
-  }
-}
+//     // if (epNames.length > 0) {
+//     //   pluginManager.addToExtensionPoint(menuName, (items, ctx) => {
+//     //     console.log('Menu hook finally fired!');
+//     //     return [
+//     //       /** @ts-expect-error */
+//     //       ...items,
+//     //       {
+//     //         label: 'Force Locus Tags',
+//     //         onClick: () => {
+//     //           // Brute force patch
+//     //           const target = ctx.track || ctx.model;
+//     //           /** @ts-expect-error */
+//     //           applyPatch(target.configuration.renderer, [
+//     //             {
+//     //               op: 'replace',
+//     //               path: '/labels/name',
+//     //               value: "jexl:get(feature, 'old_locus_tag')",
+//     //             },
+//     //           ]);
+//     //         },
+//     //       },
+//     //     ];
+//     //   });
+//     // }
+//   }
+// }
 /** JBrowse config with my custom styling + plugins */
 const staticJBrowseCustomisations: Omit<JBrowseConfig, 'assembly' | 'tracks'> =
   {
@@ -98,7 +98,7 @@ const staticJBrowseCustomisations: Omit<JBrowseConfig, 'assembly' | 'tracks'> =
     },
 
     // add plugins
-    plugins: [MyJbrowsePlugin],
+    // plugins: [MyJbrowsePlugin],
   };
 
 /** JBrowse's createViewState() ... but with my customisations */
@@ -106,7 +106,6 @@ export function myCreateViewState(config: JBrowseConfig): ViewModel {
   const newConf: JBrowseConfig = {
     ...config,
     ...staticJBrowseCustomisations,
-    plugins: [MyJbrowsePlugin],
   };
   // build the views
   const state = createViewState(newConf);

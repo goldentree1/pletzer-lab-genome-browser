@@ -146,6 +146,7 @@ main() {
         genome_dir="${genome_dir%/}"  # remove trailing slash
         refseq_file="$genome_dir/refseq.fasta"
         genes_file="$genome_dir/genes.gff"
+        variants_file="$genome_dir/variants.vcf"
         reads_dir="$genome_dir/reads"
 
         [ -d "$genome_dir" ] || continue # ignore non-directories
@@ -153,7 +154,7 @@ main() {
         printf " --- \033[0;34m$(basename "$genome_dir")\033[0m --- \n"
 
         # Create all necessary files for JBrowse
-        genome_data_processing_ritual "$refseq_file" "$genes_file" "$genome_dir" "$N_THREADS" "$BIN_SIZE" "$REBUILD_BIGWIGS" "$SKIP_PROCESSED_BAMS"
+        genome_data_processing_ritual "$refseq_file" "$genes_file" "$variants_file" "$genome_dir" "$N_THREADS" "$BIN_SIZE" "$REBUILD_BIGWIGS" "$SKIP_PROCESSED_BAMS"
     done
     # TODO make this function and catch Javascript errors and throw if so?
 
@@ -189,9 +190,10 @@ main() {
         fi
     fi
 
+    # Run build: discard stdout, capture stderr
     echo "Building website to 'dist' (this may take a couple of minutes)... "
     set +e # unset throw on err so we can print build issues
-    BUILD_LOGS=$(npm run build 1>/dev/null)
+    BUILD_LOGS=$(npm run build)
     EXIT_CODE=$?
     set -e
     if [ $EXIT_CODE -ne 0 ]; then
@@ -364,6 +366,7 @@ genome_error_check_routine(){
 genome_data_processing_ritual(){
     local refseq_file="$1"
     local genes_file="$2"
+    local variants_file="$3"
     local genome_dir="$3"
     local n_threads="$4"
     local bin_size="$5"
@@ -372,7 +375,7 @@ genome_data_processing_ritual(){
 
     # Gzip, index and make chrom.sizes a FASTA reference sequence for JBrowse
     jbrowse_prepare_fasta(){
-        local FASTA_FILE=$1
+        local FASTA_FILE="$1"
         bgzip -fk "$FASTA_FILE"
         samtools faidx "$FASTA_FILE.gz"
         cut -f1,2 < "$FASTA_FILE.gz.fai" > "$FASTA_FILE.chrom.sizes"
@@ -380,7 +383,7 @@ genome_data_processing_ritual(){
 
     # Converts/fixes GFF format and creates indexes for JBrowse
     jbrowse_prepare_gff(){
-        local GFF_FILE=$1
+        local GFF_FILE="$1"
 
         # Use AGAT to sort and standardise the GFF/GTF file into standard GFF3 format
         agat config --expose --tabix > /dev/null # Make sure there's a config
@@ -404,6 +407,7 @@ genome_data_processing_ritual(){
 
     # jbrowse_prepare_vcf(){
     #     local VCF_FILE="$1"
+
     #     if [[ -f "$VCF_FILE" ]]; then
     #         scripts/vcf-rm-empty-metadata-for-jbrowse.py < "$VCF_FILE" > "$VCF_FILE.jbrowse-compat.vcf"
     #     fi
