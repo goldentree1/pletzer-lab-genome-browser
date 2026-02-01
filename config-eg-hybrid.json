@@ -1,0 +1,99 @@
+{
+  "GCF_000006765.1 (P.aeruginosa PA01)": {
+    "genomeName": "GCF_000006765.1 (P.aeruginosa PA01)",
+    "firstRegion": "NC_002516.2",
+    "trixName": "asm",
+    "data": {
+      "refSeq": "refseq.fasta.gz",
+      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "experiments": {
+        "relA": [
+          [
+            "reads/relA_In/relA_In.average.bw",
+            "reads/relA_In/relA_In.1.bw",
+            "reads/relA_In/relA_In.2.bw"
+          ],
+          [
+            "reads/relA_Un/relA_Un.average.bw",
+            "reads/relA_Un/relA_Un.1.bw",
+            "reads/relA_Un/relA_Un.2.bw"
+          ]
+        ]
+      }
+    },
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
+    "extras": []
+  },
+  "GCF_000013465.1 (S.aureus USA300LAC)": {
+    "genomeName": "GCF_000013465.1 (S.aureus USA300LAC)",
+    "firstRegion": "NC_007793.1",
+    "trixName": "asm",
+    "data": {
+      "refSeq": "refseq.fasta.gz",
+      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "experiments": {
+        "BF_SA": [
+          [
+            "reads/BF_SA_BF/BF_SA_BF.average.bw",
+            "reads/BF_SA_BF/BF_SA_BF.1.bw",
+            "reads/BF_SA_BF/BF_SA_BF.2.bw",
+            "reads/BF_SA_BF/BF_SA_BF.3.bw"
+          ],
+          [
+            "reads/BF_SA_UT/BF_SA_UT.average.bw",
+            "reads/BF_SA_UT/BF_SA_UT.1.bw",
+            "reads/BF_SA_UT/BF_SA_UT.2.bw",
+            "reads/BF_SA_UT/BF_SA_UT.3.bw"
+          ]
+        ]
+      }
+    },
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
+    "extras": []
+  },
+  "GCF_000014625 (P.aeruginosa PA14)": {
+    "genomeName": "GCF_000014625 (P.aeruginosa PA14)",
+    "firstRegion": "NC_008463.1",
+    "trixName": "asm",
+    "data": {
+      "refSeq": "refseq.fasta.gz",
+      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "experiments": {
+        "PA14": [
+          [
+            "reads/PA14_I/PA14_I.average.bw",
+            "reads/PA14_I/PA14_I.1.bw",
+            "reads/PA14_I/PA14_I.2.bw",
+            "reads/PA14_I/PA14_I.3.bw"
+          ],
+          [
+            "reads/PA14_Un/PA14_Un.average.bw",
+            "reads/PA14_Un/PA14_Un.1.bw",
+            "reads/PA14_Un/PA14_Un.2.bw",
+            "reads/PA14_Un/PA14_Un.3.bw"
+          ]
+        ]
+      }
+    },
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
+    "extras": []
+  },
+  "GCF_000026645.1 (P.aeruginosa LESB58)": {
+    "genomeName": "GCF_000026645.1 (P.aeruginosa LESB58)",
+    "firstRegion": "NC_011770.1",
+    "trixName": "asm",
+    "data": {
+      "refSeq": "refseq.fasta.gz",
+      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "experiments": {
+        "s1": [["reads/s1/Pa_BF_s1.1.bw"]]
+      }
+    },
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
+    "extras": []
+  }
+}

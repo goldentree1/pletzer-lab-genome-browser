@@ -21,15 +21,8 @@
         }
       }
     },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
     "extras": []
   },
   "GCF_000013465.1 (S.aureus USA300LAC)": {
@@ -56,15 +49,8 @@
         }
       }
     },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
     "extras": []
   },
   "GCF_000014625 (P.aeruginosa PA14)": {
@@ -91,15 +77,8 @@
         }
       }
     },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
     "extras": []
   },
   "GCF_000026645.1 (P.aeruginosa LESB58)": {
@@ -111,24 +90,13 @@
       "genomic": "genes.gff.sorted.noregion.gff.gz",
       "experiments": {
         "s1": {
-          "COND1": [
-            "experiments/s1/COND1/Pa_BF_s1.1.bw"
-          ],
-          "COND2-SPOOFED": [
-            "experiments/s1/COND2-SPOOFED/Pa_BF_s1.1.bw"
-          ]
+          "COND1": ["experiments/s1/COND1/Pa_BF_s1.1.bw"],
+          "COND2-SPOOFED": ["experiments/s1/COND2-SPOOFED/Pa_BF_s1.1.bw"]
         }
       }
     },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
     "extras": []
   }
 }
