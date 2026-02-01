@@ -7,18 +7,21 @@
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff.gz",
       "experiments": {
-        "relA": [
-          [
-            "reads/relA_In/relA_In.average.bw",
-            "reads/relA_In/relA_In.1.bw",
-            "reads/relA_In/relA_In.2.bw"
+        "relA": {
+          "coverage": [
+            [
+              "experiments/relA/relA_In/relA_In.average.bw",
+              "experiments/relA/relA_In/relA_In.1.bw",
+              "experiments/relA/relA_In/relA_In.2.bw"
+            ],
+            [
+              "experiments/relA/relA_Un/relA_Un.average.bw",
+              "experiments/relA/relA_Un/relA_Un.1.bw",
+              "experiments/relA/relA_Un/relA_Un.2.bw"
+            ]
           ],
-          [
-            "reads/relA_Un/relA_Un.average.bw",
-            "reads/relA_Un/relA_Un.1.bw",
-            "reads/relA_Un/relA_Un.2.bw"
-          ]
-        ]
+          "coverage_condition_names": ["relA_In", "relA_Un"]
+        }
       }
     },
     "norms": ["cpm", "none"],
@@ -33,20 +36,23 @@
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff.gz",
       "experiments": {
-        "BF_SA": [
-          [
-            "reads/BF_SA_BF/BF_SA_BF.average.bw",
-            "reads/BF_SA_BF/BF_SA_BF.1.bw",
-            "reads/BF_SA_BF/BF_SA_BF.2.bw",
-            "reads/BF_SA_BF/BF_SA_BF.3.bw"
+        "BF_SA": {
+          "coverage": [
+            [
+              "experiments/BF_SA/BF_SA_BF/BF_SA_BF.average.bw",
+              "experiments/BF_SA/BF_SA_BF/BF_SA_BF.1.bw",
+              "experiments/BF_SA/BF_SA_BF/BF_SA_BF.2.bw",
+              "experiments/BF_SA/BF_SA_BF/BF_SA_BF.3.bw"
+            ],
+            [
+              "experiments/BF_SA/BF_SA_UT/BF_SA_UT.average.bw",
+              "experiments/BF_SA/BF_SA_UT/BF_SA_UT.1.bw",
+              "experiments/BF_SA/BF_SA_UT/BF_SA_UT.2.bw",
+              "experiments/BF_SA/BF_SA_UT/BF_SA_UT.3.bw"
+            ]
           ],
-          [
-            "reads/BF_SA_UT/BF_SA_UT.average.bw",
-            "reads/BF_SA_UT/BF_SA_UT.1.bw",
-            "reads/BF_SA_UT/BF_SA_UT.2.bw",
-            "reads/BF_SA_UT/BF_SA_UT.3.bw"
-          ]
-        ]
+          "coverage_condition_names": ["BF_SA_BF", "BF_SA_UT"]
+        }
       }
     },
     "norms": ["cpm", "none"],
@@ -61,20 +67,23 @@
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff.gz",
       "experiments": {
-        "PA14": [
-          [
-            "reads/PA14_I/PA14_I.average.bw",
-            "reads/PA14_I/PA14_I.1.bw",
-            "reads/PA14_I/PA14_I.2.bw",
-            "reads/PA14_I/PA14_I.3.bw"
+        "PA14": {
+          "coverage": [
+            [
+              "experiments/PA14/PA14_I/PA14_I.average.bw",
+              "experiments/PA14/PA14_I/PA14_I.1.bw",
+              "experiments/PA14/PA14_I/PA14_I.2.bw",
+              "experiments/PA14/PA14_I/PA14_I.3.bw"
+            ],
+            [
+              "experiments/PA14/PA14_Un/PA14_Un.average.bw",
+              "experiments/PA14/PA14_Un/PA14_Un.1.bw",
+              "experiments/PA14/PA14_Un/PA14_Un.2.bw",
+              "experiments/PA14/PA14_Un/PA14_Un.3.bw"
+            ]
           ],
-          [
-            "reads/PA14_Un/PA14_Un.average.bw",
-            "reads/PA14_Un/PA14_Un.1.bw",
-            "reads/PA14_Un/PA14_Un.2.bw",
-            "reads/PA14_Un/PA14_Un.3.bw"
-          ]
-        ]
+          "coverage_condition_names": ["PA14_I", "PA14_Un"]
+        }
       }
     },
     "norms": ["cpm", "none"],
@@ -89,7 +98,10 @@
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff.gz",
       "experiments": {
-        "s1": [["reads/s1/Pa_BF_s1.1.bw"]]
+        "s1": {
+          "coverage": [["experiments/s1/COND1/Pa_BF_s1.1.bw"]],
+          "coverage_condition_names": ["s1"]
+        }
       }
     },
     "norms": ["cpm", "none"],

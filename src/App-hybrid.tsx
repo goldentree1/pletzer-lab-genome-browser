@@ -187,7 +187,7 @@ function App() {
             selected={genome}
             onChange={setGenome}
           />
-          {experiments.length >= 1 && (
+          {experiments.length > 1 && (
             <select
               className="experiment-select"
               value={experiment}

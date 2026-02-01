@@ -21,3 +21,25 @@ export interface JBrowseCustomConfig {
   };
   extras?: JBrowseConfig['tracks'];
 }
+
+/** My personal config - much, much smaller.
+ * Used for building full config for JBrowse */
+export interface JBrowseCustomConfigHybrid {
+  genomeName: string; // e.g., 'GCF_000014625'
+  dataDir?: string; // default '/data/$ncbiName/'
+  trixName?: string; // defaults to $ncbiName
+  firstRegion: string; // e.g., 'NC_008463.1'
+  norms: string[]; //e.g., ['cpm', 'none', 'rpkm']
+  genesLabelTypes?: string[];
+  data: {
+    refSeq?: string; // default 'REFSEQ.faa.gz'
+    genomic: string; // default 'GENOME.gff'
+    experiments: {
+      [name: string]: {
+        coverage: string[][];
+        coverage_condition_names: string[];
+      };
+    };
+  };
+  extras?: JBrowseConfig['tracks'];
+}
