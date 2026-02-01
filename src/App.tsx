@@ -30,10 +30,10 @@ function getLocString(linearView: any) {
 }
 
 function App() {
-  const bacteria: string[] = Object.keys(myConf).sort();
-  const [bacterium, setBacterium] = useStoredStateString(
-    'pletzer-lab-genome-browser:bacterium',
-    bacteria[0],
+  const genomes: string[] = Object.keys(myConf).sort();
+  const [genome, setGenome] = useStoredStateString(
+    'pletzer-lab-genome-browser:genome',
+    genomes[0],
   );
 
   const [viewState, setViewState] = useState<ViewModel>();
@@ -100,14 +100,14 @@ function App() {
     return () => dispose();
   }, [viewState]);
 
-  // revert default conditions + loc on bacterium change
+  // revert default conditions + loc on genome change
   useEffect(() => {
     setConditionA([0, 0]);
     setConditionB([1, 0]);
     loc.current = null;
-  }, [bacterium]);
+  }, [genome]);
 
-  // full-refresh jbrowse required for bacterium or conditions changes
+  // full-refresh jbrowse required for genome or conditions changes
   useEffect(() => {
     const newLoc = [0, 5000];
     if (loc.current) {
@@ -120,9 +120,9 @@ function App() {
       loc.current = null;
     }
 
-    const config = myConf[bacterium];
+    const config = myConf[genome];
     if (!config) {
-      setBacterium(bacteria[0]);
+      setGenome(genomes[0]);
       return;
     }
 
@@ -146,11 +146,11 @@ function App() {
     );
 
     setViewState(state);
-  }, [bacterium, conditionA, conditionB, normType, genesLabelType]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [genome, conditionA, conditionB, normType, genesLabelType]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const coverage = viewState ? myConf[bacterium].data.coverage : [];
+  const coverage = viewState ? myConf[genome].data.coverage : [];
   const coverageConditionNames = viewState
-    ? myConf[bacterium].data.coverage_condition_names
+    ? myConf[genome].data.coverage_condition_names
     : [];
 
   return (
@@ -162,9 +162,9 @@ function App() {
             {/*<h1>Pletzer Lab Genome Browser</h1>*/}
           </div>
           <GenomeSelector
-            bacteria={bacteria}
-            selected={bacterium}
-            onChange={setBacterium}
+            genomes={genomes}
+            selected={genome}
+            onChange={setGenome}
           />
           {coverage.length >= 1 && (
             <div className="header-condition-chooser">
@@ -235,17 +235,17 @@ function App() {
 export default App;
 
 function GenomeSelector({
-  bacteria,
+  genomes,
   selected,
   onChange,
 }: {
-  bacteria: string[];
+  genomes: string[];
   selected: string;
   onChange: (b: string) => void;
 }) {
   return (
     <select value={selected} onChange={e => onChange(e.target.value)}>
-      {bacteria.map(b => (
+      {genomes.map(b => (
         <option key={b} value={b}>
           {b}
         </option>
