@@ -46,7 +46,8 @@ select {
     0 4px 6px -2px rgb(0 0 0 / 0.125);
   color: #155b8e;
 
-  /*overflow-x: auto;*/
+  overflow-x: auto;
+  margin-bottom: 0.2rem;
 }
 
 .header-title {
@@ -63,6 +64,7 @@ select {
   padding: 0.2rem;
   width: 3.5rem;
   /*margin-right: 0.1rem;*/
+  /*margin-block: 0.3rem;*/
   display: block;
 }
 
