@@ -31,6 +31,10 @@ select {
   min-width: 100px;
 }
 
+svg {
+  display: block;
+}
+
 /** ===== Header / navigation ===== */
 
 .header {
@@ -109,6 +113,37 @@ select {
   display: inline;
 }
 
+.extra-condition-button {
+  display: block;
+  border-radius: 100%;
+  padding: 0.2rem;
+  /*border: 1px solid gray;*/
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.extra-condition-button > svg {
+  color: #696969;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.extra-condition-button > svg:hover {
+  transform: scale(1.05);
+}
+
+.remove-condition-button > svg:hover {
+  color: red;
+  transform: scale(1.05);
+}
+
+.add-condition-button > svg:hover {
+  color: limegreen;
+  transform: scale(1.08);
+}
+
 .header-buttons-container {
   display: flex;
   align-items: center;
@@ -123,7 +158,7 @@ select {
 .header-buttons {
   display: flex;
   flex-direction: row;
-  gap: 0.6rem;
+  gap: 0.4rem;
   align-items: center;
   flex-shrink: 0;
   white-space: nowrap;
@@ -136,7 +171,7 @@ select {
 
 .header-buttons .checkbox {
   display: flex;
-  gap: 0.2rem;
+  gap: 0.15rem;
   justify-content: center;
   align-items: center;
 }

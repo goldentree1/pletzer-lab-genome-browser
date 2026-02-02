@@ -70,11 +70,20 @@ function App() {
     if (!conditionG) return setConditionG([6, 0]);
   };
 
+  const removeCondition = () => {
+    if (conditionG) return setConditionG(null);
+    if (conditionF) return setConditionF(null);
+    if (conditionE) return setConditionE(null);
+    if (conditionD) return setConditionD(null);
+    if (conditionC) return setConditionC(null);
+  };
+
   const experiments = Object.keys(myConf[genome].data.experiments);
 
   const experiment = experiments.includes(preferredExperiment)
     ? preferredExperiment
     : experiments[0];
+
   const activeExperiment =
     experiment && experiments.includes(experiment)
       ? experiment
@@ -129,6 +138,12 @@ function App() {
   useEffect(() => {
     setConditionA([0, 0]);
     setConditionB([1, 0]);
+
+    setConditionC(null);
+    setConditionD(null);
+    setConditionE(null);
+    setConditionF(null);
+    setConditionG(null);
     loc.current = null;
 
     // const exps = Object.keys(myConf[genome].data.experiments);
@@ -136,34 +151,62 @@ function App() {
   }, [genome]);
 
   // full-refresh jbrowse required for genome or conditions changes
-  useEffect(() => {
-    const newLoc = [0, 5000];
-    if (loc.current) {
-      const [newStartLoc, newEndLoc] = loc.current
-        .split(':')[1]
-        .split('..')
-        .map(Number);
-      newLoc[0] = newStartLoc;
-      newLoc[1] = newEndLoc;
-      loc.current = null;
-    }
+  useEffect(
+    () => {
+      const newLoc = [0, 5000];
+      if (loc.current) {
+        const [newStartLoc, newEndLoc] = loc.current
+          .split(':')[1]
+          .split('..')
+          .map(Number);
+        newLoc[0] = newStartLoc;
+        newLoc[1] = newEndLoc;
+        loc.current = null;
+      }
 
-    const config = myConf[genome];
-    if (!config) {
-      setGenome(genomes[0]);
-      return;
-    }
+      const config = myConf[genome];
+      if (!config) {
+        setGenome(genomes[0]);
+        return;
+      }
 
-    setNorms(config.norms);
+      setNorms(config.norms);
 
-    if (!config.norms.includes(normType)) {
-      setNormType(config.norms[0]);
-      return;
-    }
+      if (!config.norms.includes(normType)) {
+        setNormType(config.norms[0]);
+        return;
+      }
 
-    // console.log('using loc:', newLoc);
+      // console.log('using loc:', newLoc);
 
-    const allConditions = [
+      const allConditions = [
+        conditionA,
+        conditionB,
+        conditionC,
+        conditionD,
+        conditionE,
+        conditionF,
+        conditionG,
+      ].filter(Boolean) as [number, number][];
+
+      const state = myCreateViewState(
+        buildConfig(config, {
+          experiment,
+          conditionA,
+          conditionB,
+          extraConditions: allConditions.slice(2),
+          loc: newLoc,
+          normType,
+          genesLabelType,
+        }),
+      );
+
+      setViewState(state);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      genome,
+      experiment,
       conditionA,
       conditionB,
       conditionC,
@@ -171,22 +214,10 @@ function App() {
       conditionE,
       conditionF,
       conditionG,
-    ].filter(Boolean) as [number, number][];
-
-    const state = myCreateViewState(
-      buildConfig(config, {
-        experiment,
-        conditionA,
-        conditionB,
-        extraConditions: allConditions.slice(2),
-        loc: newLoc,
-        normType,
-        genesLabelType,
-      }),
-    );
-
-    setViewState(state);
-  }, [genome, experiment, conditionA, conditionB, normType, genesLabelType]); // eslint-disable-line react-hooks/exhaustive-deps
+      normType,
+      genesLabelType,
+    ],
+  );
 
   return (
     <>
@@ -242,28 +273,86 @@ function App() {
                 {extraConditions.map(
                   ([cond, setCond], i) =>
                     cond && (
-                      <ConditionsSelect
-                        key={i}
-                        id={`select-condition-${String.fromCharCode(99 + i)}`}
-                        className="pill-select"
-                        label="Condition"
-                        coverage={coverage}
-                        coverageConditionNames={coverageConditionNames}
-                        value={cond}
-                        onChange={setCond}
-                      />
+                      <>
+                        <span>vs.</span>
+                        <ConditionsSelect
+                          key={i}
+                          id={`select-condition-${i}}`}
+                          className="pill-select"
+                          label="Condition"
+                          coverage={coverage}
+                          coverageConditionNames={coverageConditionNames}
+                          value={cond}
+                          onChange={setCond}
+                        />
+                      </>
                     ),
                 )}
 
-                {coverage.length > 2 && (
+                {extraConditions.filter(([cond]) => Boolean(cond)).length >
+                  0 && (
                   <button
-                    className="pill-button add-condition"
-                    onClick={addCondition}
-                    title="Add condition"
+                    className="extra-condition-button remove-condition-button"
+                    onClick={removeCondition}
+                    title="Remove condition"
                   >
-                    +
+                    <svg
+                      version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlnsXlink="http://www.w3.org/1999/xlink"
+                      x="0px"
+                      y="0px"
+                      width="0.75rem"
+                      height="0.75rem"
+                      fill="currentColor"
+                      viewBox="0 0 121.31 122.876"
+                      enable-background="new 0 0 121.31 122.876"
+                      xmlSpace="preserve"
+                    >
+                      <g>
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M90.914,5.296c6.927-7.034,18.188-7.065,25.154-0.068 c6.961,6.995,6.991,18.369,0.068,25.397L85.743,61.452l30.425,30.855c6.866,6.978,6.773,18.28-0.208,25.247 c-6.983,6.964-18.21,6.946-25.074-0.031L60.669,86.881L30.395,117.58c-6.927,7.034-18.188,7.065-25.154,0.068 c-6.961-6.995-6.992-18.369-0.068-25.397l30.393-30.827L5.142,30.568c-6.867-6.978-6.773-18.28,0.208-25.247 c6.983-6.963,18.21-6.946,25.074,0.031l30.217,30.643L90.914,5.296L90.914,5.296z"
+                        />
+                      </g>
+                    </svg>
+                    {/*X*/}
                   </button>
                 )}
+                {
+                  <>
+                    <button
+                      className="extra-condition-button add-condition-button"
+                      onClick={addCondition}
+                      title="Show another condition"
+                    >
+                      <svg
+                        version="1.1"
+                        id="Layer_1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlnsXlink="http://www.w3.org/1999/xlink"
+                        x="0px"
+                        y="0px"
+                        width="0.82rem"
+                        height="0.82rem"
+                        fill="currentColor"
+                        viewBox="0 0 122.875 122.648"
+                        enable-background="new 0 0 122.875 122.648"
+                        xmlSpace="preserve"
+                      >
+                        <g>
+                          <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M108.993,47.079c7.683-0.059,13.898,6.12,13.882,13.805 c-0.018,7.683-6.26,13.959-13.942,14.019L75.24,75.138l-0.235,33.73c-0.063,7.619-6.338,13.789-14.014,13.78 c-7.678-0.01-13.848-6.197-13.785-13.818l0.233-33.497l-33.558,0.235C6.2,75.628-0.016,69.448,0,61.764 c0.018-7.683,6.261-13.959,13.943-14.018l33.692-0.236l0.236-33.73C47.935,6.161,54.209-0.009,61.885,0 c7.678,0.009,13.848,6.197,13.784,13.818l-0.233,33.497L108.993,47.079L108.993,47.079z"
+                          />
+                        </g>
+                      </svg>
+                    </button>
+                  </>
+                }
               </div>
               // </div>
             )}

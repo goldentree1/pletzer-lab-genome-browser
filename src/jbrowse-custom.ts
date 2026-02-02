@@ -203,21 +203,15 @@ export function buildConfig(
       adapter: {
         type: 'MultiWiggleAdapter',
         /** @ts-expect-error works at runtime */
-        bigWigs: [
-          coverage[conditionA[0]]?.[conditionA[1]],
-          coverage.length >= 2
-            ? coverage[conditionB[0]]?.[conditionB[1]]
-            : null,
-        ]
-          .filter(Boolean)
-          .map(fname => {
-            const fpath = `${dataDir}/${fname}`;
-            if (normType.toLowerCase() === 'cpm' && norms.includes('cpm')) {
-              return `${fpath.substring(0, fpath.length - 3)}.cpm.bw`;
-            }
-            return fpath;
-          }),
+        bigWigs: all.map(fname => {
+          const fpath = `${dataDir}/${fname}`;
+          if (normType.toLowerCase() === 'cpm' && norms.includes('cpm')) {
+            return `${fpath.substring(0, fpath.length - 3)}.cpm.bw`;
+          }
+          return fpath;
+        }),
       },
+
       displays: [
         {
           type: 'MultiLinearWiggleDisplay',
