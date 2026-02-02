@@ -1,62 +1,12 @@
-import type { JBrowseCustomConfig, JBrowseConfig, ViewModel } from './types';
+import type {
+  JBrowseConfig,
+  ViewModel,
+  JBrowseCustomConfigHybrid,
+} from './types';
 // import type PluginManager from '@jbrowse/core/PluginManager';
 import { applyPatch } from 'mobx-state-tree';
 import { createViewState } from '@jbrowse/react-linear-genome-view2';
-// import Plugin from '@jbrowse/core/Plugin';
-// /**@ts-expect-error tssucks */
-// import TestPlugin from './plugin-test';
 
-// // /** My custom plugin for JBrowse (allows more customisation) */
-// /**@ts-expect-error tssucks */
-// import { getSnapshot } from 'mobx-state-tree';
-// export default class MyJbrowsePlugin extends Plugin {
-//   name = 'MyJbrowsePlugin';
-//   /**@ts-expect-error tssucks */
-//   install(pluginManager: PluginManager) {
-//     // Keep this just to see it fire
-//     console.log('--- PLUGIN INSTALLING ---');
-//   }
-
-//   configure(pluginManager: PluginManager) {
-//     console.log('--- PLUGIN CONFIGURING (System should be ready) ---');
-
-//     const epNames = Object.keys(pluginManager);
-
-//     console.log('EPs available now:', epNames);
-//     // console.log(JSON.stringify(pluginManager));
-
-//     // Now try to add the menu item
-//     // Usually 'TrackMenuItems' or 'LinearGenomeView-TrackMenu'
-//     // const menuName = epNames.includes('LinearGenomeView-TrackMenu')
-//     //   ? 'LinearGenomeView-TrackMenu'
-//     //   : 'TrackMenuItems';
-
-//     // if (epNames.length > 0) {
-//     //   pluginManager.addToExtensionPoint(menuName, (items, ctx) => {
-//     //     console.log('Menu hook finally fired!');
-//     //     return [
-//     //       /** @ts-expect-error */
-//     //       ...items,
-//     //       {
-//     //         label: 'Force Locus Tags',
-//     //         onClick: () => {
-//     //           // Brute force patch
-//     //           const target = ctx.track || ctx.model;
-//     //           /** @ts-expect-error */
-//     //           applyPatch(target.configuration.renderer, [
-//     //             {
-//     //               op: 'replace',
-//     //               path: '/labels/name',
-//     //               value: "jexl:get(feature, 'old_locus_tag')",
-//     //             },
-//     //           ]);
-//     //         },
-//     //       },
-//     //     ];
-//     //   });
-//     // }
-//   }
-// }
 /** JBrowse config with my custom styling + plugins */
 const staticJBrowseCustomisations: Omit<JBrowseConfig, 'assembly' | 'tracks'> =
   {
@@ -119,6 +69,13 @@ export function myCreateViewState(config: JBrowseConfig): ViewModel {
         applyPatch(display, [
           { op: 'replace', path: '/rendererTypeNameState', value: 'multiline' },
         ]);
+        // // 2. Use the built-in JBrowse action to change height
+        // if (typeof display.setHeight === 'function') {
+        //   display.setHeight(200); // Set your desired pixel height here
+        // } else {
+        //   // Fallback for some display types
+        //   display.height = 200;
+        // }
       }
     }
   }
@@ -130,26 +87,27 @@ export function myCreateViewState(config: JBrowseConfig): ViewModel {
 export function buildConfig(
   {
     firstRegion,
-    ncbiName,
+    genomeName,
     dataDir,
     trixName,
     norms,
     genesLabelTypes,
-    data: { refSeq, genomic, coverage },
+    data: { refSeq, genomic, experiments },
     extras,
-  }: JBrowseCustomConfig,
+  }: JBrowseCustomConfigHybrid,
   {
     loc = [0, 5000],
     logScale = true,
+    experiment = Object.keys(experiments)[0],
     conditionA = [0, 0],
     conditionB = [1, 0],
     normType = 'none',
     genesLabelType = 'name',
   } = {},
 ): JBrowseConfig {
-  if (!trixName) trixName = ncbiName;
+  if (!trixName) trixName = genomeName;
   const baseUri = new URL('.', window.location.href).href;
-  if (!dataDir) dataDir = `${baseUri}data/${ncbiName}`;
+  if (!dataDir) dataDir = `${baseUri}data/${genomeName}`;
   if (!refSeq) refSeq = 'refseq.fna.gz';
 
   const conf = {
@@ -171,16 +129,10 @@ export function buildConfig(
         name: 'Genes',
         assemblyNames: ['asm'],
         adapter: {
-          type: 'Gff3TabixAdapter',
-          gffGzLocation: {
-            uri: `${dataDir}/${genomic}`,
+          type: 'Gff3Adapter',
+          gffLocation: {
+            uri: `${dataDir}/${genomic}`, // plain .gff
             locationType: 'UriLocation',
-          },
-          index: {
-            location: {
-              uri: `${dataDir}/${genomic}.tbi`,
-              locationType: 'UriLocation',
-            },
           },
         },
       },
@@ -220,45 +172,57 @@ export function buildConfig(
     ],
   } satisfies JBrowseConfig; // satisfies so it knows it's not a proper volatile config yet
 
+  const exp = experiments[experiment];
+  if (!exp) {
+    throw new Error(`Unknown experiment: ${experiment}`);
+  }
+
+  const {
+    coverage,
+    // coverage_condition_names
+  } = exp;
+
   // add multiwig coverage if at least 2 conditions exist
   if (coverage.length) {
+    const trackId = `multiwig-coverage-${experiment}`;
+
     conf.tracks.push({
       type: 'MultiQuantitativeTrack',
-      trackId: 'multiwig-coverage',
-      name: 'Coverage',
+      trackId,
+      name: `Coverage (${experiment})`,
       assemblyNames: ['asm'],
-      category: ['Coverage'],
+      category: ['Coverage', experiment],
       adapter: {
         type: 'MultiWiggleAdapter',
         /** @ts-expect-error works at runtime */
         bigWigs: [
-          coverage[conditionA[0]][conditionA[1]],
-
-          // quick hacky fix to get only one coverage condition working
-          coverage.length >= 2 ? coverage[conditionB[0]][conditionB[1]] : null,
+          coverage[conditionA[0]]?.[conditionA[1]],
+          coverage.length >= 2
+            ? coverage[conditionB[0]]?.[conditionB[1]]
+            : null,
         ]
           .filter(Boolean)
           .map(fname => {
             const fpath = `${dataDir}/${fname}`;
             if (normType.toLowerCase() === 'cpm' && norms.includes('cpm')) {
-              return `${fpath?.substring(0, fpath.length - 3)}.cpm.bw`;
+              return `${fpath.substring(0, fpath.length - 3)}.cpm.bw`;
             }
-            return `${dataDir}/${fname}`;
+            return fpath;
           }),
       },
       displays: [
         {
           type: 'MultiLinearWiggleDisplay',
-          displayId: 'Coverage_multiwiggle-MultiLinearWiggleDisplay',
-          renderer: { type: 'XYPlotRenderer' },
-          height: 340,
+          displayId: `${trackId}-MultiLinearWiggleDisplay`,
+          renderer: { type: 'XYPlotRenderer', height: 600 },
+          height: 380,
           scaleType: logScale ? 'log' : 'linear',
           autoscale: 'global',
         },
       ],
     });
 
-    conf.defaultSession.view.init.tracks.push('multiwig-coverage');
+    conf.defaultSession.view.init.tracks.push(trackId);
   }
 
   if (extras) {
@@ -272,14 +236,12 @@ export function buildConfig(
   // track patches
   for (const track of finalConf.tracks || []) {
     // add reverse/forward strand colouring to genes (GFF3 track)
-    console.log('requested-lbl', genesLabelType);
     const finalLbl = genesLabelTypes?.includes(genesLabelType)
       ? genesLabelType
       : 'name';
-    console.log('finallbl', finalLbl);
     if (
       track.type === 'FeatureTrack' &&
-      track?.adapter?.type === 'Gff3TabixAdapter'
+      track?.adapter?.type === 'Gff3Adapter'
     ) {
       track.displays = [
         {

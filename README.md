@@ -92,7 +92,7 @@ To rebuild the website with new data, follow the steps below:
 3. **Run the build script on your data/ directory:**
 
     ```bash
-    ./scripts/build.sh /path/to/data/ --n-threads=10 --bin-size=10 --yes
+    scripts/build.sh data --skip-processed-bams --yes --bin-size=10 --n-threads=5
     ```
 
     If the data is malformed, the script will abort and list errors.
@@ -142,7 +142,7 @@ To rebuild the website with new data, follow the steps below:
         ![Rename 'dist' Screenshot](./scrnsht-wp-rename.png)
     5. Done! It should now be available at [pletzerlab.com/genome-browser]
         
-    For Wordpress, go to your [Wordpress Admin Dashboard](https://pletzerlab.com/wp-admin), and upload the "dist/" folder using 'WP File Manager' in the sidebar. Once uploaded, rename "dist" to 'pletzer-lab-genome-browser', and it will be available at [https://pletzerlab.com/pletzer-lab-genome-browser](https://pletzerlab.com/pletzer-lab-genome-browser).
+    For Wordpress, go to your [Wordpress Admin Dashboard](https://pletzerlab.com/wp-admin), and upload the "dist/" folder using 'File Manager' in the sidebar. Once uploaded, rename "dist" to 'genome-browser', and it will be available at [https://pletzerlab.com/pletzer-lab-genome-browser](https://pletzerlab.com/pletzer-lab-genome-browser).
 
 ## Developer Guide
 

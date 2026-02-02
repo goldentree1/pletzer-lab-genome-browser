@@ -4,7 +4,7 @@ import { JBrowseLinearGenomeView } from '@jbrowse/react-linear-genome-view2';
 // @ts-expect-error no types for font
 import '@fontsource/roboto';
 import myConf from './config';
-import { buildConfig, myCreateViewState } from './jbrowse-custom-hybrid';
+import { buildConfig, myCreateViewState } from './jbrowse-custom';
 import { useStoredStateBoolean, useStoredStateString } from './utils';
 import Checkbox from './components/Checkbox';
 import Select from './components/Select';
