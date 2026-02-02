@@ -122,16 +122,10 @@ export function buildConfig(
         name: 'Genes',
         assemblyNames: ['asm'],
         adapter: {
-          type: 'Gff3TabixAdapter',
-          gffGzLocation: {
-            uri: `${dataDir}/${genomic}`,
+          type: 'Gff3Adapter',
+          gffLocation: {
+            uri: `${dataDir}/${genomic}`, // plain .gff
             locationType: 'UriLocation',
-          },
-          index: {
-            location: {
-              uri: `${dataDir}/${genomic}.tbi`,
-              locationType: 'UriLocation',
-            },
           },
         },
       },
@@ -242,7 +236,7 @@ export function buildConfig(
     console.log('finallbl', finalLbl);
     if (
       track.type === 'FeatureTrack' &&
-      track?.adapter?.type === 'Gff3TabixAdapter'
+      track?.adapter?.type === 'Gff3Adapter'
     ) {
       track.displays = [
         {

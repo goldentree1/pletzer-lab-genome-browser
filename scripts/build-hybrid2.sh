@@ -416,25 +416,24 @@ genome_data_processing_ritual(){
     jbrowse_prepare_gff(){
         local GFF_FILE=$1
 
-        # Use AGAT to sort and standardise the GFF/GTF file into standard GFF3 format
-        agat config --expose --tabix > /dev/null # Make sure there's a config
-        agat_convert_sp_gxf2gxf.pl \
-          --gff "$GFF_FILE" \
-          -o "$GFF_FILE.agat" > /dev/null 2>&1
+        # Use AGAT to standardize the GFF/GTF file into standard GFF3
+        agat config --expose --tabix > /dev/null
+        agat_convert_sp_gxf2gxf.pl --gff "$GFF_FILE" -o "$GFF_FILE.agat" > /dev/null 2>&1
 
-        # sort chromosomes for tabix
+        # Sort chromosomes
         {
           grep '^#' "$GFF_FILE.agat"
           LC_ALL=C sort -t $'\t' -k1,1 -k4,4n <(grep -v '^#' "$GFF_FILE.agat")
         } > "$GFF_FILE.sorted"
 
-        # remove 'region' types (these just span the entire genome - not useful)
+        # Remove 'region' features
         awk -F'\t' '$3 != "region"' < "$GFF_FILE.sorted" > "$GFF_FILE.sorted.noregion.gff"
 
-        # gzip it and create tabix index
-        bgzip -fk "$GFF_FILE.sorted.noregion.gff" -o "$GFF_FILE.sorted.noregion.gff.gz"
-        tabix -p gff "$GFF_FILE.sorted.noregion.gff.gz"
+        # **DO NOT compress**
+        # leave it uncompressed for JBrowse
+        echo "Prepared $GFF_FILE as **plain uncompressed GFF** for JBrowse"
     }
+
 
     # jbrowse_prepare_vcf(){
     #     local VCF_FILE="$1"
@@ -463,7 +462,7 @@ genome_data_processing_ritual(){
     cd "$genome_dir"
     [[ -f config.json ]] && rm config.json # rm old conf
     jbrowse add-assembly "$(basename "$refseq_file").gz" --name "asm" --load inPlace --type bgzipFasta
-    jbrowse add-track "$(basename "$genes_file").sorted.noregion.gff.gz" -a "asm" --load inPlace -n "Genes" --trackId GFF3GeneTrack
+    jbrowse add-track "$(basename "$genes_file").sorted.noregion.gff" -a "asm" --load inPlace -n "Genes" --trackId GFF3GeneTrack
     jbrowse text-index --attributes Name,old_locus_tag,locus_tag --exclude CDS,exon --force
     cd "$prev_dir"
 
@@ -604,7 +603,7 @@ node <<-EOF
         trixName: "asm",
         data: {
           refSeq: "refseq.fasta.gz",
-          genomic: "genes.gff.sorted.noregion.gff.gz",
+          genomic: "genes.gff.sorted.noregion.gff",
           experiments: $experiments_json
         },
         // below are not done yet!
@@ -672,8 +671,8 @@ clean_public_data(){
     find "$dir" -type f -name "*.bam" -delete
     find "$dir" -type f -name "*.bam.bai" -delete
     find "$dir" -type f -name "*.bam.ORIGINAL" -delete
-    find "$dir" -type f -name "*.gff" -delete
-    find "$dir" -type f -name "*.gff.sorted" -delete
+    # find "$dir" -type f -name "*.gff" -delete
+    # find "$dir" -type f -name "*.gff.sorted" -delete
     find "$dir" -type f -name "*.agat" -delete
     find "$dir" -type f -name "*.fasta" -delete
     find "$dir" -type f -name "*.fa" -delete

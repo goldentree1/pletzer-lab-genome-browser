@@ -5,7 +5,7 @@
     "trixName": "asm",
     "data": {
       "refSeq": "refseq.fasta.gz",
-      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "genomic": "genes.gff.sorted.noregion.gff",
       "experiments": {
         "relA": {
           "info": "experiments/relA/info.txt",
@@ -45,7 +45,7 @@
     "trixName": "asm",
     "data": {
       "refSeq": "refseq.fasta.gz",
-      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "genomic": "genes.gff.sorted.noregion.gff",
       "experiments": {
         "BF_SA": {
           "coverage": [
@@ -86,7 +86,7 @@
     "trixName": "asm",
     "data": {
       "refSeq": "refseq.fasta.gz",
-      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "genomic": "genes.gff.sorted.noregion.gff",
       "experiments": {
         "PA14": {
           "coverage": [
@@ -127,7 +127,7 @@
     "trixName": "asm",
     "data": {
       "refSeq": "refseq.fasta.gz",
-      "genomic": "genes.gff.sorted.noregion.gff.gz",
+      "genomic": "genes.gff.sorted.noregion.gff",
       "experiments": {
         "s1": {
           "coverage": [
