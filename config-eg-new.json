@@ -92,6 +92,10 @@
         "s1": {
           "COND1": ["experiments/s1/COND1/Pa_BF_s1.1.bw"],
           "COND2-SPOOFED": ["experiments/s1/COND2-SPOOFED/Pa_BF_s1.1.bw"]
+        },
+        "cond1_for_exp2": {
+          "COND1": ["experiments/s1/COND1/Pa_BF_s1.1.bw"],
+          "COND2-SPOOFED": ["experiments/s1/COND2-SPOOFED/Pa_BF_s1.1.bw"]
         }
       }
     },

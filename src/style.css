@@ -265,7 +265,7 @@ select {
   padding-block: 2px;
   padding-inline: 1rem 1.5rem;
   font-weight: 500;
-  /*max-width: 200px;*/
+  max-width: 200px;
   min-width: 200px;
 }
 
@@ -275,6 +275,31 @@ select {
 }*/
 
 .condition-select > optgroup:first-child {
+  padding-top: 0.37rem;
+}
+
+/* condition selects only */
+.experiment-select {
+  font-size: 0.78rem;
+  color: #155b8e;
+  background: white
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
+    right 10px center / 18px no-repeat;
+  border: 1px solid #155b8e;
+  border-radius: 1.5rem;
+  padding-block: 2px;
+  padding-inline: 1rem 1.5rem;
+  font-weight: 500;
+  max-width: 200px;
+  min-width: 200px;
+}
+
+/** I actually really like look of this, but we'd need to make it work on all selects */
+/*.experiment-select > optgroup {
+  padding-inline: 0.2rem;
+}*/
+
+.experiment-select > optgroup:first-child {
   padding-top: 0.37rem;
 }
 
