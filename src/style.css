@@ -340,10 +340,10 @@ select {
   border: 1px solid #155b8e;
   border-radius: 1.5rem;
   padding-block: 2px;
-  padding-inline: 1rem 0.85rem;
+  padding-inline: 0.9rem 0.85rem;
   font-weight: 500;
-  max-width: 180px;
-  min-width: 180px;
+  max-width: 190px;
+  min-width: 190px;
 }
 
 .sq-select {
@@ -390,7 +390,11 @@ select {
 
   .header {
     color: white;
-    background-color: #111111;
+    background-color: #2222;
+  }
+
+  .header label {
+    color: #155b8e;
   }
 
   .header-title h1 {

@@ -46,7 +46,7 @@ export default function ConditionsSelect({
     } else if (filename.match(/\d+\.bw$/)) {
       const noBw = filename.substring(0, filename.length - 3);
       const replicateN = parseInt(noBw.substring(noBw.lastIndexOf('.') + 1));
-      filename = `${noBw.substring(0, noBw.lastIndexOf('.'))} (replicate #${replicateN})`;
+      filename = `${noBw.substring(0, noBw.lastIndexOf('.'))} (replicate ${replicateN})`;
     }
     return `${filename}`;
   }
