@@ -21,6 +21,19 @@ function App() {
   const [viewState, setViewState] = useState<ViewModel>();
   const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
   const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
+  const [conditionC, setConditionC] = useState<[number, number] | null>(null);
+  const [conditionD, setConditionD] = useState<[number, number] | null>(null);
+  const [conditionE, setConditionE] = useState<[number, number] | null>(null);
+  const [conditionF, setConditionF] = useState<[number, number] | null>(null);
+  const [conditionG, setConditionG] = useState<[number, number] | null>(null);
+  const extraConditions = [
+    [conditionC, setConditionC],
+    [conditionD, setConditionD],
+    [conditionE, setConditionE],
+    [conditionF, setConditionF],
+    [conditionG, setConditionG],
+  ] as const;
+
   const [norms, setNorms] = useState(['none']);
   const loc = useRef<string | null>(null);
 
@@ -48,6 +61,14 @@ function App() {
     'pletzer-lab-genome-browser:colorByCDS',
     false,
   );
+
+  const addCondition = () => {
+    if (!conditionC) return setConditionC([2, 0]);
+    if (!conditionD) return setConditionD([3, 0]);
+    if (!conditionE) return setConditionE([4, 0]);
+    if (!conditionF) return setConditionF([5, 0]);
+    if (!conditionG) return setConditionG([6, 0]);
+  };
 
   const experiments = Object.keys(myConf[genome].data.experiments);
 
@@ -142,11 +163,22 @@ function App() {
 
     // console.log('using loc:', newLoc);
 
+    const allConditions = [
+      conditionA,
+      conditionB,
+      conditionC,
+      conditionD,
+      conditionE,
+      conditionF,
+      conditionG,
+    ].filter(Boolean) as [number, number][];
+
     const state = myCreateViewState(
       buildConfig(config, {
         experiment,
         conditionA,
         conditionB,
+        extraConditions: allConditions.slice(2),
         loc: newLoc,
         normType,
         genesLabelType,
@@ -206,6 +238,31 @@ function App() {
                     value={conditionB}
                     onChange={setConditionB}
                   />
+                )}
+                {extraConditions.map(
+                  ([cond, setCond], i) =>
+                    cond && (
+                      <ConditionsSelect
+                        key={i}
+                        id={`select-condition-${String.fromCharCode(99 + i)}`}
+                        className="pill-select"
+                        label="Condition"
+                        coverage={coverage}
+                        coverageConditionNames={coverageConditionNames}
+                        value={cond}
+                        onChange={setCond}
+                      />
+                    ),
+                )}
+
+                {coverage.length > 2 && (
+                  <button
+                    className="pill-button add-condition"
+                    onClick={addCondition}
+                    title="Add condition"
+                  >
+                    +
+                  </button>
                 )}
               </div>
               // </div>

@@ -101,9 +101,10 @@ export function buildConfig(
     experiment = Object.keys(experiments)[0],
     conditionA = [0, 0],
     conditionB = [1, 0],
+    extraConditions = [],
     normType = 'none',
     genesLabelType = 'name',
-  } = {},
+  },
 ): JBrowseConfig {
   if (!trixName) trixName = genomeName;
   const baseUri = new URL('.', window.location.href).href;
@@ -185,6 +186,13 @@ export function buildConfig(
   // add multiwig coverage if at least 2 conditions exist
   if (coverage.length) {
     const trackId = `multiwig-coverage-${experiment}`;
+    const all = [
+      coverage[conditionA[0]]?.[conditionA[1]],
+      coverage[conditionB[0]]?.[conditionB[1]],
+      ...((extraConditions as [number, number][]) ?? []).map(
+        ([i, j]) => coverage[i]?.[j],
+      ),
+    ].filter(Boolean);
 
     conf.tracks.push({
       type: 'MultiQuantitativeTrack',
