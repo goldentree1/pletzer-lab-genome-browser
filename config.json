@@ -8,6 +8,7 @@
       "genomic": "genes.gff.sorted.noregion.gff.gz",
       "experiments": {
         "relA": {
+          "info": "experiments/relA/info.txt",
           "coverage": [
             [
               "experiments/relA/relA_In/relA_In.average.bw",
