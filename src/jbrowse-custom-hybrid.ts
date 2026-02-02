@@ -207,10 +207,16 @@ export function buildConfig(
         {
           type: 'MultiLinearWiggleDisplay',
           displayId: `${trackId}-MultiLinearWiggleDisplay`,
-          renderer: { type: 'XYPlotRenderer' },
+          // renderer: { type: 'XYPlotRenderer' },
           height: 340,
           scaleType: logScale ? 'log' : 'linear',
           autoscale: 'global',
+          renderer: {
+            // type: 'XYPlotRenderer',
+            // legend: {
+            //   marginRight: 100, // default is something bigger; reduce to move left
+            // },
+          },
         },
       ],
     });

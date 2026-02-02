@@ -178,10 +178,10 @@ function App() {
     <>
       <header className="header">
         <nav className="header-genome-chooser">
-          {/*<div className="header-title">
+          <div className="header-title">
             <img src="./pletzerlab-icon.webp" alt="Pletzer Lab Icon" />
-            <h1>Pletzer Lab Genome Browser</h1>
-          </div>*/}
+            {/*<h1>Pletzer Lab Genome Browser</h1>*/}
+          </div>
           <GenomeSelector
             genomes={genomes}
             selected={genome}

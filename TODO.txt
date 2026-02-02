@@ -19,15 +19,15 @@ X Should gene labels be changeable? They are searchable by all tags now (old_loc
 X Secondary label for genes to show... do you want notes? Or scrap changeable and just do name/old_locus_tag combo? NO.
 
 TODO
-- EXPERIMENTS Select:: Genome -> experiment -> conditions. So nested dir. Change build.sh and change
+X EXPERIMENTS Select:: Genome -> experiment -> conditions. So nested dir. Change build.sh and change
     (MAJOR: DO FIRST)
     1. Add combobox for experiment.
     2. Change build script to use <genome_name>/experiments/<experiment_name>/<condition_name>/*.bam
     3.
 
 - (Sam) info.txt as optional in build.sh (info.txt should be an 'info' button on top bar - and should show a popup with literally just whatever text was thrown in). should be a 'info' button, that gives text about the EXPERIMENT.
-    1. Change build script to detect experiments/<experiment_name>/'info.txt'
-    2. if infoFile: add 'infoFile' to generated config.json for that /experiments/<experiment_name>/
+    X. Change build script to detect experiments/<experiment_name>/'info.txt'
+    X. if infoFile: add 'infoFile' to generated config.json for that /experiments/<experiment_name>/
     3. edit jbrowse-custom.ts to load them.
     4. (i) <- that is an 'info' button. it should show the text for the current experiment (if info.txt file exists).
 

@@ -25,6 +25,40 @@
             "relA_In",
             "relA_Un"
           ]
+        },
+        "GSH": {
+          "coverage": [
+            [
+              "experiments/GSH/GSH/GSH.average.bw",
+              "experiments/GSH/GSH/PA_GSH.1.bw",
+              "experiments/GSH/GSH/PA_GSH.2.bw",
+              "experiments/GSH/GSH/PA_GSH.3.bw"
+            ],
+            [
+              "experiments/GSH/NT/NT.average.bw",
+              "experiments/GSH/NT/PA_NT.1.bw",
+              "experiments/GSH/NT/PA_NT.2.bw",
+              "experiments/GSH/NT/PA_NT.3.bw"
+            ],
+            [
+              "experiments/GSH/THIO/THIO.average.bw",
+              "experiments/GSH/THIO/PA_THIO.1.bw",
+              "experiments/GSH/THIO/PA_THIO.2.bw",
+              "experiments/GSH/THIO/PA_THIO.3.bw"
+            ],
+            [
+              "experiments/GSH/TM5/TM5.average.bw",
+              "experiments/GSH/TM5/PA_TM5.1.bw",
+              "experiments/GSH/TM5/PA_TM5.2.bw",
+              "experiments/GSH/TM5/PA_TM5.3.bw"
+            ]
+          ],
+          "coverage_condition_names": [
+            "GSH",
+            "NT",
+            "THIO",
+            "TM5"
+          ]
         }
       }
     },
@@ -48,6 +82,7 @@
       "genomic": "genes.gff.sorted.noregion.gff",
       "experiments": {
         "BF_SA": {
+          "info": "experiments/BF_SA/info.txt",
           "coverage": [
             [
               "experiments/BF_SA/BF_SA_BF/BF_SA_BF.average.bw",
@@ -89,6 +124,7 @@
       "genomic": "genes.gff.sorted.noregion.gff",
       "experiments": {
         "PA14": {
+          "info": "experiments/PA14/info.txt",
           "coverage": [
             [
               "experiments/PA14/PA14_I/PA14_I.average.bw",
@@ -129,32 +165,15 @@
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff",
       "experiments": {
-        "s1": {
+        "experiment1": {
+          "info": "experiments/experiment1/info.txt",
           "coverage": [
             [
-              "experiments/s1/COND1/Pa_BF_s1.1.bw"
-            ],
-            [
-              "experiments/s1/COND2-SPOOFED/Pa_BF_s1.1.bw"
+              "experiments/experiment1/Pa_BF/Pa_BF_s1.1.bw"
             ]
           ],
           "coverage_condition_names": [
-            "COND1",
-            "COND2-SPOOFED"
-          ]
-        },
-        "s2": {
-          "coverage": [
-            [
-              "experiments/s2/COND1/Pa_BF_s1.1.bw"
-            ],
-            [
-              "experiments/s2/COND2-SPOOFED/Pa_BF_s1.1.bw"
-            ]
-          ],
-          "coverage_condition_names": [
-            "COND1",
-            "COND2-SPOOFED"
+            "Pa_BF"
           ]
         }
       }
