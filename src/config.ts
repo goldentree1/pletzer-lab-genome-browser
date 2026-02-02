@@ -1,5 +1,5 @@
-import type { JBrowseCustomConfig } from './types';
-import configJson from '../config-eg-OG.json';
+import type { JBrowseCustomConfigHybrid } from './types';
+import configJson from '../config.json';
 
-const myConfig: { [key: string]: JBrowseCustomConfig } = configJson;
+const myConfig: { [key: string]: JBrowseCustomConfigHybrid } = configJson;
 export default myConfig;

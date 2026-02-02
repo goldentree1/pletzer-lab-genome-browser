@@ -1,24 +1,26 @@
 interface SelectProps {
-  label: string;
   value: string;
-  setValue: (value: string) => void;
-  options: string[];
+  values: string[];
+  onChange: (value: string) => void;
   id: string;
-  className: string;
+  className?: string;
+  optionLabel?: (value: string) => string;
 }
 
-function Select({ label, value, setValue, options, id }: SelectProps) {
+function Select({ value, values, onChange, id, className }: SelectProps) {
   return (
-    <div className="select">
-      <label htmlFor={id}>{label}</label>
-      <select id={id} value={value} onChange={e => setValue(e.target.value)}>
-        {options.map((option, index) => (
-          <option key={index} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </div>
+    <select
+      className={className}
+      id={id}
+      value={value}
+      onChange={e => onChange(e.target.value)}
+    >
+      {values.map((value, index) => (
+        <option key={index} value={value}>
+          {value}
+        </option>
+      ))}
+    </select>
   );
 }
 

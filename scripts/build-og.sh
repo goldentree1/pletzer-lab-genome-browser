@@ -101,20 +101,14 @@ main() {
         # fi
     fi
 
-    if [[ "$CHECK_ONLY" == false ]]; then
-        echo "Building with settings:"
-        echo " - Data directory: '$DATA_DIR'"
-        echo " - Bin size: $BIN_SIZE"
-        if [[ "$REBUILD_BIGWIGS" == false ]]; then
-            echo "- Process BAM files: no (warning: this can break the build if files don't already exist)"
-        elif [[ "$SKIP_PROCESSED_BAMS" == false ]] && [[ "" ]]; then
-            echo "- Process BAM files: Only non-existent"
-        else
-            echo "- Process BAM files: yes"
-        fi
-        echo " - Rebuild website: $SKIP_WEBSITE"
-        echo
-    fi
+    echo "Building with settings:"
+    echo " - Data directory: '$DATA_DIR'"
+    echo " - Bin size: $BIN_SIZE"
+    echo " - Number of threads: $N_THREADS"
+    echo " - Rebuild all BAMs: $REBUILD_BIGWIGS"
+    echo " - Rebuild processed BAMs: $SKIP_PROCESSED_BAMS"
+    echo " - Rebuild website: $SKIP_WEBSITE"
+    echo
 
     # exit if user provided invalid directory
     if [[ ! -d "$DATA_DIR" ]]  then
@@ -130,12 +124,12 @@ main() {
     fi
 
     echo -e "\033[0;32mAll OK!\033[0m"
+    echo
 
     if [[ "$CHECK_ONLY" == true ]]; then
         exit 0
     fi
 
-    echo
     # No errors! Prompt user to continue (unless -y flag)
     if [[ "$PROMPT_TO_CONTINUE" == true ]]; then
         read -r -p "Begin processing data? (Y/n) " reply
@@ -152,7 +146,7 @@ main() {
         genome_dir="${genome_dir%/}"  # remove trailing slash
         refseq_file="$genome_dir/refseq.fasta"
         genes_file="$genome_dir/genes.gff"
-        experiments_dir="$genome_dir/experiments"
+        reads_dir="$genome_dir/reads"
 
         [ -d "$genome_dir" ] || continue # ignore non-directories
         echo
@@ -269,7 +263,7 @@ genome_error_check_routine(){
         errors=()
         local refseq_file="$genome_dir/refseq.fasta"
         local genes_file="$genome_dir/genes.gff"
-        local experiments_dir="$genome_dir/experiments"
+        local reads_dir="$genome_dir/reads"
 
         # err check: refseq.fasta exists
         if [[ ! -s "$refseq_file" ]]; then
@@ -292,77 +286,61 @@ genome_error_check_routine(){
         fi
 
         # err check: reads directory exists
-        if [[ ! -d "$experiments_dir" ]]; then
-            errors+=("Experiments directory '$experiments_dir' does not exist.")
+        if [[ ! -d "$reads_dir" ]]; then
+            errors+=("Reads directory '$reads_dir' does not exist.")
         fi
 
         # err check:
-        # Foreach experiments/<experiment_name>/<condition_name>/*.bam:
-        # 0. <experiment_name>/ has directories nested in it (i.e., conditions)
-        # 1. At least one BAM file exists in dir
+        # For each reads/* directory:
+        # 1. At least one BAM file exists
         # 2. Check that every BAM file has .<number>.bam extension
         # 3. Check that BAM chromosome names match refseq.fasta
-        if [[ -f "$refseq_file"  ]] && [[ -d "$experiments_dir" ]]; then
-            for experiment_dir in "$experiments_dir"/*; do
+        if [[ -f "$refseq_file"  ]] && [[ -d "$reads_dir" ]]; then
+            for condition_dir in "$reads_dir"/*; do
 
-                # err check
-                found_condition=false
-                for condition_dir in "$experiment_dir"/*; do
-                    if [[ -d "$condition_dir" ]]; then
-                        found_condition=true
-                        break
-                    fi
-                done
-                if [[ "$found_condition" == false ]]; then
-                    errors+=("Experiment directory '$(basename "$experiment_dir")' contains no condition directories.")
+                condition_name=$(basename "$condition_dir")
+                bam_files=("$condition_dir"/*.bam)
+
+                [[ -d "$condition_dir" ]] || continue  # skip non-directories
+
+                # err check: at least one BAM file exists in condition directory
+                if [[ ${#bam_files[@]} -eq 0 || ! -f "${bam_files[0]}" ]]; then
+                    errors+=("Condition '$condition_name' has no BAM files.")
+                    continue
                 fi
 
-                for condition_dir in "$experiment_dir"/*; do
+                 # Check BAM files
+                for bam_file in "${bam_files[@]}"; do
+                    bam_name=$(basename "$bam_file")
 
-                    condition_name=$(basename "$condition_dir")
-                    bam_files=("$condition_dir"/*.bam)
-
-                    [[ -d "$condition_dir" ]] || continue  # skip non-directories
-
-                    # err check: at least one BAM file exists in condition directory
-                    if [[ ${#bam_files[@]} -eq 0 || ! -f "${bam_files[0]}" ]]; then
-                        errors+=("Condition '$condition_name' has no BAM files.")
+                    # skip merged BAMs - we wont process them
+                    if [[ "$bam_name" == *.merged.bam ]] ; then
                         continue
                     fi
 
-                    # Check BAM files
-                    for bam_file in "${bam_files[@]}"; do
-                        bam_name=$(basename "$bam_file")
-
-                        # skip merged BAMs - we wont process them
-                        if [[ "$bam_name" == *.merged.bam ]] ; then
-                            continue
-                        fi
-
-                        # err check: must follow .<number>.bam extension
-                        if [[ ! "$bam_name" =~ \.[0-9]+\.bam$ ]]; then
-                            errors+=("BAM file '$bam_name' does not have a valid .<number>.bam extension")
-                            continue
-                        fi
-
-                        # err check: must be a file (not dir/symlink)
-                        if [[ ! -f "$bam_file" ]]; then
-                            errors+=("'$bam_file' is not a file (please check the file path).")
-                            continue
-                        fi
-
-                    done
-
-                    # err check: BAM chromosome names must match refseq.fasta
-                    # (e.g., refseq with 'chr' and BAM with 'chrom1' is invalid)
-                    bam_mismatches=$(python3 scripts/chromosome-check.py "$refseq_file" "${bam_files[@]}")
-                    rc=$?
-                    if (( rc != 0 )); then
-                        while IFS= read -r line; do
-                            errors+=("$line")
-                        done <<< "$bam_mismatches"
+                    # err check: must follow .<number>.bam extension
+                    if [[ ! "$bam_name" =~ \.[0-9]+\.bam$ ]]; then
+                        errors+=("BAM file '$bam_name' does not have a valid .<number>.bam extension")
+                        continue
                     fi
+
+                    # err check: must be a file (not dir/symlink)
+                    if [[ ! -f "$bam_file" ]]; then
+                        errors+=("'$bam_file' is not a file (please check the file path).")
+                        continue
+                    fi
+
                 done
+
+                # err check: BAM chromosome names must match refseq.fasta
+                # (e.g., refseq with 'chr' and BAM with 'chrom1' is invalid)
+                bam_mismatches=$(python3 scripts/chromosome-check.py "$refseq_file" "${bam_files[@]}")
+                rc=$?
+                if (( rc != 0 )); then
+                    while IFS= read -r line; do
+                        errors+=("$line")
+                    done <<< "$bam_mismatches"
+                fi
             done
         fi
 
@@ -456,107 +434,88 @@ genome_data_processing_ritual(){
     cd "$prev_dir"
 
 
+    condition_names_json="["
+    # Check and convert BAMs into BigWigs for JBrowse
+    coverage_json="["  # start JSON array
 
     echo "Preparing BAM files... (this may take a few minutes per file)"
-    declare -A experiments_coverage_json
+    for condition_dir in "$reads_dir"/*; do
 
-    for experiment_dir in "$experiments_dir"/*; do
-        [[ -d "$experiment_dir" ]] || continue
-        exp_name=$(basename "$experiment_dir")
+        [[ -d "$condition_dir" ]] || continue # skip non-directories
+        condition_names_json+="\"$(basename "$condition_dir")\","
 
-        # condition_names_json="["
-        # Check and convert BAMs into BigWigs for JBrowse
-        coverage_json="{"  # start JSON array
-        # TODO - check for info.txt
+        # collect allll the BAM files
+        n_replicates=0
+        bam_files=()
+        bw_files=()
+        cpm_bw_files=()
+        # These are for bigwigAverage to use
+        raw_bws_for_avg=()
+        cpm_bws_for_avg=()
 
-        for condition_dir in "$experiment_dir"/*; do
+        avg_bw="$condition_dir/$(basename "$condition_dir").average.bw"
+        cpm_avg_bw="$condition_dir/$(basename "$condition_dir").average.cpm.bw"
+        for bam_file in "$condition_dir"/*.bam; do
+            if [[ "$(basename "$bam_file")" == *.merged.bam ]]; then
+              continue
+            fi
+            bam_files+=( "$bam_file" )
+            n_replicates=$((n_replicates + 1))
+        done
 
-            [[ -d "$condition_dir" ]] || continue # skip non-directories
-            condition_names_json+="\"$(basename "$condition_dir")\","
+        # generate individual BigWigs for each BAM file
+        for bam_file in "${bam_files[@]}"; do
+            bam_name=$(basename "$bam_file" .bam)
+            bw_file="$condition_dir/${bam_name}.bw"
+            cpm_bw_file="$condition_dir/${bam_name}.cpm.bw"
 
-            # collect allll the BAM files
-            n_replicates=0
-            bam_files=()
-            bw_files=()
-            cpm_bw_files=()
-            # These are for bigwigAverage to use
-            raw_bws_for_avg=()
-            cpm_bws_for_avg=()
-
-            avg_bw="$condition_dir/$(basename "$condition_dir").average.bw"
-            cpm_avg_bw="$condition_dir/$(basename "$condition_dir").average.cpm.bw"
-            for bam_file in "$condition_dir"/*.bam; do
-                if [[ "$(basename "$bam_file")" == *.merged.bam ]]; then
-                continue
+            if [[ "$rebuild_bigwigs" == true ]]; then
+                if [[ "$skip_processed_bams" == true ]] && [[ -f "$bw_file" && -f "$cpm_bw_file" ]]; then
+                    echo "Skipping BAM '$bam_name' as BigWigs already exist."
+                else
+                    echo "Processing BAM '$bam_name' into BigWig..."
+                    samtools index "$bam_file"
+                    bamCoverage --numberOfProcessors "$n_threads" -b "$bam_file" -o "$bw_file" --binSize "$bin_size" > /dev/null 2>&1
+                    echo "Processing BAM '$bam_name' into BigWig (with CPM-normalisation)..."
+                    bamCoverage --numberOfProcessors "$n_threads" -b "$bam_file" -o "$cpm_bw_file" --normalizeUsing CPM --binSize "$bin_size" > /dev/null 2>&1
                 fi
-                bam_files+=( "$bam_file" )
-                n_replicates=$((n_replicates + 1))
-            done
-
-            # generate individual BigWigs for each BAM file
-            for bam_file in "${bam_files[@]}"; do
-                bam_name=$(basename "$bam_file" .bam)
-                bw_file="$condition_dir/${bam_name}.bw"
-                cpm_bw_file="$condition_dir/${bam_name}.cpm.bw"
-
-                if [[ "$rebuild_bigwigs" == true ]]; then
-                    if [[ "$skip_processed_bams" == true ]] && [[ -f "$bw_file" && -f "$cpm_bw_file" ]]; then
-                        echo "Skipping BAM '$bam_name' as BigWigs already exist."
-                    else
-                        echo "Processing BAM '$bam_name' into BigWig..."
-                        samtools index "$bam_file"
-                        bamCoverage --numberOfProcessors "$n_threads" -b "$bam_file" -o "$bw_file" --binSize "$bin_size" > /dev/null 2>&1
-                        echo "Processing BAM '$bam_name' into BigWig (with CPM-normalisation)..."
-                        bamCoverage --numberOfProcessors "$n_threads" -b "$bam_file" -o "$cpm_bw_file" --normalizeUsing CPM --binSize "$bin_size" > /dev/null 2>&1
-                    fi
-                fi
-
-                # Update JSON strings
-                bw_files+=( "\"experiments/$exp_name/$(basename "$condition_dir")/$bam_name.bw\"" )
-                cpm_bw_files+=( "\"experiments/$exp_name/$(basename "$condition_dir")/$bam_name.cpm.bw\"" )
-
-                # Keep clean paths for bigwigAverage
-                raw_bws_for_avg+=("$bw_file")
-                cpm_bws_for_avg+=("$cpm_bw_file")
-            done
-
-            # Generate averaged BigWigs (>= 2 replicates)
-            if (( n_replicates >= 2 )); then
-                echo "Detected multiple replicates to be averaged..."
-                if [[ "$rebuild_bigwigs" == true ]]; then
-                    if [[ "$skip_processed_bams" == true ]] && [[ -f "$avg_bw" && -f "$cpm_avg_bw" ]]; then
-                        echo "Skipping already-processed BigWig averages..."
-                    else
-                        echo "Generating BigWig average..."
-                        # Normal average
-                        bigwigAverage --numberOfProcessors "$n_threads" --binSize "$bin_size" -b "${raw_bws_for_avg[@]}" -o "$avg_bw" > /dev/null 2>&1
-                        # CPMs averaged
-                        echo "Generating BigWig average (CPM-normalized)..."
-                        bigwigAverage --numberOfProcessors "$n_threads" --binSize "$bin_size" -b "${cpm_bws_for_avg[@]}" -o "$cpm_avg_bw" > /dev/null 2>&1
-                    fi
-                fi
-                bw_files=( "\"experiments/$exp_name/$(basename "$condition_dir")/$(basename "$condition_dir").average.bw\"" "${bw_files[@]}" )
-                cpm_bw_files=( "\"experiments/$exp_name/$(basename "$condition_dir")/$(basename "$condition_dir").average.cpm.bw\"" "${cpm_bw_files[@]}" )
             fi
 
+            # Update JSON strings
+            bw_files+=( "\"reads/$(basename "$condition_dir")/$bam_name.bw\"" )
+            cpm_bw_files+=( "\"reads/$(basename "$condition_dir")/$bam_name.cpm.bw\"" )
 
-            # disgusting JSON hackery...
-            condition_name=$(basename "$condition_dir")
-            coverage_json+="\"$condition_name\": [$(IFS=,; echo "${bw_files[*]}")],"
-
+            # Keep clean paths for bigwigAverage
+            raw_bws_for_avg+=("$bw_file")
+            cpm_bws_for_avg+=("$cpm_bw_file")
         done
-        coverage_json="${coverage_json%,}}"
-        experiments_coverage_json["$exp_name"]="$coverage_json"
+
+        # Generate averaged BigWigs (>= 2 replicates)
+        if (( n_replicates >= 2 )); then
+            echo "Detected multiple replicates to be averaged..."
+            if [[ "$rebuild_bigwigs" == true ]]; then
+                if [[ "$skip_processed_bams" == true ]] && [[ -f "$avg_bw" && -f "$cpm_avg_bw" ]]; then
+                    echo "Skipping already-processed BigWig averages..."
+                else
+                    echo "Generating BigWig average..."
+                    # Normal average
+                    bigwigAverage --numberOfProcessors "$n_threads" --binSize "$bin_size" -b "${raw_bws_for_avg[@]}" -o "$avg_bw" > /dev/null 2>&1
+                    # CPMs averaged
+                    echo "Generating BigWig average (CPM-normalized)..."
+                    bigwigAverage --numberOfProcessors "$n_threads" --binSize "$bin_size" -b "${cpm_bws_for_avg[@]}" -o "$cpm_avg_bw" > /dev/null 2>&1
+                fi
+            fi
+            bw_files=( "\"reads/$(basename "$condition_dir")/$(basename "$condition_dir").average.bw\"" "${bw_files[@]}" )
+            cpm_bw_files=( "\"reads/$(basename "$condition_dir")/$(basename "$condition_dir").average.cpm.bw\"" "${cpm_bw_files[@]}" )
+        fi
+
+        # disgusting hackery to make a JSON array of BigWigs... in bash
+        coverage_json+=$'\n  ['"$(IFS=,; echo "${bw_files[*]}")"'],'
     done
 
-    experiments_json="{"
-    for exp in "${!experiments_coverage_json[@]}"; do
-        experiments_json+="
-          \"$exp\": ${experiments_coverage_json[$exp]},"
-    done
-    experiments_json="${experiments_json%,}}"
-
-
+    coverage_json="${coverage_json%,}"
+    coverage_json+=$'\n]'
+    condition_names_json+="]"
     generated_config_file="$genome_dir/generated-config.json"
     generated_config_files+=("$generated_config_file")
 
@@ -570,30 +529,33 @@ genome_data_processing_ritual(){
 
     # Evil Javascript hackery to finally build CONFIG!! :O
     # Writes all these bash vars into correct config format for the website's Javascript
-node <<-EOF
+    node <<-EOF
     const fs = require('fs');
 
     const config = {
-      "$(basename "$genome_dir")": {
-        genomeName: "$(basename "$genome_dir")",
-        firstRegion: "$first_region",
-        trixName: "asm",
-        data: {
-          refSeq: "refseq.fasta.gz",
-          genomic: "genes.gff.sorted.noregion.gff.gz",
-          experiments: $experiments_json
-        },
-        // below are not done yet!
-        norms: ["cpm", "none"],
-        genesLabelTypes: ["name", "locus_tag", "old_locus_tag"],
-        extras: []
-      }
-    };
+        "$(basename "$genome_dir")": {
+                ncbiName: "$(basename "$genome_dir")",
+                firstRegion: "$first_region",
+                trixName: "asm",
+                norms: ['cpm', 'none'],
+                genesLabelTypes: ['name', 'locus_tag', 'old_locus_tag'],
+                data: {
+                    refSeq: "refseq.fasta.gz",
+                    genomic: "genes.gff.sorted.noregion.gff.gz",
+                    coverage: $coverage_json.map((arr) => arr.sort((a, b) => {
+                        if (a.endsWith(".cpm.bw") && !b.endsWith(".cpm.bw")) return -1; // a goes first
+                        if (!a.endsWith(".cpm.bw") && b.endsWith(".cpm.bw")) return 1;  // b goes first
+                        return 0;
+                    })),
+                    coverage_condition_names: $condition_names_json
+                },
+                extras: []
+            }
+        };
 
-    fs.writeFileSync("$generated_config_file", JSON.stringify(config, null, 2));
-    console.log("Written config to $generated_config_file");
+        fs.writeFileSync("$generated_config_file", JSON.stringify(config, null, 2));
+        console.log("Written config to $generated_config_file");
 EOF
-
 }
 
 merge_json_configs() {
@@ -618,35 +580,7 @@ merge_json_configs() {
         Object.assign(merged, data);
     }
 
-    const confE = merged;
-    let confH = {};
-    const items = Object.keys(confE).map(key => {
-      const genome = confE[key];
-      const hybridExperiments = genome.data.experiments;
-      Object.keys(genome.data.experiments).forEach(eKey => {
-        const hExp = genome.data.experiments[eKey];
-
-        const coverage = [];
-        const coverage_condition_names = [];
-
-        Object.entries(hExp).forEach(([condName, bwFiles]) => {
-          coverage.push(bwFiles);
-          coverage_condition_names.push(condName);
-        });
-
-        hybridExperiments[eKey] = {
-          coverage,
-          coverage_condition_names,
-        };
-      });
-      genome.data.experiments = hybridExperiments;
-      return genome;
-    });
-    for (const item of items){
-        confH[item.genomeName] = item;
-    }
-
-    fs.writeFileSync("$output_file", JSON.stringify(confH, null, 2));
+    fs.writeFileSync("$output_file", JSON.stringify(merged, null, 2));
     console.log("Written combined config to $output_file");
 EOF
 }

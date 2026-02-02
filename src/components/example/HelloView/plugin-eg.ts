@@ -5,11 +5,11 @@ import {
   AbstractSessionModel,
   isAbstractMenuManager,
 } from '@jbrowse/core/util';
-import { version } from '../package.json';
+import { version } from '../../../../package.json';
 import {
   ReactComponent as HelloViewReactComponent,
   stateModel as helloViewStateModel,
-} from './HelloView';
+} from '.';
 // import { getSession } from '@jbrowse/core/util';
 // import { string } from 'mobx-state-tree/dist/internal';
 // import console from 'console';
