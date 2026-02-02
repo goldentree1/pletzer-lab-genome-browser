@@ -4,6 +4,7 @@ export default function ConditionsSelect({
   value,
   onChange,
   id,
+  className,
 }: {
   label: string;
   coverage: string[][];
@@ -15,7 +16,7 @@ export default function ConditionsSelect({
 }) {
   return (
     <select
-      className="condition-select"
+      className={className}
       id={id}
       value={value.join(',')}
       onChange={e => {

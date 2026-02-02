@@ -38,14 +38,15 @@ select {
   flex-direction: row;
   padding-inline: 0.37rem;
   padding-block: 0.15rem;
-  gap: 2.1rem;
+  gap: 0.5rem;
   background-color: white;
-  justify-content: space-between;
+  justify-content: flex-start;
   box-shadow:
     0 6px 8px -1px rgb(0 0 0 / 0.125),
     0 4px 6px -2px rgb(0 0 0 / 0.125);
   color: #155b8e;
-  overflow-x: auto;
+
+  /*overflow-x: auto;*/
 }
 
 .header-title {
@@ -60,8 +61,8 @@ select {
   background-color: #155b8e;
   border-radius: 2rem;
   padding: 0.2rem;
-  width: 3rem;
-  margin-right: 0.1rem;
+  width: 3.5rem;
+  /*margin-right: 0.1rem;*/
   display: block;
 }
 
@@ -71,18 +72,22 @@ select {
   display: inline-block;
 }
 
-.header-genome-chooser {
+.header-nav {
   display: flex;
   align-items: center;
-  justify-self: center;
-  gap: 0.3rem;
-
-  /** For dynamic vertical - but need to change gap property if used*/
+  justify-content: space-between;
+  width: 100%;
+  /*flex-grow: 1;*/
+  /*gap: 0.3rem;*/
   flex-wrap: wrap;
+  /** For dynamic vertical - but need to change gap property if used*/
+  /*flex-wrap: wrap;*/
 }
-
-.header-genome-chooser > select {
-  margin: 0 auto;
+.header-nav > nav {
+  padding-block: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .header-condition-chooser {
@@ -91,7 +96,7 @@ select {
   gap: 0.15rem;
   justify-content: center;
   align-items: center;
-  margin: 0 auto;
+  /*margin: 0 auto;*/
   padding-inline: 0.25rem;
 }
 
@@ -104,24 +109,26 @@ select {
 
 .header-buttons-container {
   display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  justify-content: center;
-  overflow-x: auto;
+  align-items: center;
+  min-width: 13rem;
+  max-width: fit-content;
+
+  /** Uncomment to get scroll behaviour on screen too small - currently just wraps instead*/
+  /*flex: 1 1 0%;*/
+  /*overflow: auto;*/
 }
 
 .header-buttons {
   display: flex;
   flex-direction: row;
-  gap: 0.8rem;
+  gap: 0.6rem;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
   background-color: #f5f5f5;
   border-radius: 0.37rem;
-  /*border: 1px solid #155b8e44;*/
   border: 1px solid #cccccc;
-  margin: 0.37rem 0rem;
-  padding: 0.3rem;
-  padding-inline: 0.5rem;
+  padding: 0.3rem 0.5rem;
   font-size: 0.8rem;
 }
 
@@ -152,8 +159,7 @@ other option is to fork project, and i'm not quite that desperate yet. */
   display: none;
 }
 
-/** half-stolen selector code below - shouold probably clean this up a bit.. */
-
+/** steezy select stuff (has fallback if bad browser support) */
 select {
   appearance: none;
   @supports (appearance: base-select) {
@@ -196,6 +202,8 @@ select {
       &:open::picker-icon {
         rotate: 180deg;
       }
+      /* Update your &::picker(select) block */
+
       &::picker(select) {
         padding: 0;
         margin-top: 5px;
@@ -207,6 +215,11 @@ select {
         opacity: 0;
         height: 0;
         overflow: clip;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
         transition:
           height 0.3s ease-out,
           opacity 0.3s ease-in-out,
@@ -215,15 +228,19 @@ select {
 
         transition-behavior: allow-discrete;
       }
+
       &:open::picker(select) {
+        overflow: auto;
         opacity: 1;
         height: calc-size(auto, size);
-        overflow: auto;
+
         @starting-style {
           opacity: 0;
           height: 0;
+          overflow: clip;
         }
       }
+
       optgroup {
         color: #155b8e;
       }
@@ -253,20 +270,97 @@ select {
   }
 }
 
-/* condition selects only */
-.condition-select {
-  font-size: 0.78rem;
+/* 1. THE SHARED LOGIC (Cleaned) */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 18px; /* Fixed size for consistency */
+
+  @supports (appearance: base-select) {
+    @media (hover: hover) {
+      &,
+      &::picker(select) {
+        appearance: base-select;
+      }
+
+      /* This is the key: Hide the background-image when the picker is active
+         to prevent the "Double Arrow" ghosting. */
+      background-image: none !important;
+
+      &::picker-icon {
+        content: '';
+        width: 18px;
+        height: 18px;
+        transition: rotate 0.15s ease-out;
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+
+      &:open::picker-icon {
+        rotate: 180deg;
+      }
+
+      &::picker(select) {
+        /* ... keep your existing picker styling (borders, etc) ... */
+        border: 2px solid #155b8e;
+        background: white;
+        border-radius: 20px;
+      }
+    }
+  }
+}
+
+select {
+  background-color: white;
   color: #155b8e;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
+  &::picker-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
+  }
+}
+
+.genome-select {
+  background-color: #155b8e;
+  color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23FFF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
+  &::picker-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23FFF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
+  }
+}
+
+.pill-select {
+  font-size: 0.78rem;
   background: white
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
     right 10px center / 18px no-repeat;
   border: 1px solid #155b8e;
   border-radius: 1.5rem;
   padding-block: 2px;
-  padding-inline: 1rem 1.5rem;
+  padding-inline: 1rem 0.85rem;
   font-weight: 500;
-  max-width: 200px;
-  min-width: 200px;
+  max-width: 180px;
+  min-width: 180px;
+}
+
+.sq-select {
+  font-size: 0.75rem;
+  background: white
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
+    right 10px center / 18px no-repeat;
+  border: 1px solid #155b8e;
+  border-radius: 0.3rem;
+  padding-block: 2px;
+  padding-inline: 0.5rem 0.5rem;
+  font-weight: 500;
+  max-width: 130px;
+  min-width: 130px;
+}
+
+.normalize-select {
+  max-width: 80px;
+  min-width: 80px;
 }
 
 /** I actually really like look of this, but we'd need to make it work on all selects */
@@ -274,70 +368,7 @@ select {
   padding-inline: 0.2rem;
 }*/
 
-.condition-select > optgroup:first-child {
-  padding-top: 0.37rem;
-}
-
-/* condition selects only */
-.experiment-select {
-  font-size: 0.78rem;
-  color: #155b8e;
-  background: white
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
-    right 10px center / 18px no-repeat;
-  border: 1px solid #155b8e;
-  border-radius: 1.5rem;
-  padding-block: 2px;
-  padding-inline: 1rem 1.5rem;
-  font-weight: 500;
-  max-width: 200px;
-  min-width: 200px;
-}
-
-/** I actually really like look of this, but we'd need to make it work on all selects */
-/*.experiment-select > optgroup {
-  padding-inline: 0.2rem;
-}*/
-
-.experiment-select > optgroup:first-child {
-  padding-top: 0.37rem;
-}
-
-.norm-type-select {
-  font-size: 0.78rem;
-  color: #155b8e;
-  background: white
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
-    right 10px center / 18px no-repeat;
-  border: 1px solid gray; /* Changed border color to gray */
-  border-radius: 0.5rem; /* Less rounded border */
-  padding-block: 2px;
-  padding-inline: 0.9rem 1rem; /* Slightly less padding */
-  font-weight: 500;
-  max-width: 6rem;
-  min-width: 6rem;
-}
-
-.norm-type-select > optgroup:first-child {
-  padding-top: 0.37rem;
-}
-
-.genes-label-type-select {
-  font-size: 0.78rem;
-  color: #155b8e;
-  background: white
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
-    right 10px center / 18px no-repeat;
-  border: 1px solid gray; /* Changed border color to gray */
-  border-radius: 0.5rem; /* Less rounded border */
-  padding-block: 2px;
-  padding-inline: 1rem 1.3rem; /* Slightly less padding */
-  font-weight: 500;
-  max-width: 8.5rem;
-  min-width: 8.5rem;
-}
-
-.genes-label-type-select > optgroup:first-child {
+.pill-select > optgroup:first-child {
   padding-top: 0.37rem;
 }
 

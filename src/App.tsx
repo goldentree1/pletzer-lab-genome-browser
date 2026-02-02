@@ -159,98 +159,109 @@ function App() {
   return (
     <>
       <header className="header">
-        <nav className="header-genome-chooser">
-          <div className="header-title">
-            <img src="./pletzerlab-icon.webp" alt="Pletzer Lab Icon" />
-            {/*<h1>Pletzer Lab Genome Browser</h1>*/}
-          </div>
-          <Select
-            id="genome-select"
-            values={genomes}
-            value={genome}
-            onChange={setGenome}
-          />
-          {experiments.length >= 1 && (
-            <select
-              className="experiment-select"
-              value={experiment}
-              onChange={e => setPreferredExperiment(e.target.value)}
-            >
-              {experiments.map(exp => (
-                <option key={exp} value={exp}>
-                  {exp}
-                </option>
-              ))}
-            </select>
-          )}
-
-          {coverage.length >= 1 && (
-            <div className="header-condition-chooser">
-              <ConditionsSelect
-                id="select-condition-a"
-                label="Condition"
-                coverage={coverage}
-                coverageConditionNames={coverageConditionNames}
-                value={conditionA}
-                onChange={setConditionA}
-              />
-              {coverage.length > 1 && <span>vs.</span>}
-              {coverage.length > 1 && (
+        <div className="header-title">
+          <img src="./pletzerlab-icon.webp" alt="Pletzer Lab Icon" />
+          {/*<h1>Pletzer Lab Genome Browser</h1>*/}
+        </div>
+        <div className="header-nav">
+          <nav>
+            <Select
+              id="genome-select"
+              className="genome-select"
+              values={genomes}
+              value={genome}
+              onChange={setGenome}
+            />
+            {experiments.length >= 1 && (
+              <div>
+                <Select
+                  id="experiment-select"
+                  className="pill-select"
+                  values={experiments}
+                  value={experiment}
+                  onChange={setPreferredExperiment}
+                />
+              </div>
+            )}
+            {coverage.length >= 1 && (
+              // <div className="header-condition-chooser">
+              <div className="header-condition-chooser">
                 <ConditionsSelect
-                  id="select-condition-b"
+                  id="select-condition-a"
+                  className="pill-select"
                   label="Condition"
                   coverage={coverage}
                   coverageConditionNames={coverageConditionNames}
-                  value={conditionB}
-                  onChange={setConditionB}
+                  value={conditionA}
+                  onChange={setConditionA}
                 />
-              )}
-            </div>
-          )}
-        </nav>
-
-        <div className="header-buttons-container">
-          <div className="header-buttons">
-            <div>
-              <label htmlFor="genes-label-type-select">Gene Labels:</label>
-              <Select
-                id="genes-label-type-select"
-                className="genes-label-type-select"
-                values={['name', 'locus_tag', 'old_locus_tag']}
-                value={genesLabelType}
-                onChange={setGenesLabelType}
+                {coverage.length > 1 && <span>vs.</span>}
+                {coverage.length > 1 && (
+                  <ConditionsSelect
+                    id="select-condition-b"
+                    className="pill-select"
+                    label="Condition"
+                    coverage={coverage}
+                    coverageConditionNames={coverageConditionNames}
+                    value={conditionB}
+                    onChange={setConditionB}
+                  />
+                )}
+              </div>
+              // </div>
+            )}
+          </nav>
+          <div className="header-buttons-container">
+            <div className="header-buttons">
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+              >
+                <label htmlFor="genes-label-type-select">Gene Labels:</label>
+                <Select
+                  id="genes-label-type-select"
+                  className="sq-select"
+                  values={['name', 'locus_tag', 'old_locus_tag']}
+                  value={genesLabelType}
+                  onChange={setGenesLabelType}
+                />
+              </div>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+              >
+                <label htmlFor="norm-type-select">Normalisation: </label>
+                <Select
+                  id="norm-type-select"
+                  className="sq-select normalize-select"
+                  values={norms}
+                  value={normType}
+                  onChange={setNormType}
+                />
+              </div>
+              <Checkbox
+                label="Log2"
+                checked={logScaling}
+                onChange={setLogScaling}
+                hoverDescription="Use base-2 log scale"
+              />
+              <Checkbox
+                label="Global Y-axis"
+                checked={globalScaling}
+                onChange={setGlobalScaling}
+                hoverDescription="Fix Y-axis between global minimum and maximum values"
+              />
+              <Checkbox
+                label="CDS+Amino"
+                checked={colorByCds}
+                onChange={setColorByCDS}
+                hoverDescription="Colour by CDS and amino acids (shows codon alignments by colour)"
               />
             </div>
-            <div>
-              <label htmlFor="norm-type-select">Normalisation: </label>
-              <Select
-                id="norm-type-select"
-                className="norm-type-select"
-                values={norms}
-                value={normType}
-                onChange={setNormType}
-              />
-            </div>
-            <Checkbox
-              label="Log2"
-              checked={logScaling}
-              onChange={setLogScaling}
-              hoverDescription="Use base-2 log scale"
-            />
-            <Checkbox
-              label="Global Y-axis"
-              checked={globalScaling}
-              onChange={setGlobalScaling}
-              hoverDescription="Fix Y-axis between global minimum and maximum values"
-            />
-            <Checkbox
-              label="CDS+Amino"
-              checked={colorByCds}
-              onChange={setColorByCDS}
-              hoverDescription="Colour by CDS and amino acids (shows codon alignments by colour)"
-            />
           </div>
         </div>
+
+        {/*<div className="header-buttons-container">*/}
+
+        {/*</div>*/}
       </header>
 
       <div className="jbrowse-container">
