@@ -25,20 +25,15 @@ X EXPERIMENTS Select:: Genome -> experiment -> conditions. So nested dir. Change
     2. Change build script to use <genome_name>/experiments/<experiment_name>/<condition_name>/*.bam
     3.
 
-- (Sam) info.txt as optional in build.sh (info.txt should be an 'info' button on top bar - and should show a popup with literally just whatever text was thrown in). should be a 'info' button, that gives text about the EXPERIMENT.
-    X. Change build script to detect experiments/<experiment_name>/'info.txt'
-    X. if infoFile: add 'infoFile' to generated config.json for that /experiments/<experiment_name>/
-    3. edit jbrowse-custom.ts to load them.
-    4. (i) <- that is an 'info' button. it should show the text for the current experiment (if info.txt file exists).
 
-- (Daniel/Sam) Deploy on Daniel site w/ navbar  + footer incl! Sam thinks this would be great.
+X (Daniel/Sam) Deploy on Daniel site w/ navbar  + footer incl! Sam thinks this would be great.
     (test locally via WP Local first, then do it on Daniel's site)
     1. Setup new page on WordPress
     2. Remove everything except for header/footer.
     3. iframe my site into it
     4. Adjust my site for iframe + Daniel's site.
 
-- (Sam minor) compare >= 3 conditions. Perhaps just a + button if > 3.
+X (Sam minor) compare >= 3 conditions. Perhaps just a + button if > 3.
     1. Just as is - except theres a check for >=3 conditions: if so, add a (+) button.
     1.1 Or... there could just ALWAYS be + button??
     2. idk how to do this... will be annoying... cuz currently we have conditionA and conditionB as separated vars.
@@ -50,6 +45,13 @@ X EXPERIMENTS Select:: Genome -> experiment -> conditions. So nested dir. Change
          - shift clicked
          - mouse inside JBrowse window,
          -
+
+- (Sam) info.txt as optional in build.sh (info.txt should be an 'info' button on top bar - and should show a popup with literally just whatever text was thrown in). should be a 'info' button, that gives text about the EXPERIMENT.
+    X. Change build script to detect experiments/<experiment_name>/'info.txt'
+    X. if infoFile: add 'infoFile' to generated config.json for that /experiments/<experiment_name>/
+    3. edit jbrowse-custom.ts to load them.
+    4. (i) <- that is an 'info' button. it should show the text for the current experiment (if info.txt file exists).
+
 
 - Variants as optional in build.sh
     1. Change build script to detect 'variants.vcf'

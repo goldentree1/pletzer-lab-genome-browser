@@ -117,6 +117,7 @@ export function buildConfig(
       sequence: {
         type: 'ReferenceSequenceTrack',
         trackId: 'refseq',
+        name: `Reference Sequence`,
         adapter: {
           type: 'BgzipFastaAdapter',
           uri: `${dataDir}/${refSeq}`,

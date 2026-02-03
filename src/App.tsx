@@ -194,6 +194,7 @@ function App() {
           experiment,
           conditionA,
           conditionB,
+          /** @ts-expect-error its typed never[] but should be [number,number][] */
           extraConditions: allConditions.slice(2),
           loc: newLoc,
           normType,
@@ -234,16 +235,51 @@ function App() {
               values={genomes}
               value={genome}
               onChange={setGenome}
+              hoverLabel="Select Genome"
             />
             {experiments.length >= 1 && (
-              <div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.15rem',
+                }}
+              >
                 <Select
                   id="experiment-select"
                   className="pill-select"
                   values={experiments}
                   value={experiment}
                   onChange={setPreferredExperiment}
+                  hoverLabel="Select Experiment"
                 />
+                <button
+                  className="extra-condition-button experiment-info-button"
+                  onClick={() => {}}
+                  title="Experiment Info"
+                >
+                  <svg
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlnsXlink="http://www.w3.org/1999/xlink"
+                    x="0px"
+                    y="0px"
+                    viewBox="0 0 122.88 122.88"
+                    width="1.05rem"
+                    height="1.05rem"
+                    fill="currentColor"
+                    enableBackground="new 0 0 122.88 122.88"
+                    xmlSpace="preserve"
+                  >
+                    <g>
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M61.44,0c33.926,0,61.44,27.514,61.44,61.44c0,33.926-27.514,61.439-61.44,61.439 C27.513,122.88,0,95.366,0,61.44C0,27.514,27.513,0,61.44,0L61.44,0z M79.42,98.215H43.46v-6.053h6.757v-36.96H43.46v-4.816h16.808 c4.245,0,8.422-0.51,12.549-1.551v43.328h6.604V98.215L79.42,98.215z M63.859,21.078c2.785,0,4.975,0.805,6.571,2.396 c1.579,1.59,2.377,3.771,2.377,6.581c0,2.848-1.358,5.381-4.093,7.601c-2.751,2.22-5.941,3.338-9.577,3.338 c-2.733,0-4.905-0.765-6.569-2.297c-1.665-1.551-2.497-3.556-2.497-6.05c0-3.143,1.358-5.853,4.059-8.152 C56.83,22.219,60.072,21.078,63.859,21.078L63.859,21.078z"
+                      />
+                    </g>
+                  </svg>
+                </button>
               </div>
             )}
             {coverage.length >= 1 && (
@@ -252,7 +288,7 @@ function App() {
                 <ConditionsSelect
                   id="select-condition-a"
                   className="pill-select"
-                  label="Condition"
+                  hoverLabel="Choose conditions"
                   coverage={coverage}
                   coverageConditionNames={coverageConditionNames}
                   value={conditionA}
@@ -263,7 +299,7 @@ function App() {
                   <ConditionsSelect
                     id="select-condition-b"
                     className="pill-select"
-                    label="Condition"
+                    hoverLabel="Choose conditions"
                     coverage={coverage}
                     coverageConditionNames={coverageConditionNames}
                     value={conditionB}
@@ -279,7 +315,7 @@ function App() {
                           key={i}
                           id={`select-condition-${i}}`}
                           className="pill-select"
-                          label="Condition"
+                          hoverLabel="Choose conditions"
                           coverage={coverage}
                           coverageConditionNames={coverageConditionNames}
                           value={cond}
@@ -298,7 +334,6 @@ function App() {
                   >
                     <svg
                       version="1.1"
-                      id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlnsXlink="http://www.w3.org/1999/xlink"
                       x="0px"
@@ -307,7 +342,7 @@ function App() {
                       height="0.75rem"
                       fill="currentColor"
                       viewBox="0 0 121.31 122.876"
-                      enable-background="new 0 0 121.31 122.876"
+                      enableBackground="new 0 0 121.31 122.876"
                       xmlSpace="preserve"
                     >
                       <g>
@@ -330,16 +365,15 @@ function App() {
                     >
                       <svg
                         version="1.1"
-                        id="Layer_1"
                         xmlns="http://www.w3.org/2000/svg"
                         xmlnsXlink="http://www.w3.org/1999/xlink"
                         x="0px"
                         y="0px"
-                        width="0.82rem"
-                        height="0.82rem"
+                        width="0.75rem"
+                        height="0.75rem"
                         fill="currentColor"
                         viewBox="0 0 122.875 122.648"
-                        enable-background="new 0 0 122.875 122.648"
+                        enableBackground="new 0 0 122.875 122.648"
                         xmlSpace="preserve"
                       >
                         <g>
@@ -361,6 +395,7 @@ function App() {
             <div className="header-buttons">
               <div
                 style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+                title="Displayed naming scheme for genes"
               >
                 <label htmlFor="genes-label-type-select">Gene Labels:</label>
                 <Select
@@ -373,6 +408,7 @@ function App() {
               </div>
               <div
                 style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+                title="Data normalisation technique"
               >
                 <label htmlFor="norm-type-select">Normalisation: </label>
                 <Select
