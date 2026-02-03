@@ -472,10 +472,6 @@ function App() {
             </div>
           </div>
         </div>
-
-        {/*<div className="header-buttons-container">*/}
-
-        {/*</div>*/}
       </header>
 
       <div className="jbrowse-container">
