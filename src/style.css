@@ -422,6 +422,21 @@ select {
   padding-top: 0.37rem;
 }
 
+.modal-close-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #155b8e;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.modal-close-button:hover {
+  background-color: dodgerblue;
+}
+
 /** ===== DARK THEME =====*/
 @media (prefers-color-scheme: dark) {
   html,
