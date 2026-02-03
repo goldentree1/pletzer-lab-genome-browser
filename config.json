@@ -21,10 +21,7 @@
               "experiments/relA/relA_Un/relA_Un.2.bw"
             ]
           ],
-          "coverage_condition_names": [
-            "relA_In",
-            "relA_Un"
-          ]
+          "coverage_condition_names": ["relA_In", "relA_Un"]
         },
         "GSH": {
           "coverage": [
@@ -53,24 +50,12 @@
               "experiments/GSH/TM5/PA_TM5.3.bw"
             ]
           ],
-          "coverage_condition_names": [
-            "GSH",
-            "NT",
-            "THIO",
-            "TM5"
-          ]
+          "coverage_condition_names": ["GSH", "NT", "THIO", "TM5"]
         }
       }
     },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
     "extras": []
   },
   "GCF_000013465.1 (S.aureus USA300LAC)": {
@@ -97,22 +82,12 @@
               "experiments/BF_SA/BF_SA_UT/BF_SA_UT.3.bw"
             ]
           ],
-          "coverage_condition_names": [
-            "BF_SA_BF",
-            "BF_SA_UT"
-          ]
+          "coverage_condition_names": ["BF_SA_BF", "BF_SA_UT"]
         }
       }
     },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
     "extras": []
   },
   "GCF_000014625 (P.aeruginosa PA14)": {
@@ -139,22 +114,12 @@
               "experiments/PA14/PA14_Un/PA14_Un.3.bw"
             ]
           ],
-          "coverage_condition_names": [
-            "PA14_I",
-            "PA14_Un"
-          ]
+          "coverage_condition_names": ["PA14_I", "PA14_Un"]
         }
       }
     },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
     "extras": []
   },
   "GCF_000026645.1 (P.aeruginosa LESB58)": {
@@ -167,26 +132,13 @@
       "experiments": {
         "experiment1": {
           "info": "experiments/experiment1/info.txt",
-          "coverage": [
-            [
-              "experiments/experiment1/Pa_BF/Pa_BF_s1.1.bw"
-            ]
-          ],
-          "coverage_condition_names": [
-            "Pa_BF"
-          ]
+          "coverage": [["experiments/experiment1/Pa_BF/Pa_BF_s1.1.bw"]],
+          "coverage_condition_names": ["Pa_BF"]
         }
       }
     },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
+    "norms": ["cpm", "none"],
+    "genesLabelTypes": ["name", "locus_tag", "old_locus_tag"],
     "extras": []
   }
 }

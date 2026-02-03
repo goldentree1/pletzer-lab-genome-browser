@@ -36,6 +36,7 @@ export interface JBrowseCustomConfigHybrid {
     genomic: string; // default 'GENOME.gff'
     experiments: {
       [name: string]: {
+        info?: string;
         coverage: string[][];
         coverage_condition_names: string[];
       };

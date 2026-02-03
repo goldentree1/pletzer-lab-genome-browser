@@ -404,8 +404,8 @@ select {
   padding-block: 2px;
   padding-inline: 0.5rem 0.5rem;
   font-weight: 500;
-  max-width: 110px;
-  min-width: 110px;
+  max-width: 115px;
+  min-width: 115px;
 }
 
 .normalize-select {
