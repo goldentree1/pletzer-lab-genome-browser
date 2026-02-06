@@ -61,20 +61,22 @@ To rebuild the website with new data, follow the steps below:
       ├── genome1_name/
       │   ├── refseq.fna
       │   ├── genes.gff
-      │   └── reads/
-      │       ├── condition1/
-      │       │   ├── condition1.1.bam
-      │       │   ├── condition1.2.bam
-      │       │   ├── ...
-      │       │   └── condition1.N.bam
-      │       └── condition2/
-      │           ├── condition2.1.bam
-      │           ├── condition2.2.bam
-      │           ├── ...
-      │           └── condition2.N.bam
+      │   └── experiments/
+      │       └── experiment1_name/
+      │           ├── condition1_name/
+      │           │   ├── condition1.1.bam
+      │           │   ├── condition1.2.bam
+      │           │   ├── ...
+      │           │   └── condition1.N.bam
+      │           └── condition2_name/
+      │               ├── cond2.1.bam
+      │               ├── cond2.2.bam
+      │               ├── ...
+      │               └── cond2.N.bam
       │
       └── genome2_name/
           ├── ...
+
     ```
 
     Note:
@@ -82,22 +84,36 @@ To rebuild the website with new data, follow the steps below:
     - `genes.gff` is the genes file, containing the coordinates and names for each gene.
     - `reads/` - contains BAM files. Make sure it follows the structure shown above. BAM files **must** have extension `.<sample_number>.bam` (e.g., `condition1.1.bam` for condition #1, sample #1).
     
-      You may find `scripts/ncbi-download.sh` helpful to auto-download "refseq.fna" and "genes.gff" from NCBI database, example:
+      You may find `scripts/ncbi-download.sh` helpful to auto-download "refseq.fasta" and "genes.gff" from NCBI database. For example:
       ```bash
       scripts/ncbi-download.sh GCF_000026645.1 ./data/000026645.1_PA_LESB58
       ```
+      The command above will automatically download the P.aeruginosa LESB58 nucleotide sequence and genes information. All you would need to do next is create the experiments/ directory structure.
 
 ---
 
 3. **Run the build script on your data/ directory:**
 
     ```bash
-    scripts/build.sh data --skip-processed-bams --yes --bin-size=10 --n-threads=5
+    scripts/build.sh data \
+        --yes \
+        --skip-processed-bams \
+        --bin-size=10 \
+        --n-threads=5
     ```
+
+    The command above uses a some arguments to control its output:
+     - 'data' means to process genome files from the relative directory ./data
+     - '--yes' makes the script run without waiting for user input
+     - '--skip-processed-bams' make the script skip processing for any BAM file where a BigWig (.bw) file already exists of the same name (BigWig is the final output format for the website). Adding this option can massively speed up the build-process, but may cause issues if bad BigWig files are present.
+     - '--bin-size=10' sets the bin size to 10 when processing BAM files. Values are averaged over every bin-size values (e.g., with --bin-size=3, the values (1,2,3,4,5,6) become (2,2,2,5,5,5)). Bin size of 10 is the default. Also keep in mind that while lower bin sizes are more visually precise at high resolution, the size of the BigWig will be exponentially larger.
+     - '--n-thread=5' make the script attempt to use that many threads while processing BAM files. Generally, higher values should speed up the script (but on low-end computers that do not have enough threads, it could cause issues). The default is 1 thread.
+   
+    Once the command completes successfully, the newly-built website is stored in the [./dist](./dist/) directory. This directory contains all data and files required for the page to work on a web server. More information on deployment is given below.
 
     If the data is malformed, the script will abort and list errors.
 
-    #### Common build errors:
+    ### Common build errors:
     - Chromosome names are inconsistent:
         A common issue will be that the names of chromosomes are not consistent across files. For example:
         ```bash
@@ -122,7 +138,7 @@ To rebuild the website with new data, follow the steps below:
         
       This script may be helpful for investigating chromosomes:
       ```bash
-      scripts/chromosome-check.py
+      scripts/chromosome-check.py --verbose
       ```
     ---
 
@@ -130,19 +146,16 @@ To rebuild the website with new data, follow the steps below:
     ```bash
     npm start
     ```
+    This will launch a simple web server, serving the contents of the [./dist](./dist/) directory where your new website build should be.
 
 5. Once happy, copy the entire "dist/" folder to your web server or hosting provider.
 
     **WordPress deployment on pletzerlab.com:**
     1. Go to the [Pletzer Lab Wordpress Admin Dashboard](https://pletzerlab.com/backend-login/) and login.
-    2. In the sidebar, click 'WP File Manager'.
-    3. Click the upload button, and upload the generated [dist/](./dist/) directory
-        ![Upload Button Screenshot](./scrnsht-wp-upload.png)
-    4. Rename the uploaded `dist` folder to `pletzer-lab-genome-browser`.
-        ![Rename 'dist' Screenshot](./scrnsht-wp-rename.png)
-    5. Done! It should now be available at [pletzerlab.com/genome-browser]
-        
-    For Wordpress, go to your [Wordpress Admin Dashboard](https://pletzerlab.com/wp-admin), and upload the "dist/" folder using 'File Manager' in the sidebar. Once uploaded, rename "dist" to 'genome-browser', and it will be available at [https://pletzerlab.com/pletzer-lab-genome-browser](https://pletzerlab.com/pletzer-lab-genome-browser).
+    2. In the sidebar, click 'File Manager'. This directory points to the 'genome-browser' folder, in which 'plgb-dist' is the deployed website.
+    3. Click the upload button, select 'Upload Folder', and upload your generated [dist/](./dist/) directory
+    4. Rename the uploaded `dist` folder to `plgb-dist`. The page at this URL will be automatically detected by the website and used as the official deployment.
+    5. It should now be available at [pletzerlab.com/genome-browser]!
 
 ## Developer Guide
 

@@ -209,7 +209,7 @@ main() {
 
     echo "Building website to 'dist' (this may take a couple of minutes)... "
     set +e # unset throw on err so we can print build issues
-    BUILD_LOGS=$(npm run build 1>/dev/null)
+    BUILD_LOGS=$(NODE_OPTIONS="--max-old-space-size=6144" npm run build 1>/dev/null)
     EXIT_CODE=$?
     set -e
     if [ $EXIT_CODE -ne 0 ]; then

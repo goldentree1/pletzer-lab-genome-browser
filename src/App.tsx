@@ -66,6 +66,8 @@ function App() {
     false,
   );
 
+  // lollll yes yes i know this isnt great im tired and running outta time,
+  // the rest of the code is better i swearrrrr !!!!!!!!!!!! ;-)
   const addCondition = () => {
     if (!conditionC) return setConditionC([2, 0]);
     if (!conditionD) return setConditionD([3, 0]);

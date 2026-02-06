@@ -53,11 +53,6 @@ X (Sam minor) compare >= 3 conditions. Perhaps just a + button if > 3.
     4. (i) <- that is an 'info' button. it should show the text for the current experiment (if info.txt file exists).
 
 
-- Variants as optional in build.sh
-    1. Change build script to detect 'variants.vcf'
-    2. vcf-rm-empty-metadata-for-jbrowse < variants.vcf > variants.jbrowse-compat.vcf
-    3. if vcfFile: add 'vcfFile' to generated config.json, and edit jbrowse-custom.ts to load them.
-
 - (minor) build.sh improvements - make it pick up whether old_locus_tag and locus_tag EXIST before adding options
 
 - (minor) build.sh improvements - BAMCOV_NORMALISATIONS = "cpm,none" should actually do stuff...
@@ -70,3 +65,23 @@ X (Sam minor) compare >= 3 conditions. Perhaps just a + button if > 3.
 - (very minor) GTF files accepted as well as GFF.
 
 - (very minor) accept FASTA, FA, FNA, FAA extensions for refseq.fasta
+
+
+
+
+
+- Variants as optional in build.sh + program? (didnt sound like the cared much)
+    1. Change build script to detect 'variants.vcf'
+    2. vcf-rm-empty-metadata-for-jbrowse < variants.vcf > variants.jbrowse-compat.vcf
+    3. if vcfFile: add 'vcfFile' to generated config.json, and edit jbrowse-custom.ts to load them.
+
+- Style the info popup better (just so it looks like JBrowse - GPT should be able to)
+
+- get the tests back in, they in that other repo
+
+- Need titles for the selects (Genome, experiment etc)
+
+- Do a final re-arrange:
+(EG see ./thoguht)
+
+- (optional) Make JBrowse
