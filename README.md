@@ -1,5 +1,5 @@
 # Pletzer Lab Genome Browser
-Genome browser website and related scripting utilities.
+Genome browser website and related scripting utilities for data-processing and re-building site.
 Made for Pletzer Lab by Elliott Brown.
 
 ## **Setup**
@@ -63,6 +63,7 @@ To rebuild the website with new data, follow the steps below:
       │   ├── genes.gff
       │   └── experiments/
       │       └── experiment1_name/
+      │           ├── (optional) info.txt
       │           ├── condition1_name/
       │           │   ├── condition1.1.bam
       │           │   ├── condition1.2.bam
@@ -128,15 +129,15 @@ To rebuild the website with new data, follow the steps below:
         Aborting due to errors.
         ```
     
-        If we know that "CP000255.1" conchromosome maps to "NC_007793.1", we can fix this by renaming the chromosome in the BAM file to match the reference sequence using `scripts/bam-reheader`:
+        If we know that "CP000255.1" chromosome maps to "NC_007793.1", we can fix this by renaming the chromosome in the BAM file to match the reference sequence using `scripts/bam-reheader`:
         ```bash
         scripts/bam-reheader /path/to/BF_SA_BF.1.bam "CP000255.1" "NC_007793.1"
         # After this, there will be two files:
-        #  - BF_SA_BF.1.bam.ORIGINAL (the original file with mismatched chromosomes)
+        #  - BF_SA_BF.1.bam.ORIGINAL (the original file with mismatched chromosomes - these are ignored during build)
         #  - BF_SA_BF.1.bam (the fixed file)
         ```
         
-      This script may be helpful for investigating chromosomes:
+      This script may be helpful for investigating chromosomes names:
       ```bash
       scripts/chromosome-check.py --verbose
       ```
@@ -146,7 +147,7 @@ To rebuild the website with new data, follow the steps below:
     ```bash
     npm start
     ```
-    This will launch a simple web server, serving the contents of the [./dist](./dist/) directory where your new website build should be.
+    This will launch a simple web server, serving the contents of the [./dist](./dist/) directory on [localhost:3000](http://localhost:3000).
 
 5. Once happy, copy the entire "dist/" folder to your web server or hosting provider.
 
@@ -156,6 +157,12 @@ To rebuild the website with new data, follow the steps below:
     3. Click the upload button, select 'Upload Folder', and upload your generated [dist/](./dist/) directory
     4. Rename the uploaded `dist` folder to `plgb-dist`. The page at this URL will be automatically detected by the website and used as the official deployment.
     5. It should now be available at [pletzerlab.com/genome-browser]!
+
+    **More information on deployment:**
+    The type of website outputted is known as a 'static website':
+      - A static site is a website in its simplest form - a simple folder containing an "index.html" file (that's the webpage), and any other arbitrary data the page may use.
+      - Importantly, that means that your web provider / server bears the responsibility of serving that folder, and given there are no external assets used in this project (i.e., no external dependencies such as databases, this website is fully self-contained), then this website should be as secure as your server is.
+      - Almost any web provider or server can serve static files. Just drop the directory where you wish.
 
 ## Developer Guide
 
@@ -193,9 +200,7 @@ Public assets for the website (e.g., images, data, styles).
 - #### [dist](./dist) directory
 After running the build script, the outputted website files will be here. Run the directory as a server (e.g., "npx serve -S ./dist") to make the website available on [localhost:3000](http://localhost:3000).
 
-
-
-# vite with @jbrowse/react-linear-genome-view
+### Forked from "vite with @jbrowse/react-linear-genome-view"
 
 This is a demo of using the linear genome view with vite (see
 https://vitejs.dev/)
@@ -216,8 +221,3 @@ Run `yarn` and then `yarn dev` to start a development instance
 
 Run `yarn build` which produces a `build` directory that can be deployed to a
 static web server
-
-
-### Overview
-
-This project uses [JBrowse2 Linear Genome View](https://github.com/GMOD/jbrowse-react-linear-genome-view-vite-demo) to build the genome browser website. Scripts are provided to fetch, transform and prepare the data.

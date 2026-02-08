@@ -27,6 +27,7 @@
           ]
         },
         "GSH": {
+          "info": "experiments/GSH/info.txt",
           "coverage": [
             [
               "experiments/GSH/GSH/GSH.average.bw",
@@ -68,8 +69,7 @@
     ],
     "genesLabelTypes": [
       "name",
-      "locus_tag",
-      "old_locus_tag"
+      "locus_tag"
     ],
     "extras": []
   },

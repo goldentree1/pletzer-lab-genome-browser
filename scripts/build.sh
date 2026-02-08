@@ -450,6 +450,16 @@ genome_data_processing_ritual(){
     echo "Preparing genes file '$(basename "$genes_file")'..."
     jbrowse_prepare_gff "$genes_file"
 
+    GENES_LABEL_TYPES_CONFIRMED=()
+    for label in ${GENES_LABEL_TYPES//,/ }; do
+        if grep -qi "$label=" "$genes_file"; then
+            GENES_LABEL_TYPES_CONFIRMED+=("$label")
+        fi
+    done
+    GENES_LABEL_TYPES_CONFIRMED_CSV=$(IFS=, ; echo "${GENES_LABEL_TYPES_CONFIRMED[*]}")
+
+    # check_names "$genes_file"
+
     # if [[ -f "$variants_file" ]]; then
     #     echo "Found variants '$(basename "$variants_file")', preparing..."
     #     jbrowse_prepare_vcf "$variants_file"
@@ -608,7 +618,7 @@ node <<-EOF
         },
         // below are not done yet!
         norms: ["cpm", "none"],
-        genesLabelTypes: ["name", "locus_tag", "old_locus_tag"],
+        genesLabelTypes: "$(echo "$GENES_LABEL_TYPES_CONFIRMED_CSV")".split(","),
         extras: []
       }
     };

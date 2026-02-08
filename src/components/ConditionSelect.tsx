@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 export default function ConditionsSelect({
   coverage,
   coverageConditionNames,
@@ -17,9 +15,6 @@ export default function ConditionsSelect({
   className?: string;
   id: string;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <select
       className={className}
@@ -29,11 +24,7 @@ export default function ConditionsSelect({
         const [c, r] = e.target.value.split(',').map(Number);
         onChange([c, r]);
       }}
-      title={!isOpen && isHovered ? hoverLabel : undefined} // only show on hover + not open
-      onFocus={() => setIsOpen(true)}
-      onBlur={() => setIsOpen(false)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      title={hoverLabel} // only show on hover + not open
     >
       {coverage.map((arr, i) => (
         <optgroup

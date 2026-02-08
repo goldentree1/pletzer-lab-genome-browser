@@ -323,13 +323,12 @@ select {
   }
 }
 
-/* 1. THE SHARED LOGIC (Cleaned) */
 select {
   appearance: none;
   -webkit-appearance: none;
   background-repeat: no-repeat;
   background-position: right 10px center;
-  background-size: 18px; /* Fixed size for consistency */
+  background-size: 18px;
 
   @supports (appearance: base-select) {
     @media (hover: hover) {
@@ -338,8 +337,6 @@ select {
         appearance: base-select;
       }
 
-      /* This is the key: Hide the background-image when the picker is active
-         to prevent the "Double Arrow" ghosting. */
       background-image: none !important;
 
       &::picker-icon {
@@ -356,7 +353,6 @@ select {
       }
 
       &::picker(select) {
-        /* ... keep your existing picker styling (borders, etc) ... */
         border: 2px solid #155b8e;
         background: white;
         border-radius: 20px;
@@ -398,7 +394,7 @@ select {
 }
 
 .sq-select {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   background: white
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23155b8e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")
     right 10px center / 18px no-repeat;

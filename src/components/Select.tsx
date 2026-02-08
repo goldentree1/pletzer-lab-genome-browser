@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 interface SelectProps {
   value: string;
   values: string[];
@@ -17,17 +15,13 @@ function Select({
   className,
   hoverLabel,
 }: SelectProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <select
       className={className}
       id={id}
       value={value}
       onChange={e => onChange(e.target.value)}
-      title={isOpen ? undefined : hoverLabel} // hide tooltip when open
-      onFocus={() => setIsOpen(true)} // dropdown is opening
-      onBlur={() => setIsOpen(false)} // dropdown closed
+      title={hoverLabel} // hide tooltip when open
     >
       {values.map((val, i) => (
         <option key={i} value={val}>

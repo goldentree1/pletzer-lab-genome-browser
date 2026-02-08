@@ -42,7 +42,8 @@ function App() {
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [infoText, setInfoText] = useState<string>('');
 
-  const [norms, setNorms] = useState(['none']);
+  const [norms, setNorms] = useState(['cpm']);
+  const [genesLabels, setGenesLabels] = useState(['name']);
   const loc = useRef<string | null>(null);
 
   const [preferredExperiment, setPreferredExperiment] = useStoredStateString(
@@ -55,7 +56,7 @@ function App() {
   );
   const [normType, setNormType] = useStoredStateString(
     'pletzer-lab-genome-browser:normType',
-    'none',
+    'cpm',
   );
   const [logScaling, setLogScaling] = useStoredStateBoolean(
     'pletzer-lab-genome-browser:logScaling',
@@ -176,20 +177,30 @@ function App() {
         loc.current = null;
       }
 
+      let err = false;
+
       const config = myConf[genome];
       if (!config) {
         setGenome(genomes[0]);
-        return;
+        err = true;
       }
 
       setNorms(config.norms);
 
       if (!config.norms.includes(normType)) {
         setNormType(config.norms[0]);
-        return;
+        err = true;
       }
 
-      // console.log('using loc:', newLoc);
+      setGenesLabels(config.genesLabelTypes ?? ['name']);
+      if (!config.genesLabelTypes?.includes(genesLabelType)) {
+        setGenesLabelType(
+          config.genesLabelTypes?.length ? config.genesLabelTypes[0] : 'name',
+        );
+        err = true;
+      }
+
+      if (err) return;
 
       const allConditions = [
         conditionA,
@@ -201,9 +212,9 @@ function App() {
         conditionG,
       ].filter(Boolean) as [number, number][];
 
-      console.log(JSON.stringify(myConf[genome], null, 2));
+      // console.log(JSON.stringify(myConf[genome], null, 2));
 
-      console.log(myConf[genome].data.experiments[experiment]?.info);
+      // console.log(myConf[genome].data.experiments[experiment]?.info);
 
       const info =
         myConf[genome]?.data?.experiments?.[experiment]?.info ?? null;
@@ -214,7 +225,7 @@ function App() {
           experiment,
           conditionA,
           conditionB,
-          /** @ts-expect-error its typed never[] but should be [number,number][] */
+          /** @ts-expect-error its typed never[] but should be [number,number][], in reality condA+B should be here but eh im outta time */
           extraConditions: allConditions.slice(2),
           loc: newLoc,
           normType,
@@ -481,20 +492,24 @@ function App() {
             <div className="header-buttons">
               <div
                 style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}
-                title="Displayed gene names"
+                title={`Displayed gene names: ${genesLabelType}`}
               >
                 <label htmlFor="genes-label-type-select">Gene Labels:</label>
                 <Select
                   id="genes-label-type-select"
                   className="sq-select"
-                  values={['name', 'locus_tag', 'old_locus_tag']}
+                  values={genesLabels}
                   value={genesLabelType}
                   onChange={setGenesLabelType}
                 />
               </div>
               <div
                 style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}
-                title="Data normalisation technique"
+                title={
+                  normType === 'cpm'
+                    ? 'Data normalisation: CPM (counts-per-million)'
+                    : `Data normlisation: ${normType}`
+                }
               >
                 <label htmlFor="norm-type-select">Normalisation: </label>
                 <Select
@@ -512,7 +527,7 @@ function App() {
                 hoverDescription="Use base-2 log scale"
               />
               <Checkbox
-                label="Global Y-axis"
+                label="Fix Y-axis"
                 checked={globalScaling}
                 onChange={setGlobalScaling}
                 hoverDescription="Fix Y-axis between global minimum and maximum values"
