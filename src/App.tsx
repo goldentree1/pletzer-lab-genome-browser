@@ -255,7 +255,9 @@ function App() {
     <>
       <header className="header">
         <div className="header-title">
-          <img src="./pletzerlab-icon.webp" alt="Pletzer Lab Icon" />
+          <a href="https://pletzerlab.com/">
+            <img src="./pletzerlab-icon.webp" alt="Pletzer Lab Icon" />
+          </a>
           {/*<h1>Pletzer Lab Genome Browser</h1>*/}
         </div>
         <div className="header-nav">
@@ -321,9 +323,25 @@ function App() {
                         onClick={async () => {
                           if (!experimentInfo) return;
                           try {
+                            let baseUrl;
+
+                            if (
+                              window.location.href.includes('pletzerlab.com')
+                            ) {
+                              baseUrl =
+                                'https://pletzerlab.com/wp-content/uploads/genome-browser/plgb-dist/';
+                            } else {
+                              baseUrl = window.location.href;
+                            }
+
                             const res = await fetch(
-                              `/data/${myConf[genome].genomeName}/${experimentInfo}`,
+                              new URL(
+                                `data/${myConf[genome].genomeName}/${experimentInfo}`,
+                                baseUrl,
+                              ),
                             );
+                            if (!res.ok) throw Error();
+
                             const text = await res.text();
                             setInfoText(text);
                             setInfoModalOpen(true);
@@ -543,10 +561,32 @@ function App() {
         </div>
       </header>
 
-      <div className="jbrowse-container">
-        {viewState && <JBrowseLinearGenomeView viewState={viewState} />}
-      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div className="jbrowse-container">
+          {viewState && <JBrowseLinearGenomeView viewState={viewState} />}
+        </div>
 
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <a
+            href="https://pletzerlab.com/"
+            style={{
+              fontSize: '0.7rem',
+              color: '#999',
+              textDecoration: 'none',
+              opacity: 0.8,
+            }}
+          >
+            ← back to pletzerlab.com
+          </a>
+        </div>
+      </div>
       {infoModalOpen && (
         <div
           style={{
@@ -592,7 +632,6 @@ function App() {
               Experiment "{experiment}"
             </div>
 
-            {/* Body with scroll */}
             <div
               style={{
                 padding: '1rem',
@@ -603,8 +642,6 @@ function App() {
             >
               {infoText}
             </div>
-
-            {/* Footer */}
             <div
               style={{
                 padding: '0.5rem 1rem',

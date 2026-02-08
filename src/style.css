@@ -20,6 +20,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: #1e1e25;
   background-color: #f2f2f2;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 code {

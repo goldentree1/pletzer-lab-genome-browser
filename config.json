@@ -30,35 +30,35 @@
           "info": "experiments/GSH/info.txt",
           "coverage": [
             [
-              "experiments/GSH/GSH/GSH.average.bw",
-              "experiments/GSH/GSH/PA_GSH.1.bw",
-              "experiments/GSH/GSH/PA_GSH.2.bw",
-              "experiments/GSH/GSH/PA_GSH.3.bw"
+              "experiments/GSH/PA_GSH/PA_GSH.average.bw",
+              "experiments/GSH/PA_GSH/PA_GSH.1.bw",
+              "experiments/GSH/PA_GSH/PA_GSH.2.bw",
+              "experiments/GSH/PA_GSH/PA_GSH.3.bw"
             ],
             [
-              "experiments/GSH/NT/NT.average.bw",
-              "experiments/GSH/NT/PA_NT.1.bw",
-              "experiments/GSH/NT/PA_NT.2.bw",
-              "experiments/GSH/NT/PA_NT.3.bw"
+              "experiments/GSH/PA_NT/PA_NT.average.bw",
+              "experiments/GSH/PA_NT/PA_NT.1.bw",
+              "experiments/GSH/PA_NT/PA_NT.2.bw",
+              "experiments/GSH/PA_NT/PA_NT.3.bw"
             ],
             [
-              "experiments/GSH/THIO/THIO.average.bw",
-              "experiments/GSH/THIO/PA_THIO.1.bw",
-              "experiments/GSH/THIO/PA_THIO.2.bw",
-              "experiments/GSH/THIO/PA_THIO.3.bw"
+              "experiments/GSH/PA_THIO/PA_THIO.average.bw",
+              "experiments/GSH/PA_THIO/PA_THIO.1.bw",
+              "experiments/GSH/PA_THIO/PA_THIO.2.bw",
+              "experiments/GSH/PA_THIO/PA_THIO.3.bw"
             ],
             [
-              "experiments/GSH/TM5/TM5.average.bw",
-              "experiments/GSH/TM5/PA_TM5.1.bw",
-              "experiments/GSH/TM5/PA_TM5.2.bw",
-              "experiments/GSH/TM5/PA_TM5.3.bw"
+              "experiments/GSH/PA_TM5/PA_TM5.average.bw",
+              "experiments/GSH/PA_TM5/PA_TM5.1.bw",
+              "experiments/GSH/PA_TM5/PA_TM5.2.bw",
+              "experiments/GSH/PA_TM5/PA_TM5.3.bw"
             ]
           ],
           "coverage_condition_names": [
-            "GSH",
-            "NT",
-            "THIO",
-            "TM5"
+            "PA_GSH",
+            "PA_NT",
+            "PA_THIO",
+            "PA_TM5"
           ]
         }
       }
