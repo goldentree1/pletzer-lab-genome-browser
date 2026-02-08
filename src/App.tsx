@@ -13,10 +13,14 @@ import ConditionsSelect from './components/ConditionSelect';
 
 function App() {
   const genomes: string[] = Object.keys(myConf).sort();
-  const [genome, setGenome] = useStoredStateString(
+  const [storedGenome, setGenome] = useStoredStateString(
     'pletzer-lab-genome-browser:genome',
     genomes[0],
   );
+  const genome = myConf[storedGenome] ? storedGenome : genomes[0];
+  if (genome !== storedGenome) {
+    setGenome(genome);
+  }
 
   const [viewState, setViewState] = useState<ViewModel>();
   const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
@@ -84,7 +88,9 @@ function App() {
     if (conditionC) return setConditionC(null);
   };
 
-  const experiments = Object.keys(myConf[genome].data.experiments);
+  const safeGenome = myConf[genome] ? genome : genomes[0];
+
+  const experiments = Object.keys(myConf[safeGenome].data.experiments);
 
   const experiment = experiments.includes(preferredExperiment)
     ? preferredExperiment

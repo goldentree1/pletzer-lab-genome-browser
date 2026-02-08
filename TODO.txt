@@ -1,30 +1,4 @@
-(20/01):
-X GET SEARCH WORKING AGAIN!
-X Search aliases via old_locus_tag
-X Script to rebuild based on pre-defined dir structure
-X "Use Binsizes of 10. CPM Normalization is good, it should be the default" - Sam.
-X Do BAM -> BW for S.Aureus (sam gave me more BAM files)
-X Wordpress available via WP File Manager
-X loc string... keep it same on condition changes / gene label changes / normalisation? Alternatively, could keep big
-map of all genomes and where the person was at
-X secondary label for anything else (default to note). NO - fine as is.
-
-(30/01):
-X S.aureus USA300 reads only have one chromosome, but there are 4 in reference sequence? THIS IS FINE
-X Multichromosome: is it issue they dont align with refseq? Could: NO THEY ARE FINE
-    A. Do nothing. (when you search, it comes up with chromosomes)
-    B. read .fai, save to json, show all?
-    C. Select thing at top?
-X Should gene labels be changeable? They are searchable by all tags now (old_locus,locus,name) + changeable. DONE
-X Secondary label for genes to show... do you want notes? Or scrap changeable and just do name/old_locus_tag combo? NO.
-
 TODO
-X EXPERIMENTS Select:: Genome -> experiment -> conditions. So nested dir. Change build.sh and change
-    (MAJOR: DO FIRST)
-    1. Add combobox for experiment.
-    2. Change build script to use <genome_name>/experiments/<experiment_name>/<condition_name>/*.bam
-    3.
-
 
 X (Daniel/Sam) Deploy on Daniel site w/ navbar  + footer incl! Sam thinks this would be great.
     (test locally via WP Local first, then do it on Daniel's site)
@@ -44,44 +18,39 @@ X (Sam minor) compare >= 3 conditions. Perhaps just a + button if > 3.
         So when:
          - shift clicked
          - mouse inside JBrowse window,
-         -
-
-- (Sam) info.txt as optional in build.sh (info.txt should be an 'info' button on top bar - and should show a popup with literally just whatever text was thrown in). should be a 'info' button, that gives text about the EXPERIMENT.
-    X. Change build script to detect experiments/<experiment_name>/'info.txt'
-    X. if infoFile: add 'infoFile' to generated config.json for that /experiments/<experiment_name>/
-    3. edit jbrowse-custom.ts to load them.
-    4. (i) <- that is an 'info' button. it should show the text for the current experiment (if info.txt file exists).
-
-
-- (minor) build.sh improvements - make it pick up whether old_locus_tag and locus_tag EXIST before adding options
-
-- (minor) build.sh improvements - BAMCOV_NORMALISATIONS = "cpm,none" should actually do stuff...
-
-- (minor) make steezier:
-    1. hovering normalisation OR gene labels should give 'title' popup (perhaps indicating eg in case of normalisation, that eg CPM = Counts Per Million)
-
-- (minor) more basic tests + fix build test (eg CPM test, mean test)
-
-- (very minor) GTF files accepted as well as GFF.
-
-- (very minor) accept FASTA, FA, FNA, FAA extensions for refseq.fasta
-
-
-
-
 
 - Variants as optional in build.sh + program? (didnt sound like the cared much)
     1. Change build script to detect 'variants.vcf'
     2. vcf-rm-empty-metadata-for-jbrowse < variants.vcf > variants.jbrowse-compat.vcf
     3. if vcfFile: add 'vcfFile' to generated config.json, and edit jbrowse-custom.ts to load them.
 
-- Style the info popup better (just so it looks like JBrowse - GPT should be able to)
+- get the tests back in, they in that other repo for Daniel
 
-- get the tests back in, they in that other repo
+- Need titles for the selects (Genome, experiment etc) for Daniel
 
-- Need titles for the selects (Genome, experiment etc)
+X MAJOR CACHE ISSUE:  const experiments = Object.keys(myConf[genome].data.experiments);
+If that fails, entire site wont load. We need to detect if that conf is gone, and if it is gone, reset
+localStorage to use just first genome/conf.
 
-- Do a final re-arrange:
+- Proper overflow:scroll; for condition-selects
+
+- Re-deploy on Daniel's website.
+
+- Make 'Genome Browser' an actual page on Daniel's website.
+
+- Stylistic bugfix: no hover popups on selects once they were opened
+
+- Make sure README / REPORT is good.
+
+- (minor) Style the info popup better (just so it looks like JBrowse - GPT should be able to)
+
+- (minor) Style the +, i and x buttons better
+
+- (minor) Do a final re-arrange w/ CSS:
 (EG see ./thoguht)
 
-- (optional) Make JBrowse
+- (minor) shift+mousewheel = horizontal scroll for Sam
+
+- (minor) build.sh improvements - make it pick up whether old_locus_tag and locus_tag EXIST before adding options
+
+- (minor) build.sh improvements - BAMCOV_NORMALISATIONS = "cpm,none" should actually do stuff...

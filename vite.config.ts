@@ -18,6 +18,10 @@ export default defineConfig({
     sourcemap: true,
   },
 
+  optimizeDeps: {
+    force: true,
+  },
+
   // Vite serves .gz files with "Content-Encoding: gzip" which
   // the browser auto-decompresses, making JBrowse not work!!!
   // The only work-around is to serve it separately without vite
