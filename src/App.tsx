@@ -23,14 +23,18 @@ function App() {
   }
 
   const [viewState, setViewState] = useState<ViewModel>();
+
   const [conditionA, setConditionA] = useState<[number, number]>([0, 0]);
-  const [conditionB, setConditionB] = useState<[number, number]>([1, 0]);
+
+  const [conditionB, setConditionB] = useState<[number, number] | null>(null);
   const [conditionC, setConditionC] = useState<[number, number] | null>(null);
   const [conditionD, setConditionD] = useState<[number, number] | null>(null);
   const [conditionE, setConditionE] = useState<[number, number] | null>(null);
   const [conditionF, setConditionF] = useState<[number, number] | null>(null);
   const [conditionG, setConditionG] = useState<[number, number] | null>(null);
+
   const extraConditions = [
+    [conditionB, setConditionB],
     [conditionC, setConditionC],
     [conditionD, setConditionD],
     [conditionE, setConditionE],
@@ -74,6 +78,7 @@ function App() {
   // lollll yes yes i know this isnt great im tired and running outta time,
   // the rest of the code is better i swearrrrr !!!!!!!!!!!! ;-)
   const addCondition = () => {
+    if (!conditionB) return setConditionB([1, 0]);
     if (!conditionC) return setConditionC([2, 0]);
     if (!conditionD) return setConditionD([3, 0]);
     if (!conditionE) return setConditionE([4, 0]);
@@ -87,6 +92,7 @@ function App() {
     if (conditionE) return setConditionE(null);
     if (conditionD) return setConditionD(null);
     if (conditionC) return setConditionC(null);
+    if (conditionB) return setConditionB(null);
   };
 
   const safeGenome = myConf[genome] ? genome : genomes[0];
@@ -150,17 +156,16 @@ function App() {
   // revert default conditions + loc on genome change
   useEffect(() => {
     setConditionA([0, 0]);
-    setConditionB([1, 0]);
 
+    // reset extra conditions
+    setConditionB(null);
     setConditionC(null);
     setConditionD(null);
     setConditionE(null);
     setConditionF(null);
     setConditionG(null);
-    loc.current = null;
 
-    // const exps = Object.keys(myConf[genome].data.experiments);
-    // setExperiment(exps[0] ?? '');
+    loc.current = null;
   }, [genome]);
 
   // full-refresh jbrowse required for genome or conditions changes
@@ -202,6 +207,14 @@ function App() {
 
       if (err) return;
 
+      // console.log(JSON.stringify(myConf[genome], null, 2));
+
+      // console.log(myConf[genome].data.experiments[experiment]?.info);
+
+      const info =
+        myConf[genome]?.data?.experiments?.[experiment]?.info ?? null;
+      setExperimentInfo(info);
+
       const allConditions = [
         conditionA,
         conditionB,
@@ -212,21 +225,12 @@ function App() {
         conditionG,
       ].filter(Boolean) as [number, number][];
 
-      // console.log(JSON.stringify(myConf[genome], null, 2));
-
-      // console.log(myConf[genome].data.experiments[experiment]?.info);
-
-      const info =
-        myConf[genome]?.data?.experiments?.[experiment]?.info ?? null;
-      setExperimentInfo(info);
-
       const state = myCreateViewState(
         buildConfig(config, {
           experiment,
           conditionA,
-          conditionB,
-          /** @ts-expect-error its typed never[] but should be [number,number][], in reality condA+B should be here but eh im outta time */
-          extraConditions: allConditions.slice(2),
+          /** @ts-expect-error typed as never[] cbf fixing */
+          extraConditions: allConditions.slice(1),
           loc: newLoc,
           normType,
           genesLabelType,
@@ -409,18 +413,7 @@ function App() {
                     value={conditionA}
                     onChange={setConditionA}
                   />
-                  {coverage.length > 1 && <span>vs.</span>}
-                  {coverage.length > 1 && (
-                    <ConditionsSelect
-                      id="select-condition-b"
-                      className="pill-select"
-                      hoverLabel="Choose conditions"
-                      coverage={coverage}
-                      coverageConditionNames={coverageConditionNames}
-                      value={conditionB}
-                      onChange={setConditionB}
-                    />
-                  )}
+
                   {extraConditions.map(
                     ([cond, setCond], i) =>
                       cond && (
@@ -428,7 +421,7 @@ function App() {
                           <span>vs.</span>
                           <ConditionsSelect
                             key={i}
-                            id={`select-condition-${i}}`}
+                            id={`select-condition-${i}`}
                             className="pill-select"
                             hoverLabel="Choose conditions"
                             coverage={coverage}
@@ -471,37 +464,35 @@ function App() {
                       {/*X*/}
                     </button>
                   )}
-                  {
-                    <>
-                      <button
-                        className="extra-condition-button add-condition-button"
-                        onClick={addCondition}
-                        title="Show another condition"
-                      >
-                        <svg
-                          version="1.1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlnsXlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          width="0.75rem"
-                          height="0.75rem"
-                          fill="currentColor"
-                          viewBox="0 0 122.875 122.648"
-                          enableBackground="new 0 0 122.875 122.648"
-                          xmlSpace="preserve"
-                        >
-                          <g>
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M108.993,47.079c7.683-0.059,13.898,6.12,13.882,13.805 c-0.018,7.683-6.26,13.959-13.942,14.019L75.24,75.138l-0.235,33.73c-0.063,7.619-6.338,13.789-14.014,13.78 c-7.678-0.01-13.848-6.197-13.785-13.818l0.233-33.497l-33.558,0.235C6.2,75.628-0.016,69.448,0,61.764 c0.018-7.683,6.261-13.959,13.943-14.018l33.692-0.236l0.236-33.73C47.935,6.161,54.209-0.009,61.885,0 c7.678,0.009,13.848,6.197,13.784,13.818l-0.233,33.497L108.993,47.079L108.993,47.079z"
-                            />
-                          </g>
-                        </svg>
-                      </button>
-                    </>
-                  }
+
+                  <button
+                    className="extra-condition-button add-condition-button"
+                    onClick={addCondition}
+                    title="Show another condition"
+                  >
+                    <svg
+                      version="1.1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlnsXlink="http://www.w3.org/1999/xlink"
+                      x="0px"
+                      y="0px"
+                      width="0.75rem"
+                      height="0.75rem"
+                      fill="currentColor"
+                      viewBox="0 0 122.875 122.648"
+                      enableBackground="new 0 0 122.875 122.648"
+                      xmlSpace="preserve"
+                    >
+                      <g>
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M108.993,47.079c7.683-0.059,13.898,6.12,13.882,13.805 c-0.018,7.683-6.26,13.959-13.942,14.019L75.24,75.138l-0.235,33.73c-0.063,7.619-6.338,13.789-14.014,13.78 c-7.678-0.01-13.848-6.197-13.785-13.818l0.233-33.497l-33.558,0.235C6.2,75.628-0.016,69.448,0,61.764 c0.018-7.683,6.261-13.959,13.943-14.018l33.692-0.236l0.236-33.73C47.935,6.161,54.209-0.009,61.885,0 c7.678,0.009,13.848,6.197,13.784,13.818l-0.233,33.497L108.993,47.079L108.993,47.079z"
+                        />
+                      </g>
+                    </svg>
+                    {/* + SVG here */}
+                  </button>
                 </div>
               </div>
             )}

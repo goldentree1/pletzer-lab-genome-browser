@@ -100,7 +100,6 @@ export function buildConfig(
     logScale = true,
     experiment = Object.keys(experiments)[0],
     conditionA = [0, 0],
-    conditionB = [1, 0],
     extraConditions = [],
     normType = 'none',
     genesLabelType = 'name',
@@ -187,12 +186,14 @@ export function buildConfig(
   // add multiwig coverage if at least 2 conditions exist
   if (coverage.length) {
     const trackId = `multiwig-coverage-${experiment}`;
+    // treat conditionB as first extra condition
+    const allConditions = [...(extraConditions as [number, number][])] as [
+      number,
+      number,
+    ][];
     const all = [
       coverage[conditionA[0]]?.[conditionA[1]],
-      coverage[conditionB[0]]?.[conditionB[1]],
-      ...((extraConditions as [number, number][]) ?? []).map(
-        ([i, j]) => coverage[i]?.[j],
-      ),
+      ...allConditions.map(([i, j]) => coverage[i]?.[j]),
     ].filter(Boolean);
 
     conf.tracks.push({
