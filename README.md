@@ -155,8 +155,10 @@ To rebuild the website with new data, follow the steps below:
     1. Go to the [Pletzer Lab Wordpress Admin Dashboard](https://pletzerlab.com/backend-login/) and login.
     2. In the sidebar, click 'File Manager'. This directory points to the 'genome-browser' folder, in which 'plgb-dist' is the deployed website.
     3. Click the upload button, select 'Upload Folder', and upload your generated [dist/](./dist/) directory
+        ![Screenshot of Wordpress upload procedure](./upload-dist.png)
     4. Rename the uploaded `dist` folder to `plgb-dist`. The page at this URL will be automatically detected by the website and used as the official deployment.
-    5. It should now be available at [pletzerlab.com/genome-browser]!
+        ![Screenshot of Wordpress upload procedure](./upload-dist-rename.png)
+    5. It should now be available at [pletzerlab.com/genome-browser](https://pletzerlab.com/genome-browser)!
 
     **More information on deployment:**
     The type of website outputted is known as a 'static website':
@@ -210,14 +212,3 @@ esbuild and rollup instead of webpack
 
 This particular demo includes several polyfills that are needed for JBrowse
 including the Buffer polyfill
-
-## Demo of `@jbrowse/react-linear-genome-view` with vite
-
-See this app running at https://jbrowse.org/demos/lgv-vite/.
-
-## Usage
-
-Run `yarn` and then `yarn dev` to start a development instance
-
-Run `yarn build` which produces a `build` directory that can be deployed to a
-static web server

@@ -1,25 +1,12 @@
 TODO
 
-BEFORE MONDAY DEPLOYMENT:
-X fix info.txt (make info.txt generic for each)
-
-X CANT FUCKING DO IT -_-:: (Sam minor) SHIFT-scrolling for left right scroll.
-    1. Ummm idk aye, this might actually be quite hard.
-    2. Actually, theres probably some way to move JBrowse left/right.
-        So when:
-         - shift clicked
-         - mouse inside JBrowse window,
-
-- Re-deploy on Daniel's website.
-
-- Make 'Genome Browser' an actual page on Daniel's website.
-
 BEFORE THURS HAND-IN:
 - build on macOS (+lock versions)
-
-- Variants as optional in build.sh + program? (didnt sound like the cared much)
+- get the tests back in, they in that other repo for Daniel
+- finish report.md (add to README.md)
+- anyhting we missed in README.md?
+- presentation!!! :-O
+- (minor) Variants as optional in build.sh + program? (didnt sound like the cared much)
     1. Change build script to detect 'variants.vcf'
     2. vcf-rm-empty-metadata-for-jbrowse < variants.vcf > variants.jbrowse-compat.vcf
     3. if vcfFile: add 'vcfFile' to generated config.json, and edit jbrowse-custom.ts to load them.
-
-- get the tests back in, they in that other repo for Daniel
