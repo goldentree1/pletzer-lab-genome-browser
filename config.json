@@ -1,64 +1,46 @@
 {
-  "GCF_000006765.1 (P.aeruginosa PA01)": {
-    "genomeName": "GCF_000006765.1 (P.aeruginosa PA01)",
-    "firstRegion": "NC_002516.2",
+  "genome1": {
+    "genomeName": "genome1",
+    "firstRegion": "chr1",
     "trixName": "asm",
     "data": {
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff",
       "experiments": {
-        "relA": {
-          "info": "experiments/relA/info.txt",
+        "exp1": {
+          "info": "experiments/exp1/info.txt",
           "coverage": [
             [
-              "experiments/relA/relA_In/relA_In.average.bw",
-              "experiments/relA/relA_In/relA_In.1.bw",
-              "experiments/relA/relA_In/relA_In.2.bw"
+              "experiments/exp1/sample1/sample1.average.bw",
+              "experiments/exp1/sample1/s1.1.bw",
+              "experiments/exp1/sample1/s2.2.bw",
+              "experiments/exp1/sample1/s3.3.bw"
             ],
             [
-              "experiments/relA/relA_Un/relA_Un.average.bw",
-              "experiments/relA/relA_Un/relA_Un.1.bw",
-              "experiments/relA/relA_Un/relA_Un.2.bw"
+              "experiments/exp1/sample2/sample2.1.bw"
             ]
           ],
           "coverage_condition_names": [
-            "relA_In",
-            "relA_Un"
+            "sample1",
+            "sample2"
           ]
         },
-        "GSH": {
-          "info": "experiments/GSH/info.txt",
+        "exp2": {
+          "info": "experiments/exp2/info.txt",
           "coverage": [
             [
-              "experiments/GSH/PA_GSH/PA_GSH.average.bw",
-              "experiments/GSH/PA_GSH/PA_GSH.1.bw",
-              "experiments/GSH/PA_GSH/PA_GSH.2.bw",
-              "experiments/GSH/PA_GSH/PA_GSH.3.bw"
+              "experiments/exp2/e2-c1/e2-c1.average.bw",
+              "experiments/exp2/e2-c1/s1.1.bw",
+              "experiments/exp2/e2-c1/s2.2.bw",
+              "experiments/exp2/e2-c1/s3.3.bw"
             ],
             [
-              "experiments/GSH/PA_NT/PA_NT.average.bw",
-              "experiments/GSH/PA_NT/PA_NT.1.bw",
-              "experiments/GSH/PA_NT/PA_NT.2.bw",
-              "experiments/GSH/PA_NT/PA_NT.3.bw"
-            ],
-            [
-              "experiments/GSH/PA_THIO/PA_THIO.average.bw",
-              "experiments/GSH/PA_THIO/PA_THIO.1.bw",
-              "experiments/GSH/PA_THIO/PA_THIO.2.bw",
-              "experiments/GSH/PA_THIO/PA_THIO.3.bw"
-            ],
-            [
-              "experiments/GSH/PA_TM5/PA_TM5.average.bw",
-              "experiments/GSH/PA_TM5/PA_TM5.1.bw",
-              "experiments/GSH/PA_TM5/PA_TM5.2.bw",
-              "experiments/GSH/PA_TM5/PA_TM5.3.bw"
+              "experiments/exp2/e2-c2/sample2.1.bw"
             ]
           ],
           "coverage_condition_names": [
-            "PA_GSH",
-            "PA_NT",
-            "PA_THIO",
-            "PA_TM5"
+            "e2-c1",
+            "e2-c2"
           ]
         }
       }
@@ -68,112 +50,29 @@
       "none"
     ],
     "genesLabelTypes": [
-      "name",
-      "locus_tag"
+      "name"
     ],
     "extras": []
   },
-  "GCF_000013465.1 (S.aureus USA300LAC)": {
-    "genomeName": "GCF_000013465.1 (S.aureus USA300LAC)",
-    "firstRegion": "NC_007793.1",
-    "trixName": "asm",
-    "data": {
-      "refSeq": "refseq.fasta.gz",
-      "genomic": "genes.gff.sorted.noregion.gff",
-      "experiments": {
-        "BF_SA": {
-          "info": "experiments/BF_SA/info.txt",
-          "coverage": [
-            [
-              "experiments/BF_SA/BF_SA_BF/BF_SA_BF.average.bw",
-              "experiments/BF_SA/BF_SA_BF/BF_SA_BF.1.bw",
-              "experiments/BF_SA/BF_SA_BF/BF_SA_BF.2.bw",
-              "experiments/BF_SA/BF_SA_BF/BF_SA_BF.3.bw"
-            ],
-            [
-              "experiments/BF_SA/BF_SA_UT/BF_SA_UT.average.bw",
-              "experiments/BF_SA/BF_SA_UT/BF_SA_UT.1.bw",
-              "experiments/BF_SA/BF_SA_UT/BF_SA_UT.2.bw",
-              "experiments/BF_SA/BF_SA_UT/BF_SA_UT.3.bw"
-            ]
-          ],
-          "coverage_condition_names": [
-            "BF_SA_BF",
-            "BF_SA_UT"
-          ]
-        }
-      }
-    },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
-    "extras": []
-  },
-  "GCF_000014625 (P.aeruginosa PA14)": {
-    "genomeName": "GCF_000014625 (P.aeruginosa PA14)",
-    "firstRegion": "NC_008463.1",
-    "trixName": "asm",
-    "data": {
-      "refSeq": "refseq.fasta.gz",
-      "genomic": "genes.gff.sorted.noregion.gff",
-      "experiments": {
-        "PA14": {
-          "info": "experiments/PA14/info.txt",
-          "coverage": [
-            [
-              "experiments/PA14/PA14_I/PA14_I.average.bw",
-              "experiments/PA14/PA14_I/PA14_I.1.bw",
-              "experiments/PA14/PA14_I/PA14_I.2.bw",
-              "experiments/PA14/PA14_I/PA14_I.3.bw"
-            ],
-            [
-              "experiments/PA14/PA14_Un/PA14_Un.average.bw",
-              "experiments/PA14/PA14_Un/PA14_Un.1.bw",
-              "experiments/PA14/PA14_Un/PA14_Un.2.bw",
-              "experiments/PA14/PA14_Un/PA14_Un.3.bw"
-            ]
-          ],
-          "coverage_condition_names": [
-            "PA14_I",
-            "PA14_Un"
-          ]
-        }
-      }
-    },
-    "norms": [
-      "cpm",
-      "none"
-    ],
-    "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
-    ],
-    "extras": []
-  },
-  "GCF_000026645.1 (P.aeruginosa LESB58)": {
-    "genomeName": "GCF_000026645.1 (P.aeruginosa LESB58)",
-    "firstRegion": "NC_011770.1",
+  "genome3-onecondition": {
+    "genomeName": "genome3-onecondition",
+    "firstRegion": "chr1",
     "trixName": "asm",
     "data": {
       "refSeq": "refseq.fasta.gz",
       "genomic": "genes.gff.sorted.noregion.gff",
       "experiments": {
         "experiment1": {
-          "info": "experiments/experiment1/info.txt",
           "coverage": [
             [
-              "experiments/experiment1/Pa_BF/Pa_BF_s1.1.bw"
+              "experiments/experiment1/cond1/cond1.average.bw",
+              "experiments/experiment1/cond1/sample1.1.bw",
+              "experiments/experiment1/cond1/sample1.2.bw",
+              "experiments/experiment1/cond1/sample1.3.bw"
             ]
           ],
           "coverage_condition_names": [
-            "Pa_BF"
+            "cond1"
           ]
         }
       }
@@ -183,9 +82,7 @@
       "none"
     ],
     "genesLabelTypes": [
-      "name",
-      "locus_tag",
-      "old_locus_tag"
+      "name"
     ],
     "extras": []
   }

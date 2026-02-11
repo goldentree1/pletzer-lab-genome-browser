@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Usage: scripts/build.sh [options] <DIRECTORY>
 # Examples:
@@ -123,7 +123,7 @@ main() {
     fi
 
     # exit if user provided invalid directory
-    if [[ ! -d "$DATA_DIR" ]]  then
+    if [[ ! -d "$DATA_DIR" ]];  then
         echo -e "\033[0;31mDirectory '$DATA_DIR' does not exist or is not readable.\033[0m"
         print_minimal_help
         exit 1
@@ -178,12 +178,8 @@ main() {
     #
     echo "Overwriting website data ('./public/data') (this may take a couple of minutes)..."
 
-    if command -v rsync >/dev/null 2>&1; then
-        # if rsync installed, use it bc way faster
-        replace_public_data_rsync "$DATA_DIR"
-    else
-        replace_public_data "$DATA_DIR"
-    fi
+
+      replace_public_data "$DATA_DIR"
     # TODO check for cp errs??
 
     echo "Removing unnecessary files..."
@@ -479,7 +475,11 @@ genome_data_processing_ritual(){
 
 
     echo "Preparing BAM files... (this may take a few minutes per file)"
-    declare -A experiments_coverage_json
+	experiment_names=()
+experiment_jsons=()
+
+    #declare -A experiments_coverage_json
+
 
     for experiment_dir in "$experiments_dir"/*; do
         [[ -d "$experiment_dir" ]] || continue
@@ -579,15 +579,18 @@ genome_data_processing_ritual(){
           \"coverage\": [ $(IFS=,; echo "${coverage_arrays[*]}") ],
           \"coverage_condition_names\": [ $(IFS=,; echo "${coverage_condition_names[*]}") ]
         }"
-        experiments_coverage_json["$exp_name"]="$coverage_json"
+        experiment_names+=( "$exp_name" )
+        experiment_jsons+=( "$coverage_json" )
+
     done
 
     experiments_json="{"
-    for exp in "${!experiments_coverage_json[@]}"; do
-        experiments_json+="
-          \"$exp\": ${experiments_coverage_json[$exp]},"
+    for i in "${!experiment_names[@]}"; do
+      experiments_json+="
+      \"${experiment_names[$i]}\": ${experiment_jsons[$i]},"
     done
     experiments_json="${experiments_json%,}}"
+
 
 
     generated_config_file="$genome_dir/generated-config.json"
