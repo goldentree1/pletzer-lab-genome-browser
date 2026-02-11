@@ -24,7 +24,7 @@ On first use, you must setup the dependencies for this project.
     **Alternatively**, you can install dependencies manually:
       - Install the missing listed packages. These are:
         1. nodeJS/NPM (recommend version 24 LTS, but any should work).
-        2. python3 ("python" command should point to python3, recommend 3.10 but any should work if python3).
+        2. python3 ("python" command should point to python3, recommend 3.12 but any should work if python3).
         3. conda
         4. perl (for bioinformatics commands)
 
