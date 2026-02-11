@@ -53,7 +53,26 @@ On first use, you must setup the dependencies for this project.
 
 ## **User Guide**
 
-To rebuild the website with new data, follow the steps below:
+### To navigate the website page
+You can click the Pletzer Lab icon to go back to the main website 
+
+#### 1. Select an experiment
+Select a genome, and then one of the listed experiments with the controls on the top-left of the screen.
+You can learn more about the experiment by clicking the (i) button beside the selector.
+If available, you may select different conditions to be displayed. 
+You may also compare multiple conditions simultaneously, coded by colour in the chart.
+Click (+) to add a condition, and (x) to remove.
+
+#### 2. Graph options
+Set log scale, different gene naming conventions etc. CDS+Amino changes the colour coding of genes to show the codon it is aligned to in the reference nucleotide sequence.
+
+#### 3. Browser
+Scroll left/right, or use the arrows to move location in the browser. Use mousewheel or zoom controls (+/- buttons) to zoom in or out.
+The textbox displays the current chromosome and our location we are viewing. You can search for specific genes or jump to specified locations using this textbox.
+
+---
+
+### To rebuild the website with new data, follow the steps below:
 
 
 1. **Change into the root directory of this project and activate conda:**

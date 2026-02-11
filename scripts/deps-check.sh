@@ -256,6 +256,8 @@ if [ "$RUN_CONDA_CHECK" -eq 1 ] && command -v conda >/dev/null 2>&1; then
     conda_env_check
 fi
 
+npm install
+
 echo
 echo "Dependencies are installed!"
 echo

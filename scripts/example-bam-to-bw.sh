@@ -7,7 +7,7 @@
 # ./scripts/bam-to-bw.sh "public/data/LESB58/Pa_BF_s1Aligned.sortedByCoord.out.bam.reheader.bam" "bigwig.bw"
 
 samtools index "$1"
-bamCoverage --binSize 1 -b "$1" -o "$2"
+bamCoverage --binSize 10 -b "$1" -o "$2"
 bamCoverage \
   -b "$1" \
   -o "$2.cpm.bw" \
