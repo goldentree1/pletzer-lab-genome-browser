@@ -231,8 +231,6 @@ See ./test/ for details.
 
 ## My Story
 
-# Elliott Brown Report
-
 My time at Pletzer Lab has been an interesting journey! 
 Me, a computer scientist, working in the Microbiology building for a Summer Student Internship job.
 The job had been advertised as creating interactive website charts for data, which I have had an interest in, having made a surf forecast project of my own (of a similar nature, though this was certainly a much bigger challenge).
