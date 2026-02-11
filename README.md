@@ -223,6 +223,12 @@ esbuild and rollup instead of webpack
 This particular demo includes several polyfills that are needed for JBrowse
 including the Buffer polyfill
 
+### For testing:
+1. it is important to visually confirm graph against the processed BigWigs. The bigwigToBedgraph utility was used
+after changes to check the output numbers of the BigWig to graph.
+2. bigwigAverage was confirmed to give mean result - use simple test cases.
+See ./test/ for details.
+
 ## My Story
 
 # Elliott Brown Report
